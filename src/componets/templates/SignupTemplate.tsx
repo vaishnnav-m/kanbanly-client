@@ -5,6 +5,13 @@ import { Button } from "../atoms/button";
 import SignupForm from "../organisms/SignupForm";
 import { Card, CardContent } from "../atoms/card";
 import { FieldConfig } from "@/types/form";
+import { SignupPayload } from "@/lib/api/auth/auth.types";
+
+interface SignupTemplateProps {
+  handleSignup: (values: SignupPayload) => void;
+  isLoading: boolean;
+  errorMessage?: string;
+}
 
 const className =
   "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
@@ -24,7 +31,7 @@ const signupFields: FieldConfig[] = [
         id: "lastName",
         type: "text",
         label: "Last Name",
-        placeholder: "Doe",
+        placeholder: "Enter your last name",
         className,
       },
     ],
@@ -40,7 +47,7 @@ const signupFields: FieldConfig[] = [
   {
     id: "phone",
     label: "Phone",
-    placeholder: "Enter your phone",
+    placeholder: "Enter your phone number",
     type: "phone",
     className,
   },
@@ -66,9 +73,9 @@ const signupFields: FieldConfig[] = [
 
 const SignupTemplate = ({
   handleSignup,
-}: {
-  handleSignup: (values: Record<string, string>) => void;
-}) => {
+  isLoading,
+  errorMessage,
+}: SignupTemplateProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorative elements */}
@@ -99,9 +106,9 @@ const SignupTemplate = ({
         <Card className="backdrop-blur-lg bg-[#273444] border-0 shadow-2xl">
           <CardContent className="p-6 space-y-6 bg-log ">
             {/* signup form */}
-            <SignupForm
+            <SignupForm<SignupPayload>
               submitLabel="Signup"
-              isLoading={false}
+              isLoading={isLoading}
               fields={signupFields}
               onSubmit={handleSignup}
             />

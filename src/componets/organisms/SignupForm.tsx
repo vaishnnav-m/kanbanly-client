@@ -6,13 +6,15 @@ import FormField from "../molecules/FormField";
 import { Button } from "../atoms/button";
 import { LogIn } from "lucide-react";
 
-const SignupForm = ({
+const SignupForm = <T extends object>({
   submitLabel,
   fields,
   onSubmit,
   isLoading,
-}: FormProps) => {
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
+}: FormProps<T>) => {
+  const [formValues, setFormValues] = useState<T & Record<string, string>>(
+    {} as T & Record<string, string>
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -21,7 +23,7 @@ const SignupForm = ({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSubmit(formValues);
-   }
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10">

@@ -1,3 +1,5 @@
+import { SignupPayload } from "@/lib/api/auth/auth.types";
+
 export interface FormFieldProps {
   id: string;
   className?: string;
@@ -28,10 +30,10 @@ export type GroupField = {
 
 export type FieldConfig = SingleField | GroupField;
 
-export interface FormProps {
+export interface FormProps<T extends object> {
   submitLabel: string;
   fields: FieldConfig[];
-  onSubmit: (values: Record<string, string>) => void;
+  onSubmit: (values: T) => void;
   isLoading: boolean;
   error?: string;
 }
