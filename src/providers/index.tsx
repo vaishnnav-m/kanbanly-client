@@ -1,4 +1,3 @@
-// app/providers/index.tsx
 "use client";
 import React, { useState } from "react";
 import { ThemeProvider } from "./ThemeProvider";

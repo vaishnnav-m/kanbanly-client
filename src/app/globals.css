@@ -46,6 +46,24 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Gradient Stop Colors (Light Mode) */
+    --color-bg-gradient-from-light: 220 100% 97%; /* Blue 50 equivalent */
+    --color-bg-gradient-via-light: 0 0% 100%;    /* White equivalent */
+    --color-bg-gradient-to-light: 270 100% 98%;   /* Purple 50 equivalent */
+
+    /* Text Colors (Light Mode) */
+    --color-text-default-light: 222.2 84% 4.9%; /* Gray 900 equivalent */
+    --color-text-secondary-light: 215.4 16.3% 46.9%; /* Gray 600 equivalent */
+    --color-text-tertiary-light: 215 20.2% 65.1%; /* Gray 500 equivalent */
+
+    /* Card/Element Backgrounds (Light Mode) */
+    --color-card-bg-light: 0 0% 100%; /* White */
+    --color-card-border-light: 214.3 31.8% 91.4%; /* Gray 200 equivalent */
+
+    /* Button Colors (Light Mode) */
+    --color-button-border-light: 214.3 31.8% 91.4%; /* Gray 300 equivalent */
+    --color-button-text-light: 215.4 16.3% 46.9%; /* Gray 600 equivalent */
   }
 
   .dark {
@@ -79,10 +97,32 @@
     --input: 209 36% 18%;
     --ring: 259 80% 70%; /* Primary color for rings (Dark Mode) */
     
-    
-    /* ... keep existing dark mode sidebar colors ... */
+     /* Gradient Stop Colors (Dark Mode) */
+    --color-bg-gradient-from-dark: 222.2 84% 4.9%; /* Gray 900 equivalent */
+    --color-bg-gradient-via-dark: 217.2 32.6% 17.5%; /* Gray 800 equivalent */
+    --color-bg-gradient-to-dark: 222.2 84% 4.9%;   /* Gray 900 equivalent */
+
+    /* Text Colors (Dark Mode) */
+    --color-text-default-dark: 210 40% 98%; /* White equivalent */
+    --color-text-secondary-dark: 215 20.2% 65.1%; /* Gray 300 equivalent */
+    --color-text-tertiary-dark: 215.4 16.3% 46.9%; /* Gray 400 equivalent */
+
+    /* Card/Element Backgrounds (Dark Mode) */
+    --color-card-bg-dark: 222.2 84% 4.9%; /* Gray 800 */
+    --color-card-border-dark: 217.2 32.6% 17.5%; /* Gray 700 equivalent */
+
+    /* Button Colors (Dark Mode) */
+    --color-button-border-dark: 217.2 32.6% 17.5%; /* Gray 600 equivalent */
+    --color-button-text-dark: 215 20.2% 65.1%; /* Gray 300 equivalent */
   }
 }
+
+/* #root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+} */
 
 @layer base {
   * {

@@ -23,7 +23,7 @@ const FieldGroupRow: React.FC<FieldGroupRowProps> = ({
           </Label>
           <Input
             onChange={onChange}
-            value={values[field.id || ""]}
+            value={values[field.id] || ""}
             {...field}
             name={field.id}
           />

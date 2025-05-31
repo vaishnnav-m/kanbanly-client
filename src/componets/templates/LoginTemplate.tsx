@@ -3,9 +3,17 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "../atoms/button";
 import Form from "../organisms/Form";
-import { Card, CardContent } from "../atoms/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../atoms/card";
 import { FieldConfig } from "@/types/form";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
+import { LogIn } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface SignupTemplateProps {
   handleSignup: (values: SignupPayload) => void;
@@ -16,26 +24,7 @@ interface SignupTemplateProps {
 const className =
   "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
 
-const signupFields: FieldConfig[] = [
-  {
-    group: [
-      {
-        id: "firstName",
-        type: "text",
-        label: "First Name",
-        placeholder: "Enter your first name",
-        className,
-        required: true,
-      },
-      {
-        id: "lastName",
-        type: "text",
-        label: "Last Name",
-        placeholder: "Enter your last name",
-        className,
-      },
-    ],
-  },
+const loginFields: FieldConfig[] = [
   {
     id: "email",
     label: "Email",
@@ -43,13 +32,6 @@ const signupFields: FieldConfig[] = [
     type: "email",
     className,
     required: true,
-  },
-  {
-    id: "phone",
-    label: "Phone",
-    placeholder: "Enter your phone number",
-    type: "phone",
-    className,
   },
   {
     id: "password",
@@ -60,18 +42,9 @@ const signupFields: FieldConfig[] = [
       "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
     required: true,
   },
-  {
-    id: "confirmPass",
-    label: "Confirm Password",
-    placeholder: "Confirm your password",
-    type: "password",
-    className:
-      "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
-    required: true,
-  },
 ];
 
-const SignupTemplate = ({
+const LoginTemplate = ({
   handleSignup,
   isLoading,
   errorMessage,
@@ -91,29 +64,41 @@ const SignupTemplate = ({
         ></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-lg">
+      <div className="relative z-10 w-full max-w-md">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4 pulse-glow">
+            <LogIn className="w-8 h-8 text-white" />
+          </div>
           <h1 className="text-4xl font-bold gradient-text mb-2">
-            Welcome Aboard!
+            Welcome Back
           </h1>
-          <p className="text-white/80 text-lg">
-            Create your account and boost productivity
-          </p>
+          <p className="text-white/80 text-lg">login to your account</p>
         </div>
 
         {/* Login Card */}
         <Card className="backdrop-blur-lg bg-[#273444] border-0 shadow-2xl">
-          <CardContent className="p-6 space-y-6 bg-log ">
+          <CardHeader className="space-y-1 text-center pb-4">
+            <CardTitle className="text-2xl text white">Login</CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 bg-log ">
             {/* signup form */}
             <Form<SignupPayload>
-              submitLabel="Signup"
+              submitLabel="Login"
               isLoading={isLoading}
-              fields={signupFields}
+              fields={loginFields}
               onSubmit={handleSignup}
             />
 
-            <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="relative"
+            >
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-muted"></div>
               </div>
@@ -122,9 +107,14 @@ const SignupTemplate = ({
                   Or continue with
                 </span>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="grid grid-cols-2 gap-4"
+            >
               <Button
                 variant="outline"
                 className="h-12 bg-transparent border-primary hover:bg-primary hover:text-accent-foreground hover:border-accent transition-all duration-200"
@@ -162,15 +152,15 @@ const SignupTemplate = ({
                 </svg>
                 Twitter
               </Button>
-            </div>
+            </motion.div>
 
             <div className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
+              don't have an account?{" "}
               <Link
-                href="/login"
+                href="/signup"
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
-                Sign in here
+                Sign up here
               </Link>
             </div>
           </CardContent>
@@ -191,4 +181,4 @@ const SignupTemplate = ({
   );
 };
 
-export default SignupTemplate;
+export default LoginTemplate;

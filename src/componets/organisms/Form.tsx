@@ -1,12 +1,13 @@
 "use client";
-import { FormProps } from "@/types/form";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { LogIn } from "lucide-react";
+import { FormProps } from "@/types/form";
 import FieldGroupRow from "../molecules/FieldGroupRow";
 import FormField from "../molecules/FormField";
 import { Button } from "../atoms/button";
-import { LogIn } from "lucide-react";
 
-const SignupForm = <T extends object>({
+const Form = <T extends object>({
   submitLabel,
   fields,
   onSubmit,
@@ -26,7 +27,14 @@ const SignupForm = <T extends object>({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
+    <motion.form
+      key="animated-form"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      onSubmit={handleSubmit}
+      className="space-y-10"
+    >
       <div className="space-y-3">
         {fields.map((field, index) =>
           "group" in field ? (
@@ -63,8 +71,8 @@ const SignupForm = <T extends object>({
           </div>
         )}
       </Button>
-    </form>
+    </motion.form>
   );
 };
 
-export default SignupForm;
+export default Form;

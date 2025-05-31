@@ -7,12 +7,12 @@ export const useSignup = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, SignupPayload>({
+  return useMutation<ApiResponse<{ email: string }>, Error, SignupPayload>({
     mutationKey: ["signup"],
     mutationFn: signup,
     onSuccess: (response) => {
       console.log("Signup Successfull", response);
-      router.push("/login");
+      router.push(`/verify-otp?email=vaishnnav0@gmail.com`);
     },
     onError: (error) => {
       console.log("Signup failed (network/server error):", error);

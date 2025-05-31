@@ -3,7 +3,7 @@ import { SignupPayload } from "@/lib/api/auth/auth.types";
 export interface FormFieldProps {
   id: string;
   className?: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   type?: string;
   value: string;
@@ -17,11 +17,12 @@ export interface FieldGroupRowProps {
 
 export type SingleField = {
   id: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   type?: string;
   className?: string;
   required?: boolean;
+  otpLength?: number;
 };
 
 export type GroupField = {

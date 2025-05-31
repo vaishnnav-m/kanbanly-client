@@ -1,10 +1,5 @@
 "use client";
-import SignupTemplate from "@/componets/templates/SignupTemplate";
-
+import LandingPageTemplate from "@/componets/templates/LandingPageTemplate";
 export default function Home() {
-  return (
-    <main>
-      <h1>Landing page</h1>
-    </main>
-  );
+  return <LandingPageTemplate />;
 }
