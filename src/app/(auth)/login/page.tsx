@@ -1,13 +1,13 @@
 "use client";
 import LoginTemplate from "@/componets/templates/LoginTemplate";
-import { SignupPayload } from "@/lib/api/auth/auth.types";
-import { useSignup } from "@/lib/hooks/useAuth";
+import { LoginPayload } from "@/lib/api/auth/auth.types";
+import { useLogin } from "@/lib/hooks/useAuth";
 import React from "react";
 
 const LoginPage = () => {
-  const { mutate: signupUser, isPending, error } = useSignup();
-  const handleSignup = (values: SignupPayload) => {
-    signupUser(values);
+  const { mutate: loginUser, isPending, error } = useLogin();
+  const handleSignup = (values: LoginPayload) => {
+    loginUser(values);
   };
   return (
     <main>

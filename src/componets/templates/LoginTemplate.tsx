@@ -91,6 +91,7 @@ const LoginTemplate = ({
               isLoading={isLoading}
               fields={loginFields}
               onSubmit={handleSignup}
+              error={errorMessage}
             />
 
             <motion.div

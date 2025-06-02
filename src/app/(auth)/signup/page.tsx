@@ -6,9 +6,11 @@ import React from "react";
 
 const SignupPage = () => {
   const { mutate: signupUser, isPending, error } = useSignup();
+
   const handleSignup = (values: SignupPayload) => {
     signupUser(values);
   };
+
   return (
     <main>
       <SignupTemplate

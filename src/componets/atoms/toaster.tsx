@@ -1,35 +1,16 @@
-"use client"
+"use client";
+import React from "react";
+import { ToastItem } from "./toast";
+import { useToastContext } from "@/providers/ToastProvider";
 
-import { useToast } from "@/app/hooks/use-toast"
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "@/app/components/ui/toast"
-
-export function Toaster() {
-  const { toasts } = useToast()
+export const ToastContainer: React.FC = () => {
+  const { toasts } = useToastContext();
 
   return (
-    <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
-        return (
-          <Toast key={id} {...props}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
-              )}
-            </div>
-            {action}
-            <ToastClose />
-          </Toast>
-        )
-      })}
-      <ToastViewport />
-    </ToastProvider>
-  )
-}
+    <div className="fixed inset-0 pointer-events-none z-50">
+      {toasts.map((toast, index) => (
+        <ToastItem key={toast.id} toast={toast} index={index} />
+      ))}
+    </div>
+  );
+};

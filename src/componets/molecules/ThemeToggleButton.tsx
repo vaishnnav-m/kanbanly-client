@@ -1,9 +1,8 @@
-// components/molecules/ThemeToggleButton.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggleButton() {
   const [mounted, setMounted] = useState(false);
@@ -19,29 +18,42 @@ export function ThemeToggleButton() {
     return null;
   }
 
-  const isDark = resolvedTheme === "dark";
+  const isDarkResolved = resolvedTheme === "dark";
 
   const handleToggle = () => {
     setIsClicked(true);
-    setTheme(isDark ? "light" : "dark");
+    if (theme === "light") {
+      setTheme("dark");
+    } else if (theme === "dark") {
+      setTheme("system");
+    } else {
+      setTheme("light");
+    }
     setTimeout(() => setIsClicked(false), 300);
+  };
+
+  const getNextThemeLabel = () => {
+    if (theme === "light") return "dark";
+    if (theme === "dark") return "system";
+    return "light";
   };
 
   return (
     <motion.button
-      className="relative w-10 h-10 rounded-full border-2 border-border bg-card shadow-lg focus:outline-none overflow-hidden"
+      className="relative w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg focus:outline-none overflow-hidden"
       onClick={handleToggle}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      aria-label={`Switch to ${getNextThemeLabel()} mode`}
     >
+      {/* Background gradient based on resolved theme */}
       <motion.div
         className="absolute inset-0 rounded-full"
         style={{
-          background: isDark
+          background: isDarkResolved
             ? "conic-gradient(from 0deg, hsl(259 80% 70%), hsl(170 70% 50%), hsl(259 80% 70%))"
             : "conic-gradient(from 0deg, hsl(259 94% 66%), hsl(170 78% 44%), hsl(259 94% 66%))",
         }}
@@ -58,75 +70,88 @@ export function ThemeToggleButton() {
               }
         }
       />
+      {/* Inner circle with icon */}
       <motion.div
-        className="absolute inset-1 rounded-full bg-background flex items-center justify-center"
+        className="absolute inset-1 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center"
         animate={{
           scale: isClicked ? 0.8 : 1,
         }}
         transition={{ duration: 0.2 }}
       >
-        {/* Icon container with flip animation */}
-        <motion.div
-          className="relative w-5 h-5"
-          animate={{
-            rotateY: isDark ? 180 : 0,
-          }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          {/* Sun Icon */}
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{
-              backfaceVisibility: "hidden",
-            }}
-            animate={{
-              opacity: isDark ? 0 : 1,
-            }}
-          >
+        {/* Icon container with animations */}
+        <AnimatePresence mode="wait" initial={false}>
+          {theme === "light" && (
             <motion.div
-              animate={{
-                rotate: isHovered ? 360 : 0,
-                scale: isClicked ? 1.3 : 1,
-              }}
-              transition={{
-                rotate: {
-                  duration: 2,
-                  ease: "linear",
-                  repeat: isHovered ? Infinity : 0,
-                },
-                scale: { duration: 0.2 },
-              }}
+              key="sun-icon"
+              initial={{ rotateY: -180, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              exit={{ rotateY: 180, opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <Sun size={18} className="text-yellow-500" strokeWidth={2} />
+              <motion.div
+                animate={{
+                  rotate: isHovered ? 360 : 0,
+                  scale: isClicked ? 1.3 : 1,
+                }}
+                transition={{
+                  rotate: {
+                    duration: 2,
+                    ease: "linear",
+                    repeat: isHovered ? Infinity : 0,
+                  },
+                  scale: { duration: 0.2 },
+                }}
+              >
+                <Sun size={18} className="text-yellow-500" strokeWidth={2} />
+              </motion.div>
             </motion.div>
-          </motion.div>
-
-          {/* Moon Icon */}
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{
-              backfaceVisibility: "hidden",
-              transform: "rotateY(180deg)",
-            }}
-            animate={{
-              opacity: isDark ? 1 : 0,
-            }}
-          >
+          )}
+          {theme === "dark" && (
             <motion.div
-              animate={{
-                rotate: isHovered ? -45 : 0,
-                scale: isClicked ? 1.3 : 1,
-              }}
-              transition={{
-                rotate: { duration: 1, ease: "easeInOut" },
-                scale: { duration: 0.2 },
-              }}
+              key="moon-icon"
+              initial={{ rotateY: -180, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              exit={{ rotateY: 180, opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <Moon size={18} className="text-blue-400" strokeWidth={2} />
+              <motion.div
+                animate={{
+                  rotate: isHovered ? -45 : 0,
+                  scale: isClicked ? 1.3 : 1,
+                }}
+                transition={{
+                  rotate: { duration: 1, ease: "easeInOut" },
+                  scale: { duration: 0.2 },
+                }}
+              >
+                <Moon size={18} className="text-blue-400" strokeWidth={2} />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </motion.div>
+          )}
+          {theme === "system" && (
+            <motion.div
+              key="system-icon"
+              initial={{ rotateY: -180, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              exit={{ rotateY: 180, opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <motion.div
+                animate={{
+                  scale: isClicked ? 1.3 : 1,
+                }}
+                transition={{
+                  scale: { duration: 0.2 },
+                }}
+              >
+                <Monitor size={18} className="text-gray-500" strokeWidth={2} />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Sparkle effect on click */}
         <AnimatePresence>
@@ -135,7 +160,7 @@ export function ThemeToggleButton() {
               {[...Array(6)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-1 h-1 bg-primary rounded-full"
+                  className="absolute w-1 h-1 bg-blue-500 rounded-full" // Changed to a generic primary color
                   initial={{
                     scale: 0,
                     x: 0,
@@ -151,7 +176,7 @@ export function ThemeToggleButton() {
                   exit={{ opacity: 0 }}
                   transition={{
                     duration: 0.6,
-                    delay: i * 0.1,
+                    delay: i * 0.05, // Slightly reduced delay for quicker effect
                     ease: "easeOut",
                   }}
                 />
@@ -167,7 +192,9 @@ export function ThemeToggleButton() {
           <motion.div
             className="absolute inset-0 rounded-full border-2"
             style={{
-              borderColor: isDark ? "hsl(259 80% 70%)" : "hsl(259 94% 66%)",
+              borderColor: isDarkResolved
+                ? "hsl(259 80% 70%)"
+                : "hsl(259 94% 66%)",
             }}
             initial={{ scale: 1, opacity: 0.8 }}
             animate={{ scale: 2, opacity: 0 }}
