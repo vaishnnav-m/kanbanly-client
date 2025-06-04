@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Your App Title",
-  description: "Your app description here.",
+  title: "Kanbanly",
+  description: "Project management tool",
 };
 
 export default function RootLayout({

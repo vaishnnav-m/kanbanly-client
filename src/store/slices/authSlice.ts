@@ -4,12 +4,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AuthState {
   isEmailVerified: boolean;
   isAuthenticated: boolean;
-  user: null | { id?: string; name: string; email: string };
+  user: null | { firstName: string; lastName?: string; email: string };
 }
 
+const isEmailVerified = localStorage.getItem("isEmailVerified") === "true";
+const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+
 const initialState: AuthState = {
-  isEmailVerified: false,
-  isAuthenticated: false,
+  isEmailVerified,
+  isAuthenticated,
   user: null,
 };
 
@@ -21,12 +24,13 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{
         isAuthenticated: boolean;
-        user: { id: string; name: string; email: string };
-        token: string;
+        user: { firstName: string; lastName?: string; email: string };
+        isEmailVerified: boolean;
       }>
     ) => {
       state.isAuthenticated = true;
       state.user = action.payload.user;
+      state.isEmailVerified = action.payload.isEmailVerified;
     },
     logout: (state) => {
       state.isAuthenticated = false;

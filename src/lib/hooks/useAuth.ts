@@ -15,7 +15,16 @@ export const useSignup = () => {
   const queryClient = useQueryClient();
   const toast = useToastMessage();
 
-  return useMutation<ApiResponse<{ email: string }>, Error, SignupPayload>({
+  return useMutation<
+    ApiResponse<{
+      firstName: string;
+      lastName: string;
+      isEmailVerified: boolean;
+      email: string;
+    }>,
+    Error,
+    SignupPayload
+  >({
     mutationKey: ["signup"],
     mutationFn: signup,
     onSuccess: (response) => {

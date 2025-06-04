@@ -2,7 +2,9 @@
 import SignupTemplate from "@/componets/templates/SignupTemplate";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
 import { useSignup } from "@/lib/hooks/useAuth";
-import React, { useState } from "react";
+import { setCredentials } from "@/store/slices/authSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const SignupPage = () => {
   const [errors, setErrors] = useState<{
@@ -14,7 +16,25 @@ const SignupPage = () => {
     confirmPass?: string;
   }>({});
 
-  const { mutate: signupUser, isPending } = useSignup();
+  const { mutate: signupUser, isPending, data } = useSignup();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (data?.data) {
+      const { isEmailVerified, ...user } = data?.data;
+      
+      localStorage.setItem("isEmailVerified", isEmailVerified.toString());
+      localStorage.setItem("isAuthenticated", "true");
+
+      dispatch(
+        setCredentials({
+          isEmailVerified,
+          isAuthenticated: true,
+          user,
+        })
+      );
+    }
+  }, [data]);
 
   const validate = (values: SignupPayload) => {
     const newErrors: typeof errors = {};
