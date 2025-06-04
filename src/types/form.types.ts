@@ -1,4 +1,4 @@
-import { SignupPayload } from "@/lib/api/auth/auth.types";
+import { z } from "zod";
 
 export interface FormFieldProps {
   id: string;
@@ -36,5 +36,6 @@ export interface FormProps<T extends object> {
   fields: FieldConfig[];
   onSubmit: (values: T) => void;
   isLoading: boolean;
-  error?: string;
+  errors?: Record<string, string>;
+  // schema: z.ZodSchema<T>;
 }

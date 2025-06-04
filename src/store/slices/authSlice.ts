@@ -1,18 +1,15 @@
-"use client"
-import { getAuthToken } from "@/lib/utils/auth";
+"use client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
-  token: string;
+  isEmailVerified: boolean;
   isAuthenticated: boolean;
-  user: null | { id: string; name: string };
+  user: null | { id?: string; name: string; email: string };
 }
 
-const token = getAuthToken();
-
 const initialState: AuthState = {
-  token: token || "",
-  isAuthenticated: !!token,
+  isEmailVerified: false,
+  isAuthenticated: false,
   user: null,
 };
 
@@ -24,17 +21,15 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{
         isAuthenticated: boolean;
-        user: { id: string; name: string };
+        user: { id: string; name: string; email: string };
         token: string;
       }>
     ) => {
       state.isAuthenticated = true;
-      state.token = action.payload.token;
       state.user = action.payload.user;
     },
     logout: (state) => {
       state.isAuthenticated = false;
-      state.token = "";
       state.user = null;
     },
   },

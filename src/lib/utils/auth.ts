@@ -1,20 +1,21 @@
-const AUTH_TOKEN_KEY = "userToken";
+const EMAIL_VERIFIED_STORAGE_KEY = "isEmailVerified";
 
 export const setAuthToken = (token: string): void => {
   if (typeof window !== "undefined") {
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    localStorage.setItem(EMAIL_VERIFIED_STORAGE_KEY, token);
   }
 };
 
-export const getAuthToken = (): string | null => {
+export const getIEmailVerified = (): boolean | null => {
   if (typeof window !== "undefined") {
-    return localStorage.getItem(AUTH_TOKEN_KEY);
+    const storedStatus = localStorage.getItem(EMAIL_VERIFIED_STORAGE_KEY);
+    
   }
   return null;
 };
 
 export const removeAuthToken = (): void => {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(EMAIL_VERIFIED_STORAGE_KEY);
   }
 };

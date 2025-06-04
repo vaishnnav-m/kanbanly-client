@@ -11,6 +11,7 @@ interface FormFieldProps {
   type?: string;
   value: string;
   otpLength?: number;
+  errors?: Record<string, string>;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -21,6 +22,7 @@ const FormField = ({
   value,
   onChange,
   otpLength = 6,
+  errors,
   ...props
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +39,6 @@ const FormField = ({
       )}
 
       {/* otp field rendering */}
-
       {isOtpField ? (
         <OTPInput
           length={otpLength}
@@ -46,16 +47,17 @@ const FormField = ({
             const syntheticEvent = {
               target: {
                 name: id,
+
                 value: otpValue,
               },
             } as React.ChangeEvent<HTMLInputElement>;
+
             onChange(syntheticEvent);
           }}
           onComplete={() => {}}
         />
       ) : (
         // normal field rendering
-
         <div className="relative">
           <Input
             id={id}
@@ -65,6 +67,7 @@ const FormField = ({
             onChange={onChange}
             {...props}
           />
+
           {isPasswordField && (
             <button
               type="button"
@@ -80,8 +83,8 @@ const FormField = ({
           )}
         </div>
       )}
+      {errors && <p className="text-red-500">{errors[id]}</p>}
     </div>
   );
 };
-
 export default FormField;

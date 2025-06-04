@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../atoms/card";
-import { FieldConfig } from "@/types/form";
+import { FieldConfig } from "@/types/form.types";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
 import { LogIn } from "lucide-react";
 import { motion } from "framer-motion";

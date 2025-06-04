@@ -4,13 +4,13 @@ import React from "react";
 import { Button } from "../atoms/button";
 import Form from "../organisms/Form";
 import { Card, CardContent } from "../atoms/card";
-import { FieldConfig } from "@/types/form";
+import { FieldConfig } from "@/types/form.types";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
 
 interface SignupTemplateProps {
   handleSignup: (values: SignupPayload) => void;
   isLoading: boolean;
-  errorMessage?: string;
+  errorMessages?: Record<string, string>;
 }
 
 const className =
@@ -25,7 +25,6 @@ const signupFields: FieldConfig[] = [
         label: "First Name",
         placeholder: "Enter your first name",
         className,
-        required: true,
       },
       {
         id: "lastName",
@@ -40,9 +39,8 @@ const signupFields: FieldConfig[] = [
     id: "email",
     label: "Email",
     placeholder: "Enter your email",
-    type: "email",
+    type: "text",
     className,
-    required: true,
   },
   {
     id: "phone",
@@ -58,7 +56,6 @@ const signupFields: FieldConfig[] = [
     type: "password",
     className:
       "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
-    required: true,
   },
   {
     id: "confirmPass",
@@ -67,14 +64,13 @@ const signupFields: FieldConfig[] = [
     type: "password",
     className:
       "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
-    required: true,
   },
 ];
 
 const SignupTemplate = ({
   handleSignup,
   isLoading,
-  errorMessage,
+  errorMessages,
 }: SignupTemplateProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -111,6 +107,7 @@ const SignupTemplate = ({
               isLoading={isLoading}
               fields={signupFields}
               onSubmit={handleSignup}
+              errors={errorMessages}
             />
 
             <div className="relative">

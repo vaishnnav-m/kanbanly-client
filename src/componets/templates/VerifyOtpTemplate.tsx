@@ -10,7 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { RefreshCw, Shield } from "lucide-react";
 import Form from "../organisms/Form";
-import { FieldConfig } from "@/types/form";
+import { FieldConfig } from "@/types/form.types";
 import { Button } from "../atoms/button";
 
 const otpFields: FieldConfig[] = [{ id: "otpCode", type: "otp", otpLength: 6 }];

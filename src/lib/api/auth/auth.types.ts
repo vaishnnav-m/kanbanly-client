@@ -14,6 +14,7 @@ export interface SignupPayload {
   email: string;
   phone?: string;
   password: string;
+  confirmPass?:string;
 }
 
 export interface LoginPayload {
