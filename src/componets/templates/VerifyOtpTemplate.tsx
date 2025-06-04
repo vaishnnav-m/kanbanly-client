@@ -108,7 +108,7 @@ const VerifyOtpTemplate = ({
             )}
           </div>
           <Form<{ otpCode: string }>
-            submitLabel="Signup"
+            submitLabel="Verify"
             isLoading={isSubmitLoading}
             fields={otpFields}
             onSubmit={handleOtp}

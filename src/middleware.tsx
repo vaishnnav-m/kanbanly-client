@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_AUTH_ROUTES = ["/login", "/signup", "/verify-otp"];
+const PUBLIC_AUTH_ROUTES = ["/login", "/signup"];
 const PUBLIC_LANDING_ROUTES = ["/"];
 const PROTECTED_ROUTES = ["/workspaces"];
 

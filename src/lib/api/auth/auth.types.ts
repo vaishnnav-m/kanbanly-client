@@ -14,7 +14,7 @@ export interface SignupPayload {
   email: string;
   phone?: string;
   password: string;
-  confirmPass?:string;
+  confirmPass?: string;
 }
 
 export interface LoginPayload {
@@ -27,6 +27,7 @@ export interface LoginResponseData {
   lastName: string;
   email: string;
   role: string;
+  isEmailVerified: boolean;
 }
 
 export interface ApiResponse<T = any> {
@@ -34,3 +35,5 @@ export interface ApiResponse<T = any> {
   data: T;
   message: string;
 }
+
+export interface OtpResponseData extends LoginResponseData {}

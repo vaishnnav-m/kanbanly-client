@@ -61,8 +61,6 @@ const OTPInput: React.FC<OTPInputProps> = ({
             inputRefs.current[index] = el;
           }}
           type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
           maxLength={1}
           value={value[index] || ""}
           onChange={(e) => handleChange(index, e.target.value)}
