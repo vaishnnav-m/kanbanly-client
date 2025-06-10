@@ -1,14 +1,25 @@
-// middleware.tsx
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_AUTH_ROUTES = ["/login", "/signup"];
-const PUBLIC_LANDING_ROUTES = ["/"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/signup-success"];
+const ALWAYS_PUBLIC_ROUTES = ["/", "/verify-email"];
 const PROTECTED_ROUTES = ["/workspaces"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = request.cookies.has("userAccessToken");
+
+  if (isAuthenticated) {
+    if (PUBLIC_ROUTES.includes(pathname)) {
+      return NextResponse.redirect(new URL("/workspaces", request.url));
+    }
+
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/workspaces", request.url));
+    }
+
+    return NextResponse.next();
+  }
 
   if (!isAuthenticated) {
     if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
@@ -18,8 +29,8 @@ export function middleware(request: NextRequest) {
     }
 
     if (
-      PUBLIC_AUTH_ROUTES.includes(pathname) ||
-      PUBLIC_LANDING_ROUTES.includes(pathname)
+      ALWAYS_PUBLIC_ROUTES.includes(pathname) ||
+      PUBLIC_ROUTES.includes(pathname)
     ) {
       return NextResponse.next();
     }
@@ -27,18 +38,6 @@ export function middleware(request: NextRequest) {
     const url = new URL("/login", request.url);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
-  }
-
-  if (isAuthenticated) {
-    if (PUBLIC_AUTH_ROUTES.includes(pathname)) {
-      return NextResponse.redirect(new URL("/workspaces", request.url));
-    }
-
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL("/workspaces", request.url));
-    }
-
-    return NextResponse.next();
   }
 
   return NextResponse.next();

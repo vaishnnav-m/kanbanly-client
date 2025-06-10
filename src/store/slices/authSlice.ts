@@ -24,20 +24,20 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{
         isAuthenticated: boolean;
-        user: { firstName: string; lastName?: string; email: string };
+        user?: { firstName: string; lastName?: string; email: string };
         isEmailVerified: boolean;
       }>
     ) => {
       state.isAuthenticated = true;
-      state.user = action.payload.user;
+      state.user = action.payload.user ? action.payload.user : null;
       state.isEmailVerified = action.payload.isEmailVerified;
     },
-    logout: (state) => {
+    logoutUser: (state) => {
       state.isAuthenticated = false;
       state.user = null;
     },
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logoutUser } = authSlice.actions;
 export default authSlice.reducer;

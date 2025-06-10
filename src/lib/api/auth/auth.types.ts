@@ -32,7 +32,7 @@ export interface LoginResponseData {
 
 export interface ApiResponse<T = any> {
   success: boolean;
-  data: T;
+  data?: T;
   message: string;
 }
 

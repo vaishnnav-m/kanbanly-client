@@ -1,10 +1,16 @@
 "use client";
 import { motion } from "framer-motion";
-import { User, Plus, Building2, Users, Briefcase } from "lucide-react";
+import { User, Plus, Building2, Users, Briefcase, LogOut } from "lucide-react";
 import { ThemeToggleButton } from "../molecules/ThemeToggleButton";
 import Link from "next/link";
 
-const WorkSpacesTemplate = ({ isVerified }: { isVerified: boolean }) => {
+const WorkSpacesTemplate = ({
+  isVerified,
+  handleLogout,
+}: {
+  isVerified: boolean;
+  handleLogout: () => void;
+}) => {
   const workspaces = [
     {
       id: 1,
@@ -77,6 +83,17 @@ const WorkSpacesTemplate = ({ isVerified }: { isVerified: boolean }) => {
           >
             <User className="w-5 h-5 text-white" />
           </div>
+          {/* Logout Button */}
+          <motion.button
+            onClick={handleLogout}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`w-10 h-10 rounded-full bg-gradient-to-r from-red-500 to-pink-600 flex items-center justify-center cursor-pointer text-white
+              hover:from-red-600 hover:to-pink-700 transition-all duration-300`}
+            aria-label="Logout"
+          >
+            <LogOut className="w-5 h-5" />
+          </motion.button>
         </div>
       </motion.header>
 

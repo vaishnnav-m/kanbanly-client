@@ -1,8 +1,8 @@
-"use client"
-import React from 'react';
-import { Smartphone, Radio } from 'lucide-react';
+"use client";
+import React from "react";
+import { Smartphone, Radio } from "lucide-react";
 
-const OTPSendingLoader = () => {
+const VerifyingEmailLoader = () => {
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center space-y-4 py-8">
       {/* Animated phone with signal waves */}
@@ -11,14 +11,14 @@ const OTPSendingLoader = () => {
         <div className="absolute -top-2 -right-2">
           <Radio className="w-4 h-4 text-primary animate-pulse" />
         </div>
-        
+
         {/* Pulsing rings around phone */}
         <div className="absolute inset-0 rounded-full">
           <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping"></div>
           <div className="absolute inset-2 rounded-full border-2 border-accent/40 animate-ping animation-delay-75"></div>
           <div className="absolute inset-4 rounded-full border-2 border-primary/20 animate-ping animation-delay-150"></div>
         </div>
-        
+
         {/* Phone icon */}
         <div className="relative z-10 w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg animate-pulse">
           <Smartphone className="w-8 h-8 text-white" />
@@ -28,7 +28,7 @@ const OTPSendingLoader = () => {
       {/* Loading text with animated dots */}
       <div className="text-center">
         <h3 className="text-lg font-semibold text-foreground mb-2">
-          Sending OTP
+          Verifying Email
         </h3>
         <div className="flex items-center justify-center space-x-1">
           <span className="text-muted-foreground">Please wait</span>
@@ -48,4 +48,4 @@ const OTPSendingLoader = () => {
   );
 };
 
-export default OTPSendingLoader;
+export default VerifyingEmailLoader;

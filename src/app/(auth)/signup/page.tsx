@@ -2,11 +2,23 @@
 import SignupTemplate from "@/componets/templates/SignupTemplate";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
 import { useSignup } from "@/lib/hooks/useAuth";
-import { setCredentials } from "@/store/slices/authSlice";
+import { RootState } from "@/store";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const SignupPage = () => {
+  const router = useRouter();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.isAuthenticated
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/workspace");
+    }
+  }, [isAuthenticated, router]);
+
   const [errors, setErrors] = useState<{
     firstName?: string;
     lastName?: string;
@@ -16,25 +28,7 @@ const SignupPage = () => {
     confirmPass?: string;
   }>({});
 
-  const { mutate: signupUser, isPending, data } = useSignup();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (data?.data) {
-      const { isEmailVerified, ...user } = data?.data;
-      
-      localStorage.setItem("isEmailVerified", isEmailVerified.toString());
-      localStorage.setItem("isAuthenticated", "true");
-
-      dispatch(
-        setCredentials({
-          isEmailVerified,
-          isAuthenticated: true,
-          user,
-        })
-      );
-    }
-  }, [data]);
+  const { mutate: signupUser, isPending } = useSignup();
 
   const validate = (values: SignupPayload) => {
     const newErrors: typeof errors = {};
