@@ -1,6 +1,5 @@
 "use client";
 import EmailFailureTemplate from "@/componets/templates/EmailFailureTemplate";
-import EmailSuccessTemplate from "@/componets/templates/EmailSuccessTemplate";
 import VerifyingEmailLoader from "@/componets/templates/VerifyingEmailTemplate";
 import { useVerifyEmail } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
@@ -23,7 +22,7 @@ const VerifyEmailPage = () => {
 
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-
+  // verify email hook
   const {
     mutate: verifyEmail,
     isPending: isLoading,
@@ -37,10 +36,6 @@ const VerifyEmailPage = () => {
       verifyEmail({ token });
     }
   }, [token, verifyEmail]);
-
-  if (isSuccess) {
-    return <EmailSuccessTemplate />;
-  }
 
   if (isLoading) {
     return <VerifyingEmailLoader />;

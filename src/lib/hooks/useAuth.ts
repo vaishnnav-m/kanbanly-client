@@ -10,6 +10,7 @@ import {
 } from "../api/auth/auth.types";
 import {
   logout,
+  resendEmail,
   sendOtp,
   signup,
   userLogin,
@@ -144,6 +145,8 @@ export const useVerifyEmail = () => {
           user: user ? user : undefined,
         })
       );
+
+      router.replace("/workspaces");
     },
     onError: (error: any) => {
       console.log("Email verification failed:", error);
@@ -157,13 +160,29 @@ export const useVerifyEmail = () => {
   });
 };
 
+export const useResendEmail = () => {
+  const toast = useToastMessage();
+
+  return useMutation<ApiResponse, Error, { email: string }>({
+    mutationKey: ["resend-email"],
+    mutationFn: resendEmail,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully send the link",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+  });
+};
+
 export const useLogout = () => {
   const router = useRouter();
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
   return useMutation<ApiResponse<OtpResponseData>, Error>({
-    mutationKey: ["send-otp"],
+    mutationKey: ["logout"],
     mutationFn: logout,
     onSuccess: () => {
       localStorage.clear();

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { Button } from "../atoms/button"; // Assuming your Button component
-import { XCircle } from "lucide-react"; // For an error icon
+import { Button } from "../atoms/button";
+import { XCircle } from "lucide-react";
 import Link from "next/link";
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../atoms/card"; // Reusing Card for consistent styling
+} from "../atoms/card";
 import { motion } from "framer-motion";
 
 interface VerificationFailedContentProps {
@@ -26,7 +26,7 @@ const EmailFailureTemplate = ({
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }} // Use animate for immediate appearance
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
       className="min-h-screen flex items-center justify-center p-4"
     >

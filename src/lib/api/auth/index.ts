@@ -21,6 +21,11 @@ export const verifyMagicLink = async (payload: { token: string }) => {
   return response.data;
 };
 
+export const resendEmail = async (payload: { email: string }) => {
+  const response = await api.get(`/auth/resend-email?email=${payload.email}`);
+  return response.data;
+};
+
 export const logout = async () => {
   const response = await api.get("/auth/logout");
   return response.data;

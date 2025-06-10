@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     if (pathname === "/") {
       return NextResponse.redirect(new URL("/workspaces", request.url));
     }
-
+    
     return NextResponse.next();
   }
 
