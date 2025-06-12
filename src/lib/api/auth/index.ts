@@ -11,11 +11,6 @@ export const userLogin = async (payload: LoginPayload) => {
   return response.data;
 };
 
-export const sendOtp = async () => {
-  const response = await api.get("/auth/send-otp");
-  return response.data;
-};
-
 export const verifyMagicLink = async (payload: { token: string }) => {
   const response = await api.get(`/auth/verify-email?token=${payload.token}`);
   return response.data;

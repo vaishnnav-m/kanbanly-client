@@ -13,7 +13,7 @@ function page() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace("/workspace");
+      router.replace("/workspaces");
     }
   }, [isAuthenticated, router]);
   

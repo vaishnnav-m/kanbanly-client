@@ -1,25 +1,57 @@
 import axios from "axios";
-// import { getIEmailVerified } from "../utils/auth";
+import { useToastMessage } from "../hooks/useToastMessage";
 
 const api = axios.create({
   baseURL: "http://localhost:5000/api/v1",
   withCredentials: true,
 });
 
-// api.interceptors.request.use((config) => {
-//   const token = getIEmailVerified();
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+interface ToastMethods {
+  showWarning: (options: {
+    title: string;
+    description?: string;
+    duration: number;
+    actions?: any[];
+  }) => string;
+}
+
+let toastInstance: ToastMethods | null = null;
+export const setToastMessageInstance = (instance: ToastMethods) => {
+  toastInstance = instance;
+};
+
+let isRefreshing = false;
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 403) {
-      //  code the logic to send req to the refersh end point
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 403 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          console.log("sending the refersh request");
+          await api.get("/auth/refresh");
+          isRefreshing = false;
+
+          return api(originalRequest);
+        } catch (error) {
+          console.log("[Refresh Error]", error);
+          isRefreshing = false;
+          localStorage.removeItem("isAuthenticated");
+          toastInstance?.showWarning({
+            title: "Your session has expired.",
+            description: "For your security, please log in again to continue.",
+            duration: 6000,
+          });
+          window.location.href = "/login";
+        }
+      }
     }
+
     return Promise.reject(error);
   }
 );

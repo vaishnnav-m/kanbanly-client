@@ -5,13 +5,11 @@ import {
   ApiResponse,
   LoginPayload,
   LoginResponseData,
-  OtpResponseData,
   SignupPayload,
 } from "../api/auth/auth.types";
 import {
   logout,
   resendEmail,
-  sendOtp,
   signup,
   userLogin,
   verifyMagicLink,
@@ -32,7 +30,6 @@ export const useSignup = () => {
     ApiResponse<{
       firstName: string;
       lastName: string;
-      isEmailVerified: boolean;
       email: string;
     }>,
     Error,
@@ -74,20 +71,18 @@ export const useLogin = () => {
 
       if (!response.data) return;
 
-      const { isEmailVerified, ...user } = response?.data;
+      const user = response?.data;
 
-      localStorage.setItem("isEmailVerified", isEmailVerified.toString());
       localStorage.setItem("isAuthenticated", "true");
 
       dispatch(
         setCredentials({
-          isEmailVerified,
           isAuthenticated: true,
           user,
         })
       );
 
-      router.push("/workspaces");
+      router.replace("/workspaces");
     },
     onError: (error: any) => {
       console.log(error);
@@ -101,23 +96,6 @@ export const useLogin = () => {
   });
 };
 
-export const useSendOtp = () => {
-  const toast = useToastMessage();
-
-  return useMutation<ApiResponse<OtpResponseData>, Error>({
-    mutationKey: ["send-otp"],
-    mutationFn: sendOtp,
-    onError: (error: any) => {
-      console.log(error);
-      const errorMessage = error?.response?.data?.message || "Unexpected Error";
-      toast.showError({
-        title: "Error in Login",
-        description: errorMessage,
-        duration: 6000,
-      });
-    },
-  });
-};
 
 export const useVerifyEmail = () => {
   const router = useRouter();
@@ -135,12 +113,10 @@ export const useVerifyEmail = () => {
         duration: 6000,
       });
 
-      localStorage.setItem("isEmailVerified", "true");
       localStorage.setItem("isAuthenticated", "true");
 
       dispatch(
         setCredentials({
-          isEmailVerified: true,
           isAuthenticated: true,
           user: user ? user : undefined,
         })
@@ -181,7 +157,7 @@ export const useLogout = () => {
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse<OtpResponseData>, Error>({
+  return useMutation<ApiResponse, Error>({
     mutationKey: ["logout"],
     mutationFn: logout,
     onSuccess: () => {

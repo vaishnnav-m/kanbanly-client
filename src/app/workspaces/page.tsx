@@ -1,21 +1,12 @@
 "use client";
+import { Button } from "@/componets/atoms/button";
 import WorkSpacesTemplate from "@/componets/templates/WorkSpacesTemplate";
 import { useLogout } from "@/lib/hooks/useAuth";
-import { RootState } from "@/store";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
 
 const page = () => {
-  const [isVerified, setIsVerified] = useState(false);
-
-  const isEmailVerified = useSelector(
-    (state: RootState) => state.isEmailVerified
-  );
   const { mutate: logout } = useLogout();
-
-  useEffect(() => {
-    setIsVerified(isEmailVerified);
-  }, [isEmailVerified]);
+  const toast = useToastMessage();
 
   function handleLogout() {
     logout();
@@ -23,7 +14,19 @@ const page = () => {
 
   return (
     <main>
-      <WorkSpacesTemplate isVerified={isVerified} handleLogout={handleLogout} />
+      <Button
+        className="bg-blue-700"
+        onClick={() =>
+          toast.showSuccess({
+            title: "Demo toast",
+            description: "demo",
+            duration: 6000,
+          })
+        }
+      >
+        Toast
+      </Button>
+      <WorkSpacesTemplate handleLogout={handleLogout} />
     </main>
   );
 };

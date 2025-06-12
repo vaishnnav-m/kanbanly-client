@@ -11,12 +11,12 @@ import {
   CardTitle,
 } from "../atoms/card";
 import { FieldConfig } from "@/types/form.types";
-import { SignupPayload } from "@/lib/api/auth/auth.types";
+import { LoginPayload } from "@/lib/api/auth/auth.types";
 import { LogIn } from "lucide-react";
 import { motion } from "framer-motion";
 
-interface SignupTemplateProps {
-  handleSignup: (values: SignupPayload) => void;
+interface LoginTemplateProps {
+  handleLogin: (values: LoginPayload) => void;
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -44,11 +44,7 @@ const loginFields: FieldConfig[] = [
   },
 ];
 
-const LoginTemplate = ({
-  handleSignup,
-  isLoading,
-  errorMessage,
-}: SignupTemplateProps) => {
+const LoginTemplate = ({ handleLogin, isLoading }: LoginTemplateProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorative elements */}
@@ -86,12 +82,11 @@ const LoginTemplate = ({
           </CardHeader>
           <CardContent className="space-y-6 bg-log ">
             {/* signup form */}
-            <Form<SignupPayload>
+            <Form<LoginPayload>
               submitLabel="Login"
               isLoading={isLoading}
               fields={loginFields}
-              onSubmit={handleSignup}
-              // error={errorMessage}
+              onSubmit={handleLogin}
             />
 
             <motion.div

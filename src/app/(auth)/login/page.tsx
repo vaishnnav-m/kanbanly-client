@@ -17,17 +17,17 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace("/workspace");
+      router.replace("/workspaces");
     }
   }, [isAuthenticated, router]);
 
-  const handleSignup = (values: LoginPayload) => {
+  const handleLogin = (values: LoginPayload) => {
     loginUser(values);
   };
   return (
     <main>
       <LoginTemplate
-        handleSignup={handleSignup}
+        handleLogin={handleLogin}
         isLoading={isPending}
         errorMessage={error?.message}
       />

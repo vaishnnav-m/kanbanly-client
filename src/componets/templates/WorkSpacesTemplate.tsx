@@ -2,15 +2,8 @@
 import { motion } from "framer-motion";
 import { User, Plus, Building2, Users, Briefcase, LogOut } from "lucide-react";
 import { ThemeToggleButton } from "../molecules/ThemeToggleButton";
-import Link from "next/link";
 
-const WorkSpacesTemplate = ({
-  isVerified,
-  handleLogout,
-}: {
-  isVerified: boolean;
-  handleLogout: () => void;
-}) => {
+const WorkSpacesTemplate = ({ handleLogout }: { handleLogout: () => void }) => {
   const workspaces = [
     {
       id: 1,
@@ -62,22 +55,6 @@ const WorkSpacesTemplate = ({
 
         <div className="flex items-center space-x-4">
           <ThemeToggleButton />
-          {!isVerified && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-orange-500 dark:text-orange-400 text-sm font-medium flex items-center space-x-2"
-            >
-              <span>Please verify your email!</span>
-              <Link
-                href="/verify-otp"
-                className="underline hover:text-orange-600 dark:hover:text-orange-300 transition-colors"
-              >
-                Verify
-              </Link>
-            </motion.div>
-          )}
           <div
             className={`w-10 h-10 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform`}
           >

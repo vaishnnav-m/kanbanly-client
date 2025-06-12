@@ -68,6 +68,8 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, index }) => {
   const Icon = toastIcons[toast.type];
   const styles = toastStyles[toast.type];
 
+  console.log("[toast item]", toast);
+
   return (
     <AnimatePresence>
       {toast.isVisible && (
@@ -98,10 +100,13 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, index }) => {
             damping: 20,
             duration: 0.5,
           }}
-          onMouseEnter={() => pauseToast(toast.id)}
+          onMouseEnter={() => {
+            console.log("[toast item] calling the function");
+            pauseToast(toast.id);
+          }}
           onMouseLeave={() => resumeToast(toast.id)}
           className={cn(
-            "fixed bottom-6 right-6 z-50 w-[350px] max-w-[85vw]",
+            "fixed bottom-6 right-6 z-[999] w-[350px] max-w-[85vw] pointer-events-auto",
             "border-2 rounded-xl overflow-hidden",
             "backdrop-blur-xl bg-gradient-to-br",
             styles.gradient,
@@ -112,13 +117,13 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, index }) => {
             "transform-gpu perspective-1000"
           )}
           style={{
-            background: `linear-gradient(135deg, 
-              hsl(var(--background)) 0%, 
+            background: `linear-gradient(135deg,
+              hsl(var(--background)) 0%,
               hsl(var(--background)/0.95) 100%)`,
           }}
         >
           {/* Animated background pattern */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-10 hover:hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent" />
             <motion.div
               animate={{
@@ -147,7 +152,10 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, index }) => {
             initial={{ width: "100%" }}
             animate={{ width: toast.isPaused ? "100%" : "0%" }}
             transition={{
-              duration: toast.isPaused ? 0 : (toast.duration || 5000) / 1000,
+              // Use remainingDuration when not paused, otherwise 0
+              duration: toast.isPaused
+                ? 0
+                : (toast.remainingDuration || 5000) / 1000,
               ease: "linear",
             }}
           />

@@ -7,7 +7,7 @@ const PROTECTED_ROUTES = ["/workspaces"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthenticated = request.cookies.has("userAccessToken");
+  const isAuthenticated = request.cookies.has("userRefreshToken");
 
   if (isAuthenticated) {
     if (PUBLIC_ROUTES.includes(pathname)) {
