@@ -11,7 +11,7 @@ export const userLogin = async (payload: LoginPayload) => {
   return response.data;
 };
 
-export const googleAuth = async (payload: { code: string }) => {
+export const googleAuth = async (payload: { token: string }) => {
   const response = await api.post("/auth/google/callback", payload);
   return response.data;
 };

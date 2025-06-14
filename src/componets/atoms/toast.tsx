@@ -68,8 +68,6 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, index }) => {
   const Icon = toastIcons[toast.type];
   const styles = toastStyles[toast.type];
 
-  console.log("[toast item]", toast);
-
   return (
     <AnimatePresence>
       {toast.isVisible && (
@@ -101,7 +99,6 @@ export const ToastItem: React.FC<ToastItemProps> = ({ toast, index }) => {
             duration: 0.5,
           }}
           onMouseEnter={() => {
-            console.log("[toast item] calling the function");
             pauseToast(toast.id);
           }}
           onMouseLeave={() => resumeToast(toast.id)}

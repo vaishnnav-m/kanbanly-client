@@ -33,13 +33,11 @@ api.interceptors.response.use(
       if (!isRefreshing) {
         isRefreshing = true;
         try {
-          console.log("sending the refersh request");
           await api.get("/auth/refresh");
           isRefreshing = false;
 
           return api(originalRequest);
         } catch (error) {
-          console.log("[Refresh Error]", error);
           isRefreshing = false;
           localStorage.removeItem("isAuthenticated");
           toastInstance?.showWarning({

@@ -15,12 +15,9 @@ const LoginPage = () => {
 
   const googleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      const code = tokenResponse.code;
-      googleAuth({ code });
+      const token = tokenResponse.access_token;
+      googleAuth({ token });
     },
-    flow: "auth-code",
-    redirect_uri: appConfig.googleAuth.REDIRECT_URI,
-    scope: "openid email profile",
   });
 
   const router = useRouter();
@@ -41,6 +38,7 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     googleLogin();
   };
+  
   return (
     <main>
       <LoginTemplate

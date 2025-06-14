@@ -114,7 +114,7 @@ const LoginTemplate = ({
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-1 gap-4"
+              className="grid grid-cols-1  gap-4"
             >
               <Button
                 onClick={handleGoogleLogin}

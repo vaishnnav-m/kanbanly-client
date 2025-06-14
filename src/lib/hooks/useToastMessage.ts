@@ -18,7 +18,6 @@ export const useToastMessage = () => {
   };
 
   const showError = (options: ToastOptions) => {
-    console.log("[toast hook] showing error")
     return addToast({
       type: "error",
       ...options,

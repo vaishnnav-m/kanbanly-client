@@ -137,7 +137,6 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   };
 
   const pauseToast = (id: string) => {
-    console.log("[Toast] The toast is paused");
     setToasts((prev) =>
       prev.map((toast) => {
         if (toast.id === id && !toast.isPaused) {
@@ -152,12 +151,6 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
           const newRemainingDuration = Math.max(
             0,
             toast.duration - elapsedTime
-          );
-          console.log(
-            "[toast item] remaning duration: ",
-            newRemainingDuration,
-            "\ntoast:",
-            toast
           );
           return {
             ...toast,

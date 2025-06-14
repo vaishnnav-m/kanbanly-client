@@ -9,8 +9,6 @@ const page = () => {
     logout();
   }
 
-  console.log(process.env.NEXT_PUBLIC_API_URL);
-
   return (
     <main>
       <WorkSpacesTemplate handleLogout={handleLogout} />

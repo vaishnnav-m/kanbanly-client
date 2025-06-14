@@ -105,14 +105,14 @@ export const useGoogleAuth = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse<LoginResponseData>, Error, { code: string }>({
+  return useMutation<ApiResponse<LoginResponseData>, Error, { token: string }>({
     mutationKey: ["googleAuth"],
     mutationFn: googleAuth,
     onSuccess: (response) => {
       toast.showSuccess({
-        title: "Welcome back, Commander!",
+        title: "Welcome aboard!",
         description:
-          "You've successfully logged in. The project battlefield is ready for action.",
+          "You're all set. Dive in and get started — your workspace awaits.",
         duration: 6000,
       });
 
