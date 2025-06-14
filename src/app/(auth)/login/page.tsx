@@ -1,14 +1,27 @@
 "use client";
 import LoginTemplate from "@/componets/templates/LoginTemplate";
 import { LoginPayload } from "@/lib/api/auth/auth.types";
-import { useLogin } from "@/lib/hooks/useAuth";
+import { appConfig } from "@/lib/config";
+import { useGoogleAuth, useLogin } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const LoginPage = () => {
   const { mutate: loginUser, isPending, error } = useLogin();
+  const { mutate: googleAuth } = useGoogleAuth();
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      const code = tokenResponse.code;
+      googleAuth({ code });
+    },
+    flow: "auth-code",
+    redirect_uri: appConfig.googleAuth.REDIRECT_URI,
+    scope: "openid email profile",
+  });
 
   const router = useRouter();
   const isAuthenticated = useSelector(
@@ -24,9 +37,14 @@ const LoginPage = () => {
   const handleLogin = (values: LoginPayload) => {
     loginUser(values);
   };
+
+  const handleGoogleLogin = () => {
+    googleLogin();
+  };
   return (
     <main>
       <LoginTemplate
+        handleGoogleLogin={handleGoogleLogin}
         handleLogin={handleLogin}
         isLoading={isPending}
         errorMessage={error?.message}

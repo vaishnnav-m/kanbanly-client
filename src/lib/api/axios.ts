@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useToastMessage } from "../hooks/useToastMessage";
+import { apiConfig } from "../config";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: apiConfig.baseUrl,
   withCredentials: true,
 });
 

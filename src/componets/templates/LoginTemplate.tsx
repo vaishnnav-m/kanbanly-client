@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 
 interface LoginTemplateProps {
   handleLogin: (values: LoginPayload) => void;
+  handleGoogleLogin: () => void;
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -44,7 +45,11 @@ const loginFields: FieldConfig[] = [
   },
 ];
 
-const LoginTemplate = ({ handleLogin, isLoading }: LoginTemplateProps) => {
+const LoginTemplate = ({
+  handleGoogleLogin,
+  handleLogin,
+  isLoading,
+}: LoginTemplateProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorative elements */}
@@ -109,9 +114,10 @@ const LoginTemplate = ({ handleLogin, isLoading }: LoginTemplateProps) => {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-1 gap-4"
             >
               <Button
+                onClick={handleGoogleLogin}
                 variant="outline"
                 className="h-12 bg-transparent border-primary hover:bg-primary hover:text-accent-foreground hover:border-accent transition-all duration-200"
               >
@@ -135,7 +141,7 @@ const LoginTemplate = ({ handleLogin, isLoading }: LoginTemplateProps) => {
                 </svg>
                 Google
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 className="h-12 bg-transparent border-primary border-2 hover:bg-primary hover:text-accent-foreground hover:border-accent transition-all duration-200"
               >
@@ -147,7 +153,7 @@ const LoginTemplate = ({ handleLogin, isLoading }: LoginTemplateProps) => {
                   <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                 </svg>
                 Twitter
-              </Button>
+              </Button> */}
             </motion.div>
 
             <div className="text-center text-sm text-muted-foreground">

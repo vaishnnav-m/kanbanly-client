@@ -8,6 +8,7 @@ import {
   SignupPayload,
 } from "../api/auth/auth.types";
 import {
+  googleAuth,
   logout,
   resendEmail,
   signup,
@@ -19,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { logoutUser, setCredentials } from "@/store/slices/authSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { setStorageItem } from "../utils";
 
 export const useSignup = () => {
   const router = useRouter();
@@ -73,7 +75,9 @@ export const useLogin = () => {
 
       const user = response?.data;
 
-      localStorage.setItem("isAuthenticated", "true");
+      const userData = JSON.stringify(user);
+      setStorageItem("isAuthenticated", "true");
+      setStorageItem("user", userData);
 
       dispatch(
         setCredentials({
@@ -96,6 +100,50 @@ export const useLogin = () => {
   });
 };
 
+export const useGoogleAuth = () => {
+  const toast = useToastMessage();
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  return useMutation<ApiResponse<LoginResponseData>, Error, { code: string }>({
+    mutationKey: ["googleAuth"],
+    mutationFn: googleAuth,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Welcome back, Commander!",
+        description:
+          "You've successfully logged in. The project battlefield is ready for action.",
+        duration: 6000,
+      });
+
+      if (!response.data) return;
+
+      const user = response?.data;
+
+      const userData = JSON.stringify(user);
+      setStorageItem("isAuthenticated", "true");
+      setStorageItem("user", userData);
+
+      dispatch(
+        setCredentials({
+          isAuthenticated: true,
+          user,
+        })
+      );
+
+      router.replace("/workspaces");
+    },
+    onError: (error: any) => {
+      console.log(error);
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Error in Login",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
 
 export const useVerifyEmail = () => {
   const router = useRouter();
@@ -113,7 +161,9 @@ export const useVerifyEmail = () => {
         duration: 6000,
       });
 
-      localStorage.setItem("isAuthenticated", "true");
+      const userData = JSON.stringify(user);
+      setStorageItem("isAuthenticated", "true");
+      setStorageItem("user", userData);
 
       dispatch(
         setCredentials({

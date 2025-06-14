@@ -11,6 +11,11 @@ export const userLogin = async (payload: LoginPayload) => {
   return response.data;
 };
 
+export const googleAuth = async (payload: { code: string }) => {
+  const response = await api.post("/auth/google/callback", payload);
+  return response.data;
+};
+
 export const verifyMagicLink = async (payload: { token: string }) => {
   const response = await api.get(`/auth/verify-email?token=${payload.token}`);
   return response.data;

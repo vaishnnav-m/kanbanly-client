@@ -9,8 +9,15 @@ import { ToastProvider } from "./ToastProvider";
 import { ToastContainer } from "@/componets/atoms/toaster";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { setToastMessageInstance } from "@/lib/api/axios";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { appConfig } from "@/lib/config";
+import InitAuth from "@/app/InitAuth";
 
-function ToastSetupWrapper({ children }: { children: React.ReactNode }) {
+interface IProps {
+  children: React.ReactNode;
+}
+
+function ToastSetupWrapper({ children }: IProps) {
   const toast = useToastMessage();
 
   useEffect(() => {
@@ -20,19 +27,24 @@ function ToastSetupWrapper({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: IProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system">
-        <ToastProvider>
-          <ToastContainer />
-          <ToastSetupWrapper>
-            <ReduxProvider store={store}>{children}</ReduxProvider>
-          </ToastSetupWrapper>
-        </ToastProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </ThemeProvider>
+      <GoogleOAuthProvider clientId={appConfig.googleAuth.oauthClientId}>
+        <ThemeProvider attribute="class" defaultTheme="system">
+          <ToastProvider>
+            <ToastContainer />
+            <ToastSetupWrapper>
+              <ReduxProvider store={store}>
+                <InitAuth />
+                {children}
+              </ReduxProvider>
+            </ToastSetupWrapper>
+          </ToastProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </ThemeProvider>
+      </GoogleOAuthProvider>
     </QueryClientProvider>
   );
 }

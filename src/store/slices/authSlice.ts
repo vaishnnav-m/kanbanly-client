@@ -6,10 +6,8 @@ interface AuthState {
   user: null | { firstName: string; lastName?: string; email: string };
 }
 
-const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-
 const initialState: AuthState = {
-  isAuthenticated,
+  isAuthenticated: false,
   user: null,
 };
 
@@ -24,6 +22,7 @@ const authSlice = createSlice({
         user?: { firstName: string; lastName?: string; email: string };
       }>
     ) => {
+
       state.isAuthenticated = true;
       state.user = action.payload.user ? action.payload.user : null;
     },
