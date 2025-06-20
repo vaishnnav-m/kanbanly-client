@@ -10,11 +10,12 @@ function InitAuth() {
   useEffect(() => {
     const isAuthenticated = getStorageItem("isAuthenticated") === "true";
     const userData = getStorageItem("user");
+    const role = getStorageItem("role") || "";
 
     if (isAuthenticated && userData) {
       try {
         const user = JSON.parse(userData);
-        dispatch(setCredentials({isAuthenticated,user}));
+        dispatch(setCredentials({ isAuthenticated, user, role }));
       } catch (error) {
         console.log("failed to parse userData");
       }

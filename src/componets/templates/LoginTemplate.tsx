@@ -20,36 +20,40 @@ interface LoginTemplateProps {
   handleGoogleLogin: () => void;
   isLoading: boolean;
   errorMessage?: string;
+  handleForgotPass: () => void;
 }
-
-const className =
-  "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
-
-const loginFields: FieldConfig[] = [
-  {
-    id: "email",
-    label: "Email",
-    placeholder: "Enter your email",
-    type: "email",
-    className,
-    required: true,
-  },
-  {
-    id: "password",
-    label: "Password",
-    placeholder: "Enter your password",
-    type: "password",
-    className:
-      "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
-    required: true,
-  },
-];
 
 const LoginTemplate = ({
   handleGoogleLogin,
   handleLogin,
   isLoading,
+  handleForgotPass,
 }: LoginTemplateProps) => {
+
+  const className =
+    "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
+
+  const loginFields: FieldConfig[] = [
+    {
+      id: "email",
+      label: "Email",
+      placeholder: "Enter your email",
+      type: "email",
+      className,
+      required: true,
+    },
+    {
+      id: "password",
+      label: "Password",
+      placeholder: "Enter your password",
+      type: "password",
+      className:
+        "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
+      required: true,
+      onLink: handleForgotPass,
+    },
+  ];
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorative elements */}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/login", "/signup", "/signup-success"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/signup-success",'/admin/login'];
 const ALWAYS_PUBLIC_ROUTES = ["/", "/verify-email"];
 const PROTECTED_ROUTES = ["/workspaces"];
 

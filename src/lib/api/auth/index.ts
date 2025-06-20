@@ -30,3 +30,8 @@ export const logout = async () => {
   const response = await api.get("/auth/logout");
   return response.data;
 };
+
+export const adminLogin = async (payload: LoginPayload) => {
+  const response = await api.post("/auth/admin/login", payload);
+  return response.data;
+};

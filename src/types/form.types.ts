@@ -23,6 +23,7 @@ export type SingleField = {
   className?: string;
   required?: boolean;
   otpLength?: number;
+  onLink?: () => void;
 };
 
 export type GroupField = {

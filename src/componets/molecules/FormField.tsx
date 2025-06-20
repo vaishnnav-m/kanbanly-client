@@ -13,6 +13,7 @@ interface FormFieldProps {
   otpLength?: number;
   errors?: Record<string, string>;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLink?: () => void;
 }
 
 const FormField = ({
@@ -23,6 +24,7 @@ const FormField = ({
   onChange,
   otpLength = 6,
   errors,
+  onLink,
   ...props
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,9 +35,16 @@ const FormField = ({
     <div className="space-y-2">
       {/* label component rendering */}
       {label && (
-        <Label htmlFor={id} className="text-sm font-medium">
-          {label}
-        </Label>
+        <div className="w-full flex justify-between ">
+          <Label htmlFor={id} className="text-sm font-medium">
+            {label}
+          </Label>
+          {onLink && (
+            <span className="cursor-pointer text-sm hover:text-blue-600" onClick={onLink}>
+              Forgot password ?
+            </span>
+          )}
+        </div>
       )}
 
       {/* otp field rendering */}

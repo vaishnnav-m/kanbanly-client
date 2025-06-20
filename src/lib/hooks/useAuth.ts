@@ -8,6 +8,7 @@ import {
   SignupPayload,
 } from "../api/auth/auth.types";
 import {
+  adminLogin,
   googleAuth,
   logout,
   resendEmail,
@@ -78,11 +79,13 @@ export const useLogin = () => {
       const userData = JSON.stringify(user);
       setStorageItem("isAuthenticated", "true");
       setStorageItem("user", userData);
+      setStorageItem("role", response.data.role);
 
       dispatch(
         setCredentials({
           isAuthenticated: true,
           user,
+          role: response.data.role,
         })
       );
 
@@ -123,11 +126,13 @@ export const useGoogleAuth = () => {
       const userData = JSON.stringify(user);
       setStorageItem("isAuthenticated", "true");
       setStorageItem("user", userData);
+      setStorageItem("role", response.data.role);
 
       dispatch(
         setCredentials({
           isAuthenticated: true,
           user,
+          role: response.data.role,
         })
       );
 
@@ -164,11 +169,13 @@ export const useVerifyEmail = () => {
       const userData = JSON.stringify(user);
       setStorageItem("isAuthenticated", "true");
       setStorageItem("user", userData);
+      setStorageItem("role", response.data.role);
 
       dispatch(
         setCredentials({
           isAuthenticated: true,
           user: user ? user : undefined,
+          role: response.data.role,
         })
       );
 
@@ -214,6 +221,52 @@ export const useLogout = () => {
       localStorage.clear();
       dispatch(logoutUser());
       router.replace("/login");
+    },
+    onError: (error: any) => {
+      console.log(error);
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Error in Login",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useAdminLogin = () => {
+  const router = useRouter();
+  const toast = useToastMessage();
+  const dispatch = useDispatch();
+
+  return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
+    mutationKey: ["adminLogin"],
+    mutationFn: adminLogin,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Welcome back, Commander!",
+        description: "You've successfully logged in.",
+        duration: 6000,
+      });
+
+      if (!response.data) return;
+
+      const user = response?.data;
+
+      const userData = JSON.stringify(user);
+      setStorageItem("isAuthenticated", "true");
+      setStorageItem("user", userData);
+      setStorageItem("role", response.data.role);
+
+      dispatch(
+        setCredentials({
+          isAuthenticated: true,
+          user,
+          role: response.data.role,
+        })
+      );
+
+      router.replace("/workspaces");
     },
     onError: (error: any) => {
       console.log(error);
