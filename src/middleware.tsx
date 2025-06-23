@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 const USER_PUBLIC_ROUTES = ["/login", "/signup", "/signup-success"];
 const ADMIN_PUBLIC_ROUTES = ["/admin/login"];
 const ALWAYS_PUBLIC_ROUTES = ["/", "/verify-email"];
-const USER_PROTECTED_ROUTES = ["/workspaces"];
+const USER_PROTECTED_ROUTES = ["/workspaces",'/workspaces/create'];
 const ADMIN_PROTECTED_ROUTES = ["/admin/dashboard", "/admin/users"];
 
 export function middleware(request: NextRequest) {
