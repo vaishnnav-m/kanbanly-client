@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { User, Plus, Building2, Users, Briefcase, LogOut } from "lucide-react";
-import { ThemeToggleButton } from "../molecules/ThemeToggleButton";
+import { ThemeToggleButton } from "../../molecules/ThemeToggleButton";
 
 const WorkSpacesTemplate = ({ handleLogout }: { handleLogout: () => void }) => {
   const workspaces = [

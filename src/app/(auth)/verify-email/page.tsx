@@ -1,6 +1,6 @@
 "use client";
-import EmailFailureTemplate from "@/componets/templates/EmailFailureTemplate";
-import VerifyingEmailLoader from "@/componets/templates/VerifyingEmailTemplate";
+import EmailFailureTemplate from "@/components/templates/auth/EmailFailureTemplate";
+import VerifyingEmailLoader from "@/components/templates/auth/VerifyingEmailTemplate";
 import { useVerifyEmail } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
 import { useSearchParams } from "next/navigation";

@@ -5,10 +5,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../atoms/card";
+} from "../../atoms/card";
 import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
-import { Button } from "../atoms/button";
+import { Button } from "../../atoms/button";
 
 const SignupSuccessTemplate = () => {
   return (

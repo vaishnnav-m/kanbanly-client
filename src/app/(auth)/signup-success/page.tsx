@@ -1,5 +1,5 @@
 "use client";
-import SignupSuccessTemplate from "@/componets/templates/SignupSuccessTemplate";
+import SignupSuccessTemplate from "@/components/templates/auth/SignupSuccessTemplate";
 import { RootState } from "@/store";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";

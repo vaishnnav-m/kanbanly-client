@@ -6,8 +6,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../atoms/card";
-import Form from "../organisms/Form";
+} from "../../atoms/card";
+import Form from "../../organisms/Form";
 import { LoginPayload } from "@/lib/api/auth/auth.types";
 import { FieldConfig } from "@/types/form.types";
 import Link from "next/link";

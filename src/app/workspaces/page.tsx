@@ -1,5 +1,5 @@
 "use client";
-import WorkSpacesTemplate from "@/componets/templates/WorkSpacesTemplate";
+import WorkSpacesTemplate from "@/components/templates/workspace/WorkSpacesTemplate";
 import { useLogout } from "@/lib/hooks/useAuth";
 
 const page = () => {

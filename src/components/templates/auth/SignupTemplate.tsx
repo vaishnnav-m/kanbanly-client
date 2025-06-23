@@ -1,59 +1,77 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { Button } from "../atoms/button";
-import Form from "../organisms/Form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../atoms/card";
+import { Button } from "../../atoms/button";
+import Form from "../../organisms/Form";
+import { Card, CardContent } from "../../atoms/card";
 import { FieldConfig } from "@/types/form.types";
-import { LoginPayload } from "@/lib/api/auth/auth.types";
-import { LogIn } from "lucide-react";
-import { motion } from "framer-motion";
+import { SignupPayload } from "@/lib/api/auth/auth.types";
 
-interface LoginTemplateProps {
-  handleLogin: (values: LoginPayload) => void;
-  handleGoogleLogin: () => void;
+interface SignupTemplateProps {
+  handleSignup: (values: SignupPayload) => void;
   isLoading: boolean;
-  errorMessage?: string;
-  handleForgotPass: () => void;
+  errorMessages?: Record<string, string>;
 }
 
-const LoginTemplate = ({
-  handleGoogleLogin,
-  handleLogin,
+const className =
+  "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
+
+const signupFields: FieldConfig[] = [
+  {
+    group: [
+      {
+        id: "firstName",
+        type: "text",
+        label: "First Name",
+        placeholder: "Enter your first name",
+        className,
+      },
+      {
+        id: "lastName",
+        type: "text",
+        label: "Last Name",
+        placeholder: "Enter your last name",
+        className,
+      },
+    ],
+  },
+  {
+    id: "email",
+    label: "Email",
+    placeholder: "Enter your email",
+    type: "text",
+    className,
+  },
+  {
+    id: "phone",
+    label: "Phone",
+    placeholder: "Enter your phone number",
+    type: "phone",
+    className,
+  },
+  {
+    id: "password",
+    label: "Password",
+    placeholder: "Enter your password",
+    type: "password",
+    className:
+      "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
+  },
+  {
+    id: "confirmPass",
+    label: "Confirm Password",
+    placeholder: "Confirm your password",
+    type: "password",
+    className:
+      "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
+  },
+];
+
+const SignupTemplate = ({
+  handleSignup,
   isLoading,
-  handleForgotPass,
-}: LoginTemplateProps) => {
-
-  const className =
-    "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
-
-  const loginFields: FieldConfig[] = [
-    {
-      id: "email",
-      label: "Email",
-      placeholder: "Enter your email",
-      type: "email",
-      className,
-      required: true,
-    },
-    {
-      id: "password",
-      label: "Password",
-      placeholder: "Enter your password",
-      type: "password",
-      className:
-        "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
-      required: true,
-      onLink: handleForgotPass,
-    },
-  ];
-
+  errorMessages,
+}: SignupTemplateProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorative elements */}
@@ -69,41 +87,30 @@ const LoginTemplate = ({
         ></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-md">
+      <div className="relative z-10 w-full max-w-lg">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4 pulse-glow">
-            <LogIn className="w-8 h-8 text-white" />
-          </div>
           <h1 className="text-4xl font-bold gradient-text mb-2">
-            Welcome Back
+            Welcome Aboard!
           </h1>
-          <p className="text-white/80 text-lg">login to your account</p>
+          <p className="text-white/80 text-lg">
+            Create your account and boost productivity
+          </p>
         </div>
 
         {/* Login Card */}
         <Card className="backdrop-blur-lg bg-[#273444] border-0 shadow-2xl">
-          <CardHeader className="space-y-1 text-center pb-4">
-            <CardTitle className="text-2xl text white">Login</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Enter your credentials to access your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 bg-log ">
+          <CardContent className="p-6 space-y-6 bg-log ">
             {/* signup form */}
-            <Form<LoginPayload>
-              submitLabel="Login"
+            <Form<SignupPayload>
+              submitLabel="Signup"
               isLoading={isLoading}
-              fields={loginFields}
-              onSubmit={handleLogin}
+              fields={signupFields}
+              onSubmit={handleSignup}
+              errors={errorMessages}
             />
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative"
-            >
+            <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-muted"></div>
               </div>
@@ -112,16 +119,10 @@ const LoginTemplate = ({
                   Or continue with
                 </span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-1  gap-4"
-            >
+            <div className="grid grid-cols-2 gap-4">
               <Button
-                onClick={handleGoogleLogin}
                 variant="outline"
                 className="h-12 bg-transparent border-primary hover:bg-primary hover:text-accent-foreground hover:border-accent transition-all duration-200"
               >
@@ -145,7 +146,7 @@ const LoginTemplate = ({
                 </svg>
                 Google
               </Button>
-              {/* <Button
+              <Button
                 variant="outline"
                 className="h-12 bg-transparent border-primary border-2 hover:bg-primary hover:text-accent-foreground hover:border-accent transition-all duration-200"
               >
@@ -157,16 +158,16 @@ const LoginTemplate = ({
                   <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                 </svg>
                 Twitter
-              </Button> */}
-            </motion.div>
+              </Button>
+            </div>
 
             <div className="text-center text-sm text-muted-foreground">
-              don't have an account?{" "}
+              Already have an account?{" "}
               <Link
-                href="/signup"
+                href="/login"
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
-                Sign up here
+                Sign in here
               </Link>
             </div>
           </CardContent>
@@ -187,4 +188,4 @@ const LoginTemplate = ({
   );
 };
 
-export default LoginTemplate;
+export default SignupTemplate;

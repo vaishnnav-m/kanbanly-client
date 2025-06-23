@@ -1,5 +1,5 @@
 import api from "../axios";
-import { ApiResponse, LoginPayload, SignupPayload } from "./auth.types";
+import { LoginPayload, SignupPayload } from "./auth.types";
 
 export const signup = async (payload: SignupPayload) => {
   const response = await api.post("/auth/signup", payload);

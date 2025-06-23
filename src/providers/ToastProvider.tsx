@@ -20,12 +20,12 @@ export interface Toast {
   type: "success" | "error" | "warning" | "info";
   title: string;
   description?: string;
-  duration: number; // Make duration always present after initialization
+  duration: number;
   actions?: ToastAction[];
   isVisible: boolean;
   isPaused: boolean;
-  startTime: number; // Time when the toast started or was last resumed
-  remainingDuration: number; // Time left before dismissal
+  startTime: number;
+  remainingDuration: number;
 }
 
 interface ToastContextType {

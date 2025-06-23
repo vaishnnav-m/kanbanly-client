@@ -1,11 +1,13 @@
 export interface User {
-  id: string;
+  _id: string;
   firstName: string;
-  lasName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
   profile?: string;
   createdAt?: Date;
+  isEmailVerified?: boolean;
+  isActive?: boolean;
 }
 
 export interface SignupPayload {

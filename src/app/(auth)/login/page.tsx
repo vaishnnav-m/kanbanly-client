@@ -1,7 +1,6 @@
 "use client";
-import LoginTemplate from "@/componets/templates/LoginTemplate";
+import LoginTemplate from "@/components/templates/auth/LoginTemplate";
 import { LoginPayload } from "@/lib/api/auth/auth.types";
-import { appConfig } from "@/lib/config";
 import { useGoogleAuth, useLogin } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -38,7 +37,7 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     googleLogin();
   };
-  
+
   return (
     <main>
       <LoginTemplate
@@ -46,7 +45,7 @@ const LoginPage = () => {
         handleLogin={handleLogin}
         isLoading={isPending}
         errorMessage={error?.message}
-        handleForgotPass={()=>{}}
+        handleForgotPass={() => {}}
       />
     </main>
   );

@@ -40,7 +40,10 @@ const FormField = ({
             {label}
           </Label>
           {onLink && (
-            <span className="cursor-pointer text-sm hover:text-blue-600" onClick={onLink}>
+            <span
+              className="cursor-pointer text-sm hover:text-blue-600"
+              onClick={onLink}
+            >
               Forgot password ?
             </span>
           )}
@@ -72,6 +75,7 @@ const FormField = ({
             id={id}
             name={id}
             type={isPasswordField && showPassword ? "text" : type}
+            autoComplete={isPasswordField ? "new-password" : "on"}
             value={value || ""}
             onChange={onChange}
             {...props}

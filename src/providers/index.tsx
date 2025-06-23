@@ -6,7 +6,7 @@ import { store } from "@/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ToastProvider } from "./ToastProvider";
-import { ToastContainer } from "@/componets/atoms/toaster";
+import { ToastContainer } from "@/components/atoms/toaster";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { setToastMessageInstance } from "@/lib/api/axios";
 import { GoogleOAuthProvider } from "@react-oauth/google";

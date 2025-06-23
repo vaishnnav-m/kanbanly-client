@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/componets/atoms/card";
+} from "@/components/atoms/card";
 
 interface FeatureCardProps {
   icon: React.ReactElement<React.ComponentProps<typeof LucideIconComponent>>;

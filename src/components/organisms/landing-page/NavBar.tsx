@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { ThemeToggleButton } from "@/componets/molecules/ThemeToggleButton";
-import { Button } from "@/componets/atoms/button";
+import { ThemeToggleButton } from "@/components/molecules/ThemeToggleButton";
+import { Button } from "@/components/atoms/button";
 import Link from "next/link";
 
 const Navbar = () => {

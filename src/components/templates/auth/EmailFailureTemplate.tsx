@@ -1,16 +1,10 @@
 "use client";
 import React from "react";
-import { Button } from "../atoms/button";
 import { XCircle } from "lucide-react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../atoms/card";
 import { motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
+import { Button } from "@/components/atoms/button";
 
 interface VerificationFailedContentProps {
   errorMessage: string;

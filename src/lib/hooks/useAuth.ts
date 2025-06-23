@@ -27,7 +27,6 @@ export const useSignup = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const toast = useToastMessage();
-  const dispatch = useDispatch();
 
   return useMutation<
     ApiResponse<{
@@ -266,7 +265,7 @@ export const useAdminLogin = () => {
         })
       );
 
-      router.replace("/workspaces");
+      router.replace("/admin/dashboard");
     },
     onError: (error: any) => {
       console.log(error);

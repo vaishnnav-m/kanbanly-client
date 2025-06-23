@@ -1,5 +1,5 @@
 "use client";
-import LandingPageTemplate from "@/componets/templates/LandingPageTemplate";
+import LandingPageTemplate from "@/components/templates/LandingPageTemplate";
 export default function Home() {
   return <LandingPageTemplate />;
 }

@@ -1,5 +1,5 @@
 "use client";
-import SignupTemplate from "@/componets/templates/SignupTemplate";
+import SignupTemplate from "@/components/templates/auth/SignupTemplate";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
 import { useSignup } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
