@@ -1,7 +1,16 @@
+"use client"
 import { AppSidebar } from "@/components/organisms/admin/Sidebar";
+import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
 function layout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === "/admin/login";
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen flex w-full bg-background text-foreground transition-colors duration-300">
       <AppSidebar />

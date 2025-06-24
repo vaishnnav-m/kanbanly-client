@@ -1,7 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiResponse } from "../api/auth/auth.types";
-import { createWorkspace } from "../api/workspace";
-import { WorkspaceCreatePayload } from "../api/workspace/workspace.types";
+import { createWorkspace, getAllWorkspaces } from "../api/workspace";
+import {
+  IWorkspace,
+  WorkspaceCreatePayload,
+} from "../api/workspace/workspace.types";
 import { useToastMessage } from "./useToastMessage";
 import { useRouter } from "next/navigation";
 
@@ -27,5 +30,12 @@ export const useCreateWorkspace = () => {
         duration: 6000,
       });
     },
+  });
+};
+
+export const useGetAllWorkspaces = () => {
+  return useQuery<ApiResponse<IWorkspace[]>, Error>({
+    queryKey: ["workspaces"],
+    queryFn: getAllWorkspaces,
   });
 };

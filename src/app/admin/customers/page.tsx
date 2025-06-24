@@ -1,30 +1,26 @@
 "use client";
 import AdminCustomers from "@/components/templates/admin/AdminCustomers";
 import { User } from "@/lib/api/auth/auth.types";
-import { useGetUsers } from "@/lib/hooks/useAdmin";
-import { useEffect, useState } from "react";
+import { useGetUsers, useUpdateUserStatus } from "@/lib/hooks/useAdmin";
 
 function page() {
-  const [users, setUsers] = useState<User[]>([]);
-  const { mutate: getUsers, isPending } = useGetUsers({
-    onSuccess: (response) => {
-      console.log(response);
-      if (response.data) {
-        setUsers(response.data);
-      }
-    },
-  });
+  const { data, isPending } = useGetUsers();
+  const { mutate: updateStatus, isPending: isLoading } = useUpdateUserStatus();
 
-  useEffect(() => {
-    getAllUsers();
-  }, []);
+  const users = data?.data ?? [];
 
-  function getAllUsers() {
-    const response = getUsers();
-    console.log(response);
-  }
+  const handleUpdateStatus = (user: User) => {
+    const id = user._id;
+    updateStatus({ id });
+  };
 
-  return <AdminCustomers data={users} isLoading={isPending} />;
+  return (
+    <AdminCustomers
+      updateStatus={handleUpdateStatus}
+      data={users}
+      isLoading={isPending}
+    />
+  );
 }
 
 export default page;

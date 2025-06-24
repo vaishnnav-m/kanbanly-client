@@ -9,10 +9,16 @@ import RecentTransactions from "@/components/organisms/admin/RecentTransactions"
 import SalesChart from "@/components/organisms/admin/SalesChart";
 import TableSkeleton from "@/components/organisms/admin/TableSkelton";
 import UserActivity from "@/components/organisms/admin/UserActivityChart";
+import { motion } from "framer-motion";
+import { LogOut } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
-function AdminDashboardTemplate() {
+interface AdminDashboardTemplateProps {
+  handleLogout(): void;
+}
+
+function AdminDashboardTemplate({ handleLogout }: AdminDashboardTemplateProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +32,19 @@ function AdminDashboardTemplate() {
     <>
       <div className="w-full flex justify-between py-5">
         <h1 className="text-xl font-bold">Dashboard</h1>
-        <ThemeToggleButton />
+        <div className="flex items-center space-x-4">
+          <ThemeToggleButton />
+          {/* Logout Button */}
+          <motion.button
+            onClick={handleLogout}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer text-white transition-all duration-300`}
+            aria-label="Logout"
+          >
+            <LogOut className="w-5 h-5" />
+          </motion.button>
+        </div>
       </div>
 
       {/* Dashboard Content */}

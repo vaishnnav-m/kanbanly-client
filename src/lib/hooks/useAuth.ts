@@ -8,6 +8,7 @@ import {
   SignupPayload,
 } from "../api/auth/auth.types";
 import {
+  adminLogout,
   adminLogin,
   googleAuth,
   logout,
@@ -266,6 +267,29 @@ export const useAdminLogin = () => {
       );
 
       router.replace("/admin/dashboard");
+    },
+    onError: (error: any) => {
+      console.log(error);
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Error in Login",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useAdminLogout = () => {
+  const router = useRouter();
+  const toast = useToastMessage();
+  const dispatch = useDispatch();
+
+  return useMutation<ApiResponse, Error>({
+    mutationKey: ["logout"],
+    mutationFn: adminLogout,
+    onSuccess: () => {
+      router.replace("/admin/login");
     },
     onError: (error: any) => {
       console.log(error);

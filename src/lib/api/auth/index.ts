@@ -35,3 +35,8 @@ export const adminLogin = async (payload: LoginPayload) => {
   const response = await api.post("/auth/admin/login", payload);
   return response.data;
 };
+
+export const adminLogout = async () => {
+  const response = await api.get("/auth/admin/logout");
+  return response.data;
+};

@@ -2,21 +2,35 @@ import { ThemeToggleButton } from "@/components/molecules/ThemeToggleButton";
 import TableSkeleton from "@/components/organisms/admin/TableSkelton";
 import CustomTable from "@/components/organisms/DataTable";
 import { User } from "@/lib/api/auth/auth.types";
+import { ButtonConfig } from "@/types/table.types";
+import { ToggleLeft, ToggleRight } from "lucide-react";
 
 interface IAdminCustomersProps {
   data: User[];
   isLoading?: boolean;
+  updateStatus: (data: User) => void;
 }
 
-function AdminCustomers({ data, isLoading }: IAdminCustomersProps) {
+function AdminCustomers({
+  data,
+  isLoading,
+  updateStatus,
+}: IAdminCustomersProps) {
   const headings = ["Id", "First Name", "Last Name", "Email", "isActive"];
 
-  const cols: (keyof User)[] = [
-    "_id",
-    "firstName",
-    "lastName",
-    "email",
-    "isActive",
+  const cols: (keyof User)[] = ["_id", "firstName", "lastName", "email"];
+
+  const buttonConfigs: ButtonConfig<User>[] = [
+    {
+      action: updateStatus,
+      styles: "bg-none",
+      icon: (user) =>
+        user.isActive ? (
+          <ToggleRight className="fill-green-500" />
+        ) : (
+          <ToggleLeft />
+        ),
+    },
   ];
 
   return (
@@ -32,7 +46,12 @@ function AdminCustomers({ data, isLoading }: IAdminCustomersProps) {
         {isLoading ? (
           <TableSkeleton />
         ) : (
-          <CustomTable headings={headings} data={data} columns={cols} />
+          <CustomTable
+            headings={headings}
+            data={data}
+            columns={cols}
+            buttonConfigs={buttonConfigs}
+          />
         )}
       </div>
     </>
