@@ -48,6 +48,9 @@ function WorkSpaceCreateTemplate({
   const [selectedIcon, setSelectedIcon] = useState(workspaceIcons[0]);
   const [workspaceName, setWorkspaceName] = useState("");
   const [description, setDescription] = useState("");
+  const [workspaceNameError, setWorkspaceNameError] = useState<string | null>(
+    null
+  );
 
   const handleNext = () => {
     if (currentStep < 3) {
@@ -61,7 +64,18 @@ function WorkSpaceCreateTemplate({
     }
   };
 
+  const validateForm = () => {
+    if (!workspaceName.trim()) {
+      setWorkspaceNameError("Workspace name is required.");
+      return false;
+    }
+    setWorkspaceNameError(null);
+    return true;
+  };
+
   const handleFormSubmit = () => {
+    if (!validateForm()) return;
+
     handleCreateWorkspace({
       name: workspaceName,
       description,
@@ -183,10 +197,23 @@ function WorkSpaceCreateTemplate({
                     <Input
                       id="workspace-name"
                       placeholder="e.g. Marketing Team"
+                      required
                       value={workspaceName}
-                      onChange={(e) => setWorkspaceName(e.target.value)}
-                      className="border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+                      onChange={(e) => {
+                        setWorkspaceName(e.target.value);
+                        if (workspaceNameError) setWorkspaceNameError(null); // clear on type
+                      }}
+                      className={`border ${
+                        workspaceNameError
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary"
+                      }`}
                     />
+                    {workspaceNameError && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {workspaceNameError}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

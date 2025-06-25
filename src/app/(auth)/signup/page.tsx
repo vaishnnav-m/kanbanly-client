@@ -1,8 +1,9 @@
 "use client";
 import SignupTemplate from "@/components/templates/auth/SignupTemplate";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
-import { useSignup } from "@/lib/hooks/useAuth";
+import { useGoogleAuth, useSignup } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -29,7 +30,21 @@ const SignupPage = () => {
   }>({});
 
   const { mutate: signupUser, isPending } = useSignup();
+  const { mutate: googleAuth } = useGoogleAuth();
 
+  // google login logic
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      const token = tokenResponse.access_token;
+      googleAuth({ token });
+    },
+  });
+
+  const handleGoogleLogin = () => {
+    googleLogin();
+  };
+
+  // form validation
   const validate = (values: SignupPayload) => {
     const newErrors: typeof errors = {};
 
@@ -62,6 +77,7 @@ const SignupPage = () => {
     return newErrors;
   };
 
+  // signup logic
   const handleSignup = (values: SignupPayload) => {
     const validationErrors = validate(values);
     if (Object.keys(validationErrors).length > 0) {
@@ -76,6 +92,7 @@ const SignupPage = () => {
   return (
     <main>
       <SignupTemplate
+        handleGoogleLogin={handleGoogleLogin}
         handleSignup={handleSignup}
         isLoading={isPending}
         errorMessages={errors}
