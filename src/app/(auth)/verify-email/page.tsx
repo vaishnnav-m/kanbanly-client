@@ -43,7 +43,7 @@ const VerifyEmailPage = () => {
 
   if (isError) {
     const errorMessage = error?.message || "An unknown error occurred.";
-    <EmailFailureTemplate errorMessage={errorMessage} />;
+    return <EmailFailureTemplate errorMessage={errorMessage} />;
   }
 
   if (!token) {

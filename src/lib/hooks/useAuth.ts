@@ -19,14 +19,15 @@ import {
 } from "../api/auth";
 import { useToastMessage } from "./useToastMessage";
 import { useDispatch } from "react-redux";
-import { logoutUser, setCredentials } from "@/store/slices/authSlice";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import {
+  logoutAdmin,
+  logoutUser,
+  setCredentials,
+} from "@/store/slices/authSlice";
 import { setStorageItem } from "../utils";
 
 export const useSignup = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const toast = useToastMessage();
 
   return useMutation<
@@ -72,20 +73,10 @@ export const useLogin = () => {
         duration: 6000,
       });
 
-      if (!response.data) return;
-
-      const user = response?.data;
-
-      const userData = JSON.stringify(user);
       setStorageItem("isAuthenticated", "true");
-      setStorageItem("user", userData);
-      setStorageItem("role", response.data.role);
-
       dispatch(
         setCredentials({
           isAuthenticated: true,
-          user,
-          role: response.data.role,
         })
       );
 
@@ -119,20 +110,10 @@ export const useGoogleAuth = () => {
         duration: 6000,
       });
 
-      if (!response.data) return;
-
-      const user = response?.data;
-
-      const userData = JSON.stringify(user);
       setStorageItem("isAuthenticated", "true");
-      setStorageItem("user", userData);
-      setStorageItem("role", response.data.role);
-
       dispatch(
         setCredentials({
           isAuthenticated: true,
-          user,
-          role: response.data.role,
         })
       );
 
@@ -154,7 +135,6 @@ export const useVerifyEmail = () => {
   const router = useRouter();
   const toast = useToastMessage();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
 
   return useMutation<ApiResponse, Error, { token: string }>({
     mutationKey: ["verify-magiclink"],
@@ -166,16 +146,10 @@ export const useVerifyEmail = () => {
         duration: 6000,
       });
 
-      const userData = JSON.stringify(user);
       setStorageItem("isAuthenticated", "true");
-      setStorageItem("user", userData);
-      setStorageItem("role", response.data.role);
-
       dispatch(
         setCredentials({
           isAuthenticated: true,
-          user: user ? user : undefined,
-          role: response.data.role,
         })
       );
 
@@ -244,25 +218,16 @@ export const useAdminLogin = () => {
     mutationFn: adminLogin,
     onSuccess: (response) => {
       toast.showSuccess({
-        title: "Welcome back, Commander!",
+        title: "Welcome back",
         description: "You've successfully logged in.",
         duration: 6000,
       });
 
-      if (!response.data) return;
-
-      const user = response?.data;
-
-      const userData = JSON.stringify(user);
-      setStorageItem("isAuthenticated", "true");
-      setStorageItem("user", userData);
-      setStorageItem("role", response.data.role);
+      setStorageItem("isAdminAuthenticated", "true");
 
       dispatch(
         setCredentials({
-          isAuthenticated: true,
-          user,
-          role: response.data.role,
+          isAdminAuthenticated: true,
         })
       );
 
@@ -289,6 +254,7 @@ export const useAdminLogout = () => {
     mutationKey: ["logout"],
     mutationFn: adminLogout,
     onSuccess: () => {
+      dispatch(logoutAdmin());
       router.replace("/admin/login");
     },
     onError: (error: any) => {
