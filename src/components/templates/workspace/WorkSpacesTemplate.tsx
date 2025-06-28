@@ -6,6 +6,7 @@ import { IWorkspace } from "@/lib/api/workspace/workspace.types";
 import { useRouter } from "next/navigation";
 import { getWorkspaceIcon } from "@/lib/utils";
 import WorkspaceIconDisplay from "@/components/atoms/WorkspaceIconDisplay";
+import Link from "next/link";
 
 interface WorkSpacesTemplateProps {
   handleLogout: () => void;
@@ -89,55 +90,61 @@ const WorkSpacesTemplate = ({
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
           >
             {workspaces.map((workspace, index) => (
-              <motion.div
+              <Link
                 key={workspace.workspaceId}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`relative overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm ${
-                  getWorkspaceIcon(workspace.logo)?.color
-                }
+                href={`/workspaces/${workspace.slug}`}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`relative overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm ${
+                    getWorkspaceIcon(workspace.logo)?.color
+                  }
                   bg-card/70 border-border
                   dark:bg-card/50 dark:border-border
                   shadow-lg hover:shadow-2xl transition-all duration-300`}
-              >
-                <div className="p-6">
-                  <div
-                    className={`w-16 h-16 rounded-2xl ${
-                      getWorkspaceIcon(workspace.logo)?.color
-                    } flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <WorkspaceIconDisplay name={workspace.logo} />
-                  </div>
-
-                  <h3 className={`text-xl font-semibold mb-2 text-foreground`}>
-                    {workspace.name}
-                  </h3>
-
-                  <p className={`text-sm mb-4 text-muted-foreground`}>
-                    {workspace.description}
-                  </p>
-
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs text-muted-foreground`}>
-                      {workspace.members.length} members
-                    </span>
+                >
+                  <div className="p-6">
                     <div
-                      className={`w-2 h-2 rounded-full ${
+                      className={`w-16 h-16 rounded-2xl ${
                         getWorkspaceIcon(workspace.logo)?.color
-                      }`}
-                    ></div>
-                  </div>
-                </div>
+                      } flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <WorkspaceIconDisplay name={workspace.logo} />
+                    </div>
 
-                <div
-                  className={`absolute inset-0 ${
-                    getWorkspaceIcon(workspace.logo)?.color
-                  } opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
-                ></div>
-              </motion.div>
+                    <h3
+                      className={`text-xl font-semibold mb-2 text-foreground`}
+                    >
+                      {workspace.name}
+                    </h3>
+
+                    <p className={`text-sm mb-4 text-muted-foreground`}>
+                      {workspace.description}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs text-muted-foreground`}>
+                        {workspace.members.length} members
+                      </span>
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          getWorkspaceIcon(workspace.logo)?.color
+                        }`}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`absolute inset-0 ${
+                      getWorkspaceIcon(workspace.logo)?.color
+                    } opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                  ></div>
+                </motion.div>
+              </Link>
             ))}
           </motion.div>
 
