@@ -6,21 +6,26 @@ import { ReactNode, useState } from "react";
 
 function layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  let isLayoutNotNeeded =
+  let isLayoutNeeded =
     pathname === "/workspaces" || pathname === "/workspaces/create";
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-  if (isLayoutNotNeeded) {
+  if (isLayoutNeeded) {
     return <>{children}</>;
   }
 
-  const [isSidebarOpen, setIsSidbarOpen] = useState(true);
-
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300">
-      <Header />
+      <Header setIsSidebarOpen={() => setIsCollapsed((prev) => !prev)} />
       <main className="flex">
-        <Sidebar />
-        <div className="px-4 pt-[75px] pl-64 py-6 w-full">{children}</div>
+        <Sidebar isSidebarOpen={isCollapsed} />
+        <div
+          className={`px-4 pt-[75px] ${
+            !isCollapsed ? "pl-64" : "pl-16"
+          } py-6 w-full`}
+        >
+          {children}
+        </div>
       </main>
     </div>
   );

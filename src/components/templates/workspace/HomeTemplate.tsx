@@ -9,7 +9,6 @@ function HomeTemplate() {
     <main className="flex-1 overflow-auto">
       <div className="p-6 md:p-8 h-full">
         <div className="max-w-7xl mx-auto h-full space-y-8">
-          {/* Page Title - KEPT AS IS */}
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-1 animate-fade-in">
               Dashboard
@@ -22,12 +21,12 @@ function HomeTemplate() {
             </p>
           </div>
 
-          {/* My Tasks - Full Width */}
+          {/* My Tasks */}
           <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <TaskList />
           </div>
 
-          {/* Calendar and Goals - Side by Side (Responsive) */}
+          {/* Calendar and Goals */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
               className="animate-slide-up"

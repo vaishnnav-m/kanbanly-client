@@ -1,6 +1,6 @@
 import { ThemeToggleButton } from "@/components/molecules/ThemeToggleButton";
 import TableSkeleton from "@/components/organisms/admin/TableSkelton";
-import CustomTable from "@/components/organisms/DataTable";
+import DataTable from "@/components/organisms/DataTable";
 import { User } from "@/lib/api/auth/auth.types";
 import { ButtonConfig } from "@/types/table.types";
 import { ToggleLeft, ToggleRight } from "lucide-react";
@@ -46,7 +46,7 @@ function AdminCustomers({
         {isLoading ? (
           <TableSkeleton />
         ) : (
-          <CustomTable
+          <DataTable<User>
             headings={headings}
             data={data}
             columns={cols}

@@ -100,7 +100,7 @@ const WorkSpacesTemplate = ({
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`relative overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm ${
+                  className={`relative h-full overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm ${
                     getWorkspaceIcon(workspace.logo)?.color
                   }
                   bg-card/70 border-border

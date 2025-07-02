@@ -7,15 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "../atoms/table";
-import { ToggleLeft, ToggleRight } from "lucide-react";
-import { Button } from "../atoms/button";
 import { ButtonConfig } from "@/types/table.types";
 
 interface TableProps<T extends object> {
   headings: string[];
   data?: T[];
   columns?: (keyof T)[];
-  buttonConfigs: ButtonConfig<T>[];
+  buttonConfigs?: ButtonConfig<T>[];
 }
 
 const DataTable = <T extends object>({
@@ -41,9 +39,14 @@ const DataTable = <T extends object>({
                 {(row[col] as React.ReactNode) || "Nill"}
               </TableCell>
             ))}
-            {buttonConfigs.map((button) => (
+            {buttonConfigs?.map((button) => (
               <TableCell>
-                <button onClick={() => button.action(row)} className={button.styles}>{button.icon(row)}</button>
+                <button
+                  onClick={() => button.action(row)}
+                  className={button.styles}
+                >
+                  {button.icon(row)}
+                </button>
               </TableCell>
             ))}
           </TableRow>
