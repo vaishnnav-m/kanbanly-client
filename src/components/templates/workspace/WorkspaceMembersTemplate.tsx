@@ -3,33 +3,39 @@ import { Button } from "@/components/atoms/button";
 import { Card } from "@/components/atoms/card";
 import SearchBar from "@/components/molecules/SearchBar";
 import DataTable from "@/components/organisms/DataTable";
+import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
 import { ButtonConfig } from "@/types/table.types";
 import { EllipsisIcon, UserPlus } from "lucide-react";
+import { useState } from "react";
 
 function WorkspaceMembersTemplates() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // member type
   interface Members {
-    id: string;
+    _id: string;
     name: string;
     role: string;
     lastActivity: string;
   }
 
+  // table customization
   const headings = ["Name", "Role", "Last Activity", "Manage"];
   const data: Members[] = [
     {
-      id: "1",
+      _id: "1",
       name: "Max",
       role: "Member",
       lastActivity: "2 days ago",
     },
     {
-      id: "2",
+      _id: "2",
       name: "Gregor",
       role: "Project Manager",
       lastActivity: "2 days ago",
     },
     {
-      id: "3",
+      _id: "3",
       name: "Yiran",
       role: "Member",
       lastActivity: "2 days ago",
@@ -45,6 +51,11 @@ function WorkspaceMembersTemplates() {
       icon: (member) => <EllipsisIcon />,
     },
   ];
+
+  // function to handle invite
+  function handleInvite(email: string) {
+    console.log("inviting..", email);
+  }
 
   return (
     <main className="flex-1 overflow-auto">
@@ -67,7 +78,7 @@ function WorkspaceMembersTemplates() {
             <Card className="p-6 animate-fade-in">
               <div className="w-full flex justify-between items-center px-5 pb-5 border-b-2">
                 <span>This workspace has 3 members</span>
-                <Button>
+                <Button onClick={() => setIsModalOpen(true)}>
                   <UserPlus />
                   Invite Members
                 </Button>
@@ -84,6 +95,11 @@ function WorkspaceMembersTemplates() {
                 />
               </div>
             </Card>
+            <InviteUserModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onInvite={handleInvite}
+            />
           </div>
         </div>
       </div>
