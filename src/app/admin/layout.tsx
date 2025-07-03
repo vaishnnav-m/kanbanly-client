@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { AppSidebar } from "@/components/organisms/admin/Sidebar";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";

@@ -7,18 +7,16 @@ import {
   TableHeader,
   TableRow,
 } from "../atoms/table";
-import { ToggleLeft, ToggleRight } from "lucide-react";
-import { Button } from "../atoms/button";
 import { ButtonConfig } from "@/types/table.types";
 
-interface TableProps<T extends object> {
+interface TableProps<T extends { _id: string | number }> {
   headings: string[];
   data?: T[];
   columns?: (keyof T)[];
-  buttonConfigs: ButtonConfig<T>[];
+  buttonConfigs?: ButtonConfig<T>[];
 }
 
-const DataTable = <T extends object>({
+const DataTable = <T extends { _id: string | number }>({
   headings,
   data,
   columns,
@@ -34,16 +32,21 @@ const DataTable = <T extends object>({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data?.map((row, idx) => (
-          <TableRow key={idx}>
+        {data?.map((row) => (
+          <TableRow key={row._id}>
             {columns?.map((col, idx) => (
               <TableCell key={idx}>
                 {(row[col] as React.ReactNode) || "Nill"}
               </TableCell>
             ))}
-            {buttonConfigs.map((button) => (
-              <TableCell>
-                <button onClick={() => button.action(row)} className={button.styles}>{button.icon(row)}</button>
+            {buttonConfigs?.map((button, idx) => (
+              <TableCell key={idx}>
+                <button
+                  onClick={() => button.action(row)}
+                  className={button.styles}
+                >
+                  {button.icon(row)}
+                </button>
               </TableCell>
             ))}
           </TableRow>
