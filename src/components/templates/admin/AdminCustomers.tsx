@@ -1,9 +1,11 @@
 import { ThemeToggleButton } from "@/components/molecules/ThemeToggleButton";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import TableSkeleton from "@/components/organisms/admin/TableSkelton";
 import DataTable from "@/components/organisms/DataTable";
 import { User } from "@/lib/api/auth/auth.types";
 import { ButtonConfig } from "@/types/table.types";
 import { ToggleLeft, ToggleRight } from "lucide-react";
+import { useState } from "react";
 
 interface IAdminCustomersProps {
   data: User[];
@@ -16,13 +18,18 @@ function AdminCustomers({
   isLoading,
   updateStatus,
 }: IAdminCustomersProps) {
-  const headings = ["Id", "First Name", "Last Name", "Email", "isActive"];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User>();
 
-  const cols: (keyof User)[] = ["_id", "firstName", "lastName", "email"];
+  const headings = ["Id", "First Name", "Last Name", "Email", "isActive"];
+  const cols: (keyof User)[] = ["userId", "firstName", "lastName", "email"];
 
   const buttonConfigs: ButtonConfig<User>[] = [
     {
-      action: updateStatus,
+      action: (user) => {
+        setSelectedUser(user);
+        setIsModalOpen(true);
+      },
       styles: "bg-none",
       icon: (user) =>
         user.isActive ? (
@@ -54,6 +61,21 @@ function AdminCustomers({
           />
         )}
       </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          selectedUser && updateStatus(selectedUser);
+          setIsModalOpen(false);
+        }}
+        title={`${selectedUser?.isActive ? "Block" : "Unblock"} User`}
+        description={`Are you sure to ${
+          selectedUser?.isActive ? "block" : "unblock"
+        } the user`}
+        confirmText="Proceed"
+        cancelText="Cancel"
+        isDestructive={false}
+      />
     </>
   );
 }

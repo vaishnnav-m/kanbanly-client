@@ -10,7 +10,7 @@ function page() {
   const users = data?.data ?? [];
 
   const handleUpdateStatus = (user: User) => {
-    const id = user._id;
+    const id = user.userId;
     updateStatus({ id });
   };
 
