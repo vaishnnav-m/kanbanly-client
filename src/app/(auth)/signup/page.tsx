@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 const SignupPage = () => {
   const router = useRouter();
   const isAuthenticated = useSelector(
-    (state: RootState) => state.isAuthenticated
+    (state: RootState) => state.auth.isAuthenticated
   );
 
   useEffect(() => {

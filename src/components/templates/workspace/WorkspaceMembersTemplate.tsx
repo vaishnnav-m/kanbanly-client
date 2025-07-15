@@ -4,11 +4,18 @@ import { Card } from "@/components/atoms/card";
 import SearchBar from "@/components/molecules/SearchBar";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
+import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
 import { ButtonConfig } from "@/types/table.types";
 import { EllipsisIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
 
-function WorkspaceMembersTemplates() {
+function WorkspaceMembersTemplates({
+  handleInvite,
+  isLoading,
+}: {
+  handleInvite: (data: WorkspaceInvitationPayload) => void;
+  isLoading: boolean;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // member type
@@ -52,11 +59,6 @@ function WorkspaceMembersTemplates() {
     },
   ];
 
-  // function to handle invite
-  function handleInvite(email: string) {
-    console.log("inviting..", email);
-  }
-
   return (
     <main className="flex-1 overflow-auto">
       <div className="p-6 md:p-8 h-full">
@@ -76,15 +78,19 @@ function WorkspaceMembersTemplates() {
 
           <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Card className="p-6 animate-fade-in">
-              <div className="w-full flex justify-between items-center px-5 pb-5 border-b-2">
-                <span>This workspace has 3 members</span>
-                <Button onClick={() => setIsModalOpen(true)}>
-                  <UserPlus />
-                  Invite Members
-                </Button>
-              </div>
-              <div className="w-full pt-5 px-5 pb-3">
-                <SearchBar placeholder="Search Members" />
+              <div className="w-full flex justify-between items-center px-5 pb-5">
+                <div className="flex-1">
+                  <span>This workspace has 3 members</span>
+                </div>
+                <div className="flex-1">
+                  <SearchBar placeholder="Search Members" />
+                </div>
+                <div className="flex-1 text-end">
+                  <Button onClick={() => setIsModalOpen(true)}>
+                    <UserPlus />
+                    Invite Members
+                  </Button>
+                </div>
               </div>
               <div className="px-5">
                 <DataTable<Members>
@@ -92,10 +98,12 @@ function WorkspaceMembersTemplates() {
                   data={data}
                   columns={cols}
                   buttonConfigs={buttonConfigs}
+                  isLoading={false}
                 />
               </div>
             </Card>
             <InviteUserModal
+              isLoading={isLoading}
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
               onInvite={handleInvite}

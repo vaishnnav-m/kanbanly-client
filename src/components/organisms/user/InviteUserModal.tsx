@@ -1,27 +1,31 @@
 "use client";
 import { BaseModal } from "@/components/molecules/BaseModal";
+import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
+import { workspaceRoles } from "@/types/roles.enum";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 interface InviteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onInvite: (email: string) => void;
+  onInvite: (data: WorkspaceInvitationPayload) => void;
+  isLoading: boolean;
 }
 
 export const InviteUserModal = ({
   isOpen,
   onClose,
   onInvite,
+  isLoading,
 }: InviteUserModalProps) => {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(workspaceRoles.member);
   const params = useParams();
 
-  const roles = ["Member", "Project Manager"];
+  const roles = Object.values(workspaceRoles);
 
   const handleInvite = () => {
-    onInvite(email);
+    onInvite({ invitedEmail: email, role });
     setEmail("");
     onClose();
   };
@@ -45,7 +49,7 @@ export const InviteUserModal = ({
             onClick={handleInvite}
             disabled={!email.trim()}
           >
-            Invite
+            {isLoading ? "Inviting" : "Invite"}
           </button>
         </div>
       }
@@ -66,7 +70,7 @@ export const InviteUserModal = ({
           {/* Person icon */}
           <select
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => setRole(e.target.value as workspaceRoles)}
             className="pl-10 pr-3 py-3 w-full appearance-none bg-transparent text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-lg cursor-pointer transition-colors duration-300"
           >
             <option

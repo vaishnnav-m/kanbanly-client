@@ -1,8 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiResponse } from "../api/auth/auth.types";
-import { createWorkspace, getAllWorkspaces } from "../api/workspace";
+import {
+  createWorkspace,
+  getAllWorkspaces,
+  sendInvititation,
+  verifyInvitation,
+} from "../api/workspace";
 import {
   IWorkspace,
+  SendInvititationArgs,
   WorkspaceCreatePayload,
 } from "../api/workspace/workspace.types";
 import { useToastMessage } from "./useToastMessage";
@@ -37,5 +43,36 @@ export const useGetAllWorkspaces = () => {
   return useQuery<ApiResponse<IWorkspace[]>, Error>({
     queryKey: ["workspaces"],
     queryFn: getAllWorkspaces,
+  });
+};
+
+export const useSendInvitation = () => {
+  const toast = useToastMessage();
+  return useMutation<ApiResponse, Error, SendInvititationArgs>({
+    mutationFn: sendInvititation,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Sent",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useVerifyInvitation = () => {
+  const toast = useToastMessage();
+  const router = useRouter();
+
+  return useMutation<ApiResponse, Error, { token: string }>({
+    mutationFn: verifyInvitation,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Veryfied",
+        description: response.message,
+        duration: 6000,
+      });
+      router.replace("/workspaces");
+    },
   });
 };

@@ -1,6 +1,6 @@
 "use client";
+import CustomLoader from "@/components/organisms/user/CustomLoader";
 import EmailFailureTemplate from "@/components/templates/auth/EmailFailureTemplate";
-import VerifyingEmailLoader from "@/components/templates/auth/VerifyingEmailTemplate";
 import { useVerifyEmail } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
 import { useSearchParams } from "next/navigation";
@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 const VerifyEmailPage = () => {
   const router = useRouter();
   const isAuthenticated = useSelector(
-    (state: RootState) => state.isAuthenticated
+    (state: RootState) => state.auth.isAuthenticated
   );
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const VerifyEmailPage = () => {
   }, [token, verifyEmail]);
 
   if (isLoading) {
-    return <VerifyingEmailLoader />;
+    return <CustomLoader span="Please Wait" title="Verifying Email" />;
   }
 
   if (isError) {
