@@ -2,6 +2,8 @@
 import WorkSpacesTemplate from "@/components/templates/workspace/WorkSpacesTemplate";
 import { useLogout } from "@/lib/hooks/useAuth";
 import { useGetAllWorkspaces } from "@/lib/hooks/useWorkspace";
+import { RootState } from "@/store";
+import { useSelector } from "react-redux";
 
 const page = () => {
   const { mutate: logout } = useLogout();
@@ -10,10 +12,12 @@ const page = () => {
   function handleLogout() {
     logout();
   }
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+  console.log(isAuthenticated);
 
   const workspaces = data?.data ?? [];
-
-  function getAllWorkspaces() {}
 
   return (
     <main>

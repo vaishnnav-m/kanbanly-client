@@ -1,3 +1,5 @@
+import { workspaceRoles } from "@/types/roles.enum";
+
 export interface WorkspaceCreatePayload {
   name: string;
   description?: string;
@@ -12,4 +14,14 @@ export interface IWorkspace {
   createdBy: string;
   members: string[];
   logo: string;
+}
+
+export interface WorkspaceInvitationPayload {
+  invitedEmail: string;
+  role: workspaceRoles;
+}
+
+export interface SendInvititationArgs {
+  workspaceId: string;
+  data: WorkspaceInvitationPayload;
 }

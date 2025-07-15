@@ -7,6 +7,9 @@ import { useRouter } from "next/navigation";
 import { getWorkspaceIcon } from "@/lib/utils";
 import WorkspaceIconDisplay from "@/components/atoms/WorkspaceIconDisplay";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { setWorkspaceData } from "@/store/slices/workSpaceSlice";
 
 interface WorkSpacesTemplateProps {
   handleLogout: () => void;
@@ -18,6 +21,12 @@ const WorkSpacesTemplate = ({
   workspaces,
 }: WorkSpacesTemplateProps) => {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  function handleWorkspaceClick(workspaceId: string) {
+    dispatch(setWorkspaceData({ workspaceId }));
+    localStorage.setItem("workspaceId", workspaceId);
+  }
 
   return (
     <div
@@ -91,6 +100,7 @@ const WorkSpacesTemplate = ({
           >
             {workspaces.map((workspace, index) => (
               <Link
+                onClick={() => handleWorkspaceClick(workspace.workspaceId)}
                 key={workspace.workspaceId}
                 href={`/workspaces/${workspace.slug}`}
               >

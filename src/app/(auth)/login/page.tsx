@@ -21,7 +21,7 @@ const LoginPage = () => {
 
   const router = useRouter();
   const isAuthenticated = useSelector(
-    (state: RootState) => state.isAuthenticated
+    (state: RootState) => state.auth.isAuthenticated
   );
 
   useEffect(() => {

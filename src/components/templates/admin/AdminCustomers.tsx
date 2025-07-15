@@ -50,16 +50,13 @@ function AdminCustomers({
 
       {/* Dashboard Content */}
       <div className="space-y-8 animate-fade-in">
-        {isLoading ? (
-          <TableSkeleton />
-        ) : (
           <DataTable<User>
             headings={headings}
             data={data}
             columns={cols}
             buttonConfigs={buttonConfigs}
+            isLoading={isLoading}
           />
-        )}
       </div>
       <ConfirmationModal
         isOpen={isModalOpen}
