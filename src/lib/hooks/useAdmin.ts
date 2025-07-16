@@ -4,13 +4,18 @@ import { ApiResponse, User } from "../api/auth/auth.types";
 import { fetchAllUsers, updateUserStatus } from "../api/admin";
 import { useToastMessage } from "./useToastMessage";
 
-export const useGetUsers = (options?: {
-  onSuccess?: (response: ApiResponse<User[]>) => void;
-  onError?: (error: unknown) => void;
-}) => {
-  return useQuery<ApiResponse<User[]>, Error>({
-    queryKey: ["fetchAllUsers"],
-    queryFn: fetchAllUsers,
+export const useGetUsers = (
+  page: number,
+  options?: {
+    onSuccess?: (
+      response: ApiResponse<{ users: User[]; totalPages: number }>
+    ) => void;
+    onError?: (error: unknown) => void;
+  }
+) => {
+  return useQuery<ApiResponse<{ users: User[]; totalPages: number }>, Error>({
+    queryKey: ["fetchAllUsers", page],
+    queryFn: () => fetchAllUsers(page),
     ...options,
   });
 };

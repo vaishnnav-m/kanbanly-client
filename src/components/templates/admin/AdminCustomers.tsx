@@ -11,12 +11,18 @@ interface IAdminCustomersProps {
   data: User[];
   isLoading?: boolean;
   updateStatus: (data: User) => void;
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 function AdminCustomers({
   data,
   isLoading,
   updateStatus,
+  onPageChange,
+  page,
+  totalPages,
 }: IAdminCustomersProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
@@ -50,13 +56,16 @@ function AdminCustomers({
 
       {/* Dashboard Content */}
       <div className="space-y-8 animate-fade-in">
-          <DataTable<User>
-            headings={headings}
-            data={data}
-            columns={cols}
-            buttonConfigs={buttonConfigs}
-            isLoading={isLoading}
-          />
+        <DataTable<User>
+          headings={headings}
+          data={data}
+          columns={cols}
+          buttonConfigs={buttonConfigs}
+          isLoading={isLoading}
+          onPageChange={onPageChange}
+          page={page}
+          totalPages={totalPages}
+        />
       </div>
       <ConfirmationModal
         isOpen={isModalOpen}
