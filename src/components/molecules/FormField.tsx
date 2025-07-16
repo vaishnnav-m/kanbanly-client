@@ -69,7 +69,6 @@ const FormField = ({
           onComplete={() => {}}
         />
       ) : (
-        
         // normal field rendering
         <div className="relative">
           <Input
@@ -97,7 +96,7 @@ const FormField = ({
           )}
         </div>
       )}
-      {errors && <p className="text-red-500">{errors[id]}</p>}
+      {errors && errors[id] && <p className="text-red-500">{errors[id]}</p>}
     </div>
   );
 };

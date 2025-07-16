@@ -15,7 +15,6 @@ const page = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  console.log(isAuthenticated);
 
   const workspaces = data?.data ?? [];
 

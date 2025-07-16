@@ -201,7 +201,7 @@ function WorkSpaceCreateTemplate({
                       value={workspaceName}
                       onChange={(e) => {
                         setWorkspaceName(e.target.value);
-                        if (workspaceNameError) setWorkspaceNameError(null); // clear on type
+                        if (workspaceNameError) setWorkspaceNameError(null);
                       }}
                       className={`border ${
                         workspaceNameError

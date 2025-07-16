@@ -14,21 +14,21 @@ import { FieldConfig } from "@/types/form.types";
 import { LoginPayload } from "@/lib/api/auth/auth.types";
 import { LogIn } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface LoginTemplateProps {
   handleLogin: (values: LoginPayload) => void;
   handleGoogleLogin: () => void;
   isLoading: boolean;
   errorMessage?: string;
-  handleForgotPass: () => void;
 }
 
 const LoginTemplate = ({
   handleGoogleLogin,
   handleLogin,
   isLoading,
-  handleForgotPass,
 }: LoginTemplateProps) => {
+  const router = useRouter();
 
   const className =
     "h-12 border-primary bg-input focus:ring-2 focus:ring-primary transition-all duration-200";
@@ -50,7 +50,7 @@ const LoginTemplate = ({
       className:
         "h-12 pr-12 bg-input border-primary focus:ring-2 focus:ring-primary transition-all duration-200",
       required: true,
-      onLink: handleForgotPass,
+      onLink: () => router.push("/forgot-password"),
     },
   ];
 

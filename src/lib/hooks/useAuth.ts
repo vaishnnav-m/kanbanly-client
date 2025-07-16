@@ -16,6 +16,8 @@ import {
   signup,
   userLogin,
   verifyMagicLink,
+  forgotPassword,
+  resetPassword,
 } from "../api/auth";
 import { useToastMessage } from "./useToastMessage";
 import { useDispatch } from "react-redux";
@@ -177,6 +179,60 @@ export const useResendEmail = () => {
       toast.showSuccess({
         title: "Successfully send the link",
         description: response.message,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useForgotPassword = () => {
+  const toast = useToastMessage();
+  const router = useRouter();
+
+  return useMutation<ApiResponse, Error, { email: string }>({
+    mutationKey: ["forgot-password"],
+    mutationFn: forgotPassword,
+    onSuccess: (response) => {
+      router.push("/login");
+      toast.showSuccess({
+        title: "Successfully send the link",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+    onError: (error: any) => {
+      console.log(error);
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Error in Reseting Password",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  const toast = useToastMessage();
+  const router = useRouter();
+
+  return useMutation<ApiResponse, Error, { password: string; token: string }>({
+    mutationKey: ["reset-password"],
+    mutationFn: resetPassword,
+    onSuccess: (response) => {
+      router.push("/login");
+      toast.showSuccess({
+        title: "Successfully reseted the password",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+    onError: (error: any) => {
+      console.log(error);
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Error in Reseting Password",
+        description: errorMessage,
         duration: 6000,
       });
     },
