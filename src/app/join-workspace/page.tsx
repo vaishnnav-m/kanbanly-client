@@ -2,18 +2,11 @@
 import CustomLoader from "@/components/organisms/user/CustomLoader";
 import InvitationFailureTemplate from "@/components/templates/workspace/InvitationFailureTemplate";
 import { useVerifyInvitation } from "@/lib/hooks/useWorkspace";
-import { RootState } from "@/store";
 import { AxiosError } from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+import {  useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 
 function page() {
-  const router = useRouter();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 

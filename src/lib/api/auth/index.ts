@@ -26,6 +26,19 @@ export const resendEmail = async (payload: { email: string }) => {
   return response.data;
 };
 
+export const forgotPassword = async (payload: { email: string }) => {
+  const response = await api.post("/auth/forgot-password", payload);
+  return response.data;
+};
+
+export const resetPassword = async (payload: {
+  password: string;
+  token: string;
+}) => {
+  const response = await api.patch("/auth/reset-password", payload);
+  return response.data;
+};
+
 export const logout = async () => {
   const response = await api.get("/auth/logout");
   return response.data;

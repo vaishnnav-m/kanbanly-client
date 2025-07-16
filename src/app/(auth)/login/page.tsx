@@ -45,7 +45,6 @@ const LoginPage = () => {
         handleLogin={handleLogin}
         isLoading={isPending}
         errorMessage={error?.message}
-        handleForgotPass={() => {}}
       />
     </main>
   );
