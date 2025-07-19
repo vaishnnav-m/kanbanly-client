@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  ApiResponse,
   LoginPayload,
   LoginResponseData,
   SignupPayload,
@@ -27,6 +26,7 @@ import {
   setCredentials,
 } from "@/store/slices/authSlice";
 import { setStorageItem } from "../utils";
+import { ApiResponse } from "../api/common.types";
 
 export const useSignup = () => {
   const router = useRouter();

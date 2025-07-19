@@ -4,52 +4,33 @@ import { Card } from "@/components/atoms/card";
 import SearchBar from "@/components/molecules/SearchBar";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
-import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
+import { WorkspaceInvitationPayload, WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { ButtonConfig } from "@/types/table.types";
 import { EllipsisIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
 
+// props type
+interface IWorkspaceMembersTemplateProps {
+  handleInvite: (data: WorkspaceInvitationPayload) => void;
+  isLoading: boolean;
+  isMembersLoading: boolean;
+  members: WorkspaceMember[]
+  total: number;
+}
+
 function WorkspaceMembersTemplates({
   handleInvite,
   isLoading,
-}: {
-  handleInvite: (data: WorkspaceInvitationPayload) => void;
-  isLoading: boolean;
-}) {
+  isMembersLoading,
+  members,
+  total=0,
+}: IWorkspaceMembersTemplateProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // member type
-  interface Members {
-    _id: string;
-    name: string;
-    role: string;
-    lastActivity: string;
-  }
 
   // table customization
   const headings = ["Name", "Role", "Last Activity", "Manage"];
-  const data: Members[] = [
-    {
-      _id: "1",
-      name: "Max",
-      role: "Member",
-      lastActivity: "2 days ago",
-    },
-    {
-      _id: "2",
-      name: "Gregor",
-      role: "Project Manager",
-      lastActivity: "2 days ago",
-    },
-    {
-      _id: "3",
-      name: "Yiran",
-      role: "Member",
-      lastActivity: "2 days ago",
-    },
-  ];
-  const cols: (keyof Members)[] = ["name", "role", "lastActivity"];
-  const buttonConfigs: ButtonConfig<Members>[] = [
+  const cols: (keyof WorkspaceMember)[] = ["name", "role", "email"];
+  const buttonConfigs: ButtonConfig<WorkspaceMember>[] = [
     {
       action: (data) => {
         console.log("button clicked", data);
@@ -80,7 +61,7 @@ function WorkspaceMembersTemplates({
             <Card className="p-6 animate-fade-in">
               <div className="w-full flex justify-between items-center px-5 pb-5">
                 <div className="flex-1">
-                  <span>This workspace has 3 members</span>
+                  <span>This workspace has {total} members</span>
                 </div>
                 <div className="flex-1">
                   <SearchBar placeholder="Search Members" />
@@ -93,12 +74,12 @@ function WorkspaceMembersTemplates({
                 </div>
               </div>
               <div className="px-5">
-                <DataTable<Members>
+                <DataTable<WorkspaceMember>
                   headings={headings}
-                  data={data}
+                  data={members}
                   columns={cols}
                   buttonConfigs={buttonConfigs}
-                  isLoading={false}
+                  isLoading={isMembersLoading}
                 />
               </div>
             </Card>
