@@ -1,8 +1,9 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiResponse, User } from "../api/auth/auth.types";
+import {User } from "../api/auth/auth.types";
 import { fetchAllUsers, updateUserStatus } from "../api/admin";
 import { useToastMessage } from "./useToastMessage";
+import { ApiResponse } from "../api/common.types";
 
 export const useGetUsers = (
   page: number,

@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ApiResponse } from "../api/auth/auth.types";
 import {
   createWorkspace,
   getAllWorkspaces,
+  getWorkspaceMembers,
   sendInvititation,
   verifyInvitation,
 } from "../api/workspace";
@@ -10,9 +10,11 @@ import {
   IWorkspace,
   SendInvititationArgs,
   WorkspaceCreatePayload,
+  WorkspaceMember,
 } from "../api/workspace/workspace.types";
 import { useToastMessage } from "./useToastMessage";
 import { useRouter } from "next/navigation";
+import { ApiResponse, PaginatedResponse } from "../api/common.types";
 
 export const useCreateWorkspace = () => {
   const toast = useToastMessage();
@@ -31,7 +33,7 @@ export const useCreateWorkspace = () => {
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
-        title: "Error in Login",
+        title: "Workspace Creation Failed",
         description: errorMessage,
         duration: 6000,
       });
@@ -74,5 +76,13 @@ export const useVerifyInvitation = () => {
       });
       router.replace("/workspaces");
     },
+  });
+};
+
+export const useWorkspaceMembers = (workspaceId: string, page: number) => {
+  return useQuery<ApiResponse<PaginatedResponse<WorkspaceMember[]>>, Error>({
+    queryKey: ["getWorkspaceMembers", workspaceId],
+    queryFn: () => getWorkspaceMembers({ workspaceId }, page),
+    enabled: !!workspaceId,
   });
 };

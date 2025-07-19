@@ -25,3 +25,11 @@ export interface SendInvititationArgs {
   workspaceId: string;
   data: WorkspaceInvitationPayload;
 }
+
+export interface WorkspaceMember {
+  _id: string;
+  name: string;
+  email: string;
+  role: workspaceRoles;
+}
+

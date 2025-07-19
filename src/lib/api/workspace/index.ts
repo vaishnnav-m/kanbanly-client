@@ -26,6 +26,18 @@ export const sendInvititation = async ({
 };
 
 export const verifyInvitation = async (payload: { token: string }) => {
-  const response = await api.post(`/invitations/workspace/${payload.token}/accept`);
+  const response = await api.post(
+    `/invitations/workspace/${payload.token}/accept`
+  );
+  return response.data;
+};
+
+export const getWorkspaceMembers = async (
+  payload: { workspaceId: string },
+  page: number
+) => {
+  const response = await api.get(
+    `/workspace/${payload.workspaceId}/members?page=${page}`
+  );
   return response.data;
 };
