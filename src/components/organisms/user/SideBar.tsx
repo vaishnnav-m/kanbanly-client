@@ -10,15 +10,30 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { CreateProjectModal } from "../project/CreateProject";
+import { useState } from "react";
+import { ProjectCreationPayload } from "@/lib/api/project/project.types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
   const pathname = usePathname();
   const params = useParams();
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+ 
 
   const navigation = [
     { name: "Home", href: `/workspaces/${params.slug}`, icon: Home },
-    { name: "Chats", href: `/workspaces/${params.slug}/chats`, icon: MessageSquare },
-    { name: "Members", href: `/workspaces/${params.slug}/members`, icon: Users },
+    {
+      name: "Chats",
+      href: `/workspaces/${params.slug}/chats`,
+      icon: MessageSquare,
+    },
+    {
+      name: "Members",
+      href: `/workspaces/${params.slug}/members`,
+      icon: Users,
+    },
   ];
 
   const projects = [
@@ -73,6 +88,7 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
                 Projects
               </span>
               <Button
+                onClick={() => setIsProjectModalOpen(true)}
                 size="sm"
                 variant="ghost"
                 className="h-5 w-5 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -163,6 +179,10 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
           </div>
         )}
       </div>
+      <CreateProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ModalBackdrop } from "../atoms/ModalBackdrop";
 import { ModalContainer } from "../atoms/ModalContainer";
+import { createPortal } from "react-dom";
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -20,9 +21,19 @@ export const BaseModal = ({
   footer,
   text,
 }: BaseModalProps) => {
-  if (!isOpen) return null;
+  const [isMounted, setIsMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted || !isOpen) return null;
+
+  const modalRoot = document.getElementById("modal-root");
+
+  if (!modalRoot) return null;
+
+  return createPortal(
     <>
       <ModalBackdrop onClick={onClose} />
       <ModalContainer>
@@ -33,6 +44,7 @@ export const BaseModal = ({
         <div>{children}</div>
         {footer && <div>{footer}</div>}
       </ModalContainer>
-    </>
+    </>,
+    modalRoot
   );
 };

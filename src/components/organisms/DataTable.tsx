@@ -35,7 +35,7 @@ const DataTable = <T extends { _id: string | number }>({
 }: TableProps<T>) => {
   return (
     <>
-      <Table>
+      <Table className="z-auto">
         <TableHeader>
           <TableRow>
             {headings.map((heading, idx) => (
