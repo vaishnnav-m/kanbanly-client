@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiResponse } from "../api/common.types";
 import { createProject, getAllProjects } from "../api/project";
-import { ProjectCreationArgs } from "../api/project/project.types";
+import { IProject, ProjectCreationArgs } from "../api/project/project.types";
 import { useToastMessage } from "./useToastMessage";
 
 export const useCreateProject = () => {
@@ -28,9 +28,9 @@ export const useCreateProject = () => {
   });
 };
 
-export const useGetAllProject = (workspaceId: string) => {
-  return useQuery<ApiResponse, Error>({
-    queryKey: ["getWorkspaceMembers", workspaceId],
+export const useGetAllProjects = (workspaceId: string) => {
+  return useQuery<ApiResponse<IProject[]>, Error>({
+    queryKey: ["getProjects", workspaceId],
     queryFn: () => getAllProjects({ workspaceId }),
     enabled: !!workspaceId,
   });

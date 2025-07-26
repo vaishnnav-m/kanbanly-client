@@ -23,6 +23,8 @@ function page() {
   const totalPages = members?.data?.totalPages ?? 0;
   const total = members?.data?.total ?? 0;
 
+  console.log(members)
+
   function sendInvite(data: WorkspaceInvitationPayload) {
     SendInvitation({ workspaceId, data });
   }
