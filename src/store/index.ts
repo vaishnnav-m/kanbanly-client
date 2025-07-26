@@ -5,6 +5,7 @@ import workspaceReducer from "./slices/workSpaceSlice";
 
 export const store = configureStore({
   reducer: { auth: authReducer, workspace: workspaceReducer },
+  devTools: true
 });
 
 export type RootState = ReturnType<typeof store.getState>;

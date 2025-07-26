@@ -17,7 +17,7 @@ function layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300">
       <Header setIsSidebarOpen={() => setIsCollapsed((prev) => !prev)} />
-      <main className="flex">
+      <main className="min-h-screen relative flex">
         <Sidebar isSidebarOpen={isCollapsed} />
         <div
           className={`px-4 pt-[75px] ${

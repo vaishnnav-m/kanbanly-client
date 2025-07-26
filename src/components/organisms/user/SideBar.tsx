@@ -10,19 +10,40 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { CreateProjectModal } from "../project/CreateProject";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { useGetAllProjects } from "@/lib/hooks/useProject";
 
 export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
   const pathname = usePathname();
   const params = useParams();
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const {
+    data,
+    isPending,
+  } = useGetAllProjects(workspaceId);
+
+  const projects = data ? data.data : [];
 
   const navigation = [
     { name: "Home", href: `/workspaces/${params.slug}`, icon: Home },
-    { name: "Chats", href: `/workspaces/${params.slug}/chats`, icon: MessageSquare },
-    { name: "Members", href: `/workspaces/${params.slug}/members`, icon: Users },
-  ];
-
-  const projects = [
-    { name: "CRM Platform", href: "/projects/crm", active: true },
+    {
+      name: "Chats",
+      href: `/workspaces/${params.slug}/chats`,
+      icon: MessageSquare,
+    },
+    {
+      name: "Members",
+      href: `/workspaces/${params.slug}/members`,
+      icon: Users,
+    },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -73,6 +94,7 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
                 Projects
               </span>
               <Button
+                onClick={() => setIsProjectModalOpen(true)}
                 size="sm"
                 variant="ghost"
                 className="h-5 w-5 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -81,27 +103,29 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
               </Button>
             </div>
           )}
-
-          {projects.map((project) => (
-            <Link key={project.name} href={project.href}>
-              <div
-                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
-                  isActive(project.href)
-                    ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
-                    : "hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                }`}
-              >
-                <div
-                  className={`${
-                    isSidebarOpen ? "mx-auto" : "mr-3"
-                  } h-3 w-3 rounded-full bg-blue-500 transition-transform duration-200 group-hover:scale-110`}
-                />
-                {!isSidebarOpen && (
-                  <span className="animate-fade-in">{project.name}</span>
-                )}
-              </div>
-            </Link>
-          ))}
+          <div className="flex flex-col gap-3">
+            {projects?.length &&
+              projects.map((project) => (
+                <button key={project.name}>
+                  <div
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+                      isActive("")
+                        ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
+                        : "hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                    }`}
+                  >
+                    <div
+                      className={`${
+                        isSidebarOpen ? "mx-auto" : "mr-3"
+                      } h-3 w-3 rounded-full bg-blue-500 transition-transform duration-200 group-hover:scale-110`}
+                    />
+                    {!isSidebarOpen && (
+                      <span className="animate-fade-in">{project.name}</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+          </div>
         </div>
 
         <div className="my-4 w-full h-[1px] bg-zinc-200 dark:bg-zinc-800" />
@@ -163,6 +187,10 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
           </div>
         )}
       </div>
+      <CreateProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </div>
   );
 }
