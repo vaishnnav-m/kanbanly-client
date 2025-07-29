@@ -1,5 +1,5 @@
 "use client";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Home,
@@ -16,6 +16,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { cn } from "@/lib/utils";
+import { useDispatch } from "react-redux";
+import { setprojectData } from "@/store/slices/projectSlice";
+import { IProject } from "@/lib/api/project/project.types";
 
 export default function SideBar({
   isSidebarOpen,
@@ -27,6 +30,8 @@ export default function SideBar({
   const pathname = usePathname();
   const params = useParams();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
@@ -51,6 +56,14 @@ export default function SideBar({
   ];
 
   const isActive = (href: string) => pathname === href;
+
+  function handleProjectClick(project: IProject) {
+    localStorage.setItem("projectName", project.name);
+    dispatch(setprojectData({ projectName: project.name }));
+    router.push(
+      `/workspaces/${params.slug}/projects/${project.projectId}/tasks`
+    );
+  }
   return (
     <div
       className={`${
@@ -123,7 +136,10 @@ export default function SideBar({
           <div className="flex flex-col gap-3">
             {projects?.length &&
               projects.map((project) => (
-                <button key={project.name}>
+                <button
+                  onClick={() => handleProjectClick(project)}
+                  key={project.name}
+                >
                   <div
                     className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
                       isActive("")

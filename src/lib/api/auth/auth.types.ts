@@ -32,5 +32,3 @@ export interface LoginResponseData {
   role: string;
   isEmailVerified: boolean;
 }
-
-
