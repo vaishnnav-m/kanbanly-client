@@ -37,7 +37,7 @@
 
     --radius: 0.5rem;
 
-    /* Sidebar colors - kept as is for now, can be themed later if a sidebar is used in-app */
+    /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -145,4 +145,22 @@
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
+}
+
+@keyframes bell-ring {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(15deg); }
+  50%  { transform: rotate(-15deg); }
+  75%  { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.bell-ring {
+  animation: bell-ring 1.2s ease-in-out;
+  transform-origin: top center;
+}
+
+.group:hover .bell-icon {
+  animation: bell-ring 1s ease-in-out;
+  transform-origin: top center;
 }

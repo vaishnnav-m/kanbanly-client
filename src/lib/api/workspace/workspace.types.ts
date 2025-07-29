@@ -12,8 +12,9 @@ export interface IWorkspace {
   slug: string;
   description: string;
   createdBy: string;
-  members: string[];
-  logo: string;
+  members?: number;
+  logo?: string;
+  createdAt: Date;
 }
 
 export interface WorkspaceInvitationPayload {
@@ -32,4 +33,3 @@ export interface WorkspaceMember {
   email: string;
   role: workspaceRoles;
 }
-

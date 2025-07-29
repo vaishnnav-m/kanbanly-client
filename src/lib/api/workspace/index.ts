@@ -14,6 +14,11 @@ export const getAllWorkspaces = async () => {
   return response.data;
 };
 
+export const getOneWorkspace = async (payload: { workspaceId: string }) => {
+  const response = await api.get(`/workspace/${payload.workspaceId}`);
+  return response.data;
+};
+
 export const sendInvititation = async ({
   workspaceId,
   data,

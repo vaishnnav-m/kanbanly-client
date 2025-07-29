@@ -8,7 +8,7 @@ function layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   let isLayoutNeeded =
     pathname === "/workspaces" || pathname === "/workspaces/create";
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   if (isLayoutNeeded) {
     return <>{children}</>;
@@ -16,9 +16,15 @@ function layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300">
-      <Header setIsSidebarOpen={() => setIsCollapsed((prev) => !prev)} />
+      <Header
+        setIsSidebarOpen={() => setIsCollapsed((prev) => !prev)}
+        isSidebarOpen={isCollapsed}
+      />
       <main className="min-h-screen relative flex">
-        <Sidebar isSidebarOpen={isCollapsed} />
+        <Sidebar
+          isSidebarOpen={!isCollapsed}
+          setIsSidebarOpen={() => setIsCollapsed((prev) => !prev)}
+        />
         <div
           className={`px-4 pt-[75px] ${
             !isCollapsed ? "pl-64" : "pl-16"
