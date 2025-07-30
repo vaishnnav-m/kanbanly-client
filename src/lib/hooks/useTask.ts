@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 import { ITask, TaskCreationArgs } from "../api/task/task.types";
-import { createTask, getAllTasks } from "../api/task";
+import { createTask, getAllTasks, removeTask } from "../api/task";
 
 export const useCreateTask = () => {
   const toast = useToastMessage();
@@ -32,5 +32,32 @@ export const useGetAllTasks = (workspaceId: string, projectId: string) => {
     queryKey: ["getTasks", workspaceId],
     queryFn: () => getAllTasks({ workspaceId, projectId }),
     enabled: !!workspaceId || !!projectId,
+  });
+};
+
+export const useRemoveTask = () => {
+  const toast = useToastMessage();
+
+  return useMutation<
+    ApiResponse,
+    Error,
+    { workspaceId: string; projectId: string; taskId: string }
+  >({
+    mutationFn: removeTask,
+    mutationKey: ["removeTask"],
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Task Deletion Successfull",
+        duration: 6000,
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Task Deletion Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
   });
 };
