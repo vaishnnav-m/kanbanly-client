@@ -16,47 +16,34 @@ import { TaskListing } from "@/lib/api/task/task.types";
 import { TaskStatus } from "@/types/task.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { CreateTaskModal } from "@/components/organisms/task/CreateTask";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
   tasks: TaskListing[] | [];
+  refetchTasks: () => void;
 }
 
 function TaskListingPageTemplate({
   tasks,
   projectId,
+  refetchTasks,
 }: TaskListingPageTemplateProps) {
   const [activeTab, setActiveTab] = useState("List");
+  const tabs = ["Overview", "List", "Board", "Timeline"];
+
   const projectName = useSelector(
     (state: RootState) => state.project.projectName
   );
 
-  const tabs = ["Overview", "List", "Board", "Timeline"];
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const addTask = () => {
-    //  const newTask: TaskListing = {
-    //    taskId: Date.now().toString(),
-    //    task: "New task",
-    //    status: TaskStatus.Todo,
-    //    dueDate: new Date(),
-    //  };
-    //  setTasks([...tasks, newTask]);
-  };
-
-  const toggleTaskComplete = (taskId: string) => {
-    //  setTasks(
-    //    tasks.map((task) =>
-    //      task.taskId === taskId
-    //        ? { ...task, status: TaskStatus.Completed }
-    //        : task
-    //    )
-    //  );
-  };
+  const toggleTaskComplete = (taskId: string) => {};
 
   return (
     <div className="min-h-screen bg-background max-w-7xl mx-auto">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <div className="border-b border-border bg-card">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -72,7 +59,7 @@ function TaskListingPageTemplate({
 
         {/* Navigation Tabs */}
         <div className="px-6">
-          <nav className="flex gap-6">
+          <div className="flex gap-6">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -86,17 +73,17 @@ function TaskListingPageTemplate({
                 {tab}
               </button>
             ))}
-          </nav>
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* Content */}
-      <main className="p-6">
+      <div className="p-6">
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Button
-              onClick={addTask}
+              onClick={() => setIsModalOpen(true)}
               className="bg-primary hover:bg-primary/90"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -139,7 +126,7 @@ function TaskListingPageTemplate({
           </div>
 
           {/* Tasks */}
-          {tasks.length &&
+          {tasks.length ? (
             tasks.map((task) => (
               <div
                 key={task.taskId}
@@ -186,10 +173,20 @@ function TaskListingPageTemplate({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 hover:bg-transparent"
+                    className="p-0 hover:bg-transparent"
                   >
                     <Calendar className="w-4 h-4 text-muted-foreground" />
-                    {task.dueDate && <span>{task.dueDate.toDateString()}</span>}
+                    {task.dueDate ? (
+                      <span>
+                        {new Date(task.dueDate).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                    ) : (
+                      ""
+                    )}
                   </Button>
                 </div>
 
@@ -203,9 +200,18 @@ function TaskListingPageTemplate({
                   </Button>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="w-full p-4 text-center">No Tasks</div>
+          )}
         </div>
-      </main>
+      </div>
+      <CreateTaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        projectId={projectId}
+        refetchTasks={refetchTasks}
+      />
     </div>
   );
 }

@@ -2,10 +2,10 @@ import { TaskPriority, TaskStatus } from "@/types/task.enum";
 
 export interface TaskCreationPayload {
   task: string;
-  description: string;
-  priority: TaskPriority;
+  description?: string;
+  priority?: TaskPriority;
   assignedTo?: string;
-  dueDate: Date;
+  dueDate?: Date | string;
 }
 
 export interface TaskCreationArgs {

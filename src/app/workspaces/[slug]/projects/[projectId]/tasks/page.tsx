@@ -1,6 +1,6 @@
 "use client";
 import TaskListingPageTemplate from "@/components/templates/task/TaskListingPageTemplate";
-import { useGetAllTasks } from "@/lib/hooks/useTask";
+import { useCreateTask, useGetAllTasks } from "@/lib/hooks/useTask";
 import { RootState } from "@/store";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -12,7 +12,7 @@ function page() {
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
-  const { data } = useGetAllTasks(workspaceId, projectId);
+  const { data, refetch, isPending } = useGetAllTasks(workspaceId, projectId);
 
   const tasks = data?.data ? data.data : [];
 
@@ -20,6 +20,7 @@ function page() {
     <TaskListingPageTemplate
       tasks={tasks}
       projectId={params.projectId as string}
+      refetchTasks={refetch}
     />
   );
 }

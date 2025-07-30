@@ -80,11 +80,13 @@ export default function SideBar({
             : "opacity-0 scale-95 pointer-events-none"
         )}
       >
-        <img
-          className="cursor-pointer size-10"
-          src="/collapse.svg"
-          onClick={setIsSidebarOpen}
-        />
+        {isSidebarOpen && (
+          <img
+            className="cursor-pointer size-10"
+            src="/collapse.svg"
+            onClick={setIsSidebarOpen}
+          />
+        )}
       </div>
       {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">

@@ -5,7 +5,6 @@ export interface ProjectCreationPayload {
 
 export interface ProjectCreationArgs {
   workspaceId: string;
-  projectId: string;
   data: ProjectCreationPayload;
 }
 
