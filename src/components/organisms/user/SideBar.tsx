@@ -1,5 +1,5 @@
 "use client";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Home,
@@ -11,24 +11,33 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { CreateProjectModal } from "../project/CreateProject";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
+import { cn } from "@/lib/utils";
+import { useDispatch } from "react-redux";
+import { setprojectData } from "@/store/slices/projectSlice";
+import { IProject } from "@/lib/api/project/project.types";
 
-export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
+export default function SideBar({
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: () => void;
+}) {
   const pathname = usePathname();
   const params = useParams();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
 
-  const {
-    data,
-    isPending,
-  } = useGetAllProjects(workspaceId);
+  const { data, isPending } = useGetAllProjects(workspaceId);
 
   const projects = data ? data.data : [];
 
@@ -47,6 +56,14 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
   ];
 
   const isActive = (href: string) => pathname === href;
+
+  function handleProjectClick(project: IProject) {
+    localStorage.setItem("projectName", project.name);
+    dispatch(setprojectData({ projectName: project.name }));
+    router.push(
+      `/workspaces/${params.slug}/projects/${project.projectId}/tasks`
+    );
+  }
   return (
     <div
       className={`${
@@ -55,6 +72,22 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
       bg-white text-zinc-800 border-r border-zinc-200 
       dark:bg-background dark:text-zinc-100 dark:border-zinc-800`}
     >
+      <div
+        className={cn(
+          "px-3 transition-all duration-300",
+          isSidebarOpen
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-95 pointer-events-none"
+        )}
+      >
+        {isSidebarOpen && (
+          <img
+            className="cursor-pointer size-10"
+            src="/collapse.svg"
+            onClick={setIsSidebarOpen}
+          />
+        )}
+      </div>
       {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {!isSidebarOpen && (
@@ -62,7 +95,6 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
             Navigation
           </p>
         )}
-
         {navigation.map((item) => (
           <Link key={item.name} href={item.href} passHref>
             <div
@@ -106,7 +138,10 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
           <div className="flex flex-col gap-3">
             {projects?.length &&
               projects.map((project) => (
-                <button key={project.name}>
+                <button
+                  onClick={() => handleProjectClick(project)}
+                  key={project.name}
+                >
                   <div
                     className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
                       isActive("")
@@ -151,7 +186,12 @@ export default function SideBar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
               </span>
             </div>
             {!isSidebarOpen && (
-              <span className="animate-fade-in">My Workspace</span>
+              <Link
+                href={`/workspaces/${params.slug}/manage`}
+                className="animate-fade-in"
+              >
+                My Workspace
+              </Link>
             )}
           </div>
         </div>

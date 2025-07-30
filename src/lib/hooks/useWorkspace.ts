@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createWorkspace,
   getAllWorkspaces,
+  getOneWorkspace,
   getWorkspaceMembers,
   sendInvititation,
   verifyInvitation,
@@ -45,6 +46,16 @@ export const useGetAllWorkspaces = () => {
   return useQuery<ApiResponse<IWorkspace[]>, Error>({
     queryKey: ["workspaces"],
     queryFn: getAllWorkspaces,
+  });
+};
+
+export const useGetOneWorkspace = (workspaceId: string) => {
+  return useQuery<
+    ApiResponse<Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">>,
+    Error
+  >({
+    queryKey: ["getOneWorkspace", workspaceId],
+    queryFn: () => getOneWorkspace({ workspaceId }),
   });
 };
 
