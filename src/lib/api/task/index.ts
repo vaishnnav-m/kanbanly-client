@@ -18,3 +18,14 @@ export const getAllTasks = async (data: {
   );
   return response.data;
 };
+
+export const removeTask = async (data: {
+  workspaceId: string;
+  projectId: string;
+  taskId: string;
+}) => {
+  const response = await api.delete(
+    `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks/${data.taskId}`
+  );
+  return response.data;
+};

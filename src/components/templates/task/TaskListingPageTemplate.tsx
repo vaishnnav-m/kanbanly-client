@@ -5,10 +5,10 @@ import {
   Search,
   Filter,
   ArrowUpDown,
-  MoreHorizontal,
   Calendar,
   CheckCircle2,
   User,
+  Trash,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
@@ -17,26 +17,34 @@ import { TaskStatus } from "@/types/task.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { CreateTaskModal } from "@/components/organisms/task/CreateTask";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
   tasks: TaskListing[] | [];
   refetchTasks: () => void;
+  isRemoving: boolean;
+  removeTask: (taskId: string) => void;
 }
 
 function TaskListingPageTemplate({
   tasks,
   projectId,
   refetchTasks,
+  isRemoving,
+  removeTask,
 }: TaskListingPageTemplateProps) {
   const [activeTab, setActiveTab] = useState("List");
   const tabs = ["Overview", "List", "Board", "Timeline"];
+
+  const [selectedTask, setSelectedTask] = useState("");
 
   const projectName = useSelector(
     (state: RootState) => state.project.projectName
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const toggleTaskComplete = (taskId: string) => {};
 
@@ -190,13 +198,17 @@ function TaskListingPageTemplate({
                   </Button>
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex items-center relative">
                   <Button
+                    onClick={() => {
+                      setSelectedTask(task.taskId);
+                      setIsConfirmationOpen(true);
+                    }}
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent"
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <Trash className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -211,6 +223,19 @@ function TaskListingPageTemplate({
         onClose={() => setIsModalOpen(false)}
         projectId={projectId}
         refetchTasks={refetchTasks}
+      />
+      <ConfirmationModal
+        isOpen={isConfirmationOpen}
+        onClose={() => setIsConfirmationOpen(false)}
+        onConfirm={() => {
+          removeTask(selectedTask);
+          setSelectedTask("");
+          setIsConfirmationOpen(false);
+        }}
+        title="Are you sure you want to remove this task?"
+        description="This action cannot be undone. The task will be permanently deleted from the project."
+        cancelText="Cancel"
+        confirmText="Delete Task"
       />
     </div>
   );
