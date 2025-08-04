@@ -46,3 +46,8 @@ export const getWorkspaceMembers = async (
   );
   return response.data;
 };
+
+export const getCurrentMember = async (workspaceId: string | null) => {
+  const response = await api.get(`/workspace/${workspaceId}/members/me`);
+  return response.data;
+};

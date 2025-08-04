@@ -7,6 +7,8 @@ import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
 import { workspaceIcons } from "@/constants/icons";
 import { IWorkspace } from "@/lib/api/workspace/workspace.types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 interface WorkspaceManageTemplateProps {
   workspaceData: Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">;
@@ -16,8 +18,9 @@ export function WorkspaceManageTemplate({
   workspaceData,
 }: WorkspaceManageTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
-
   const [editData, setEditData] = useState(workspaceData);
+
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   const handleSave = () => {};
 
@@ -69,7 +72,7 @@ export function WorkspaceManageTemplate({
             </p>
           </div>
 
-          {!isEditing && (
+          {!isEditing && role === "owner" && (
             <div className="flex gap-5">
               <Button
                 onClick={handleEdit}

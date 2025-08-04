@@ -10,9 +10,11 @@ function getInitialWorkspaceId() {
 const workspaceId = getInitialWorkspaceId();
 interface WorkspaceState {
   workspaceId: string;
+  memberRole: string;
 }
 const initialState: WorkspaceState = {
   workspaceId: workspaceId || "",
+  memberRole: "",
 };
 
 const workspaceSlice = createSlice({
@@ -21,9 +23,12 @@ const workspaceSlice = createSlice({
   reducers: {
     setWorkspaceData: (
       state,
-      action: PayloadAction<{ workspaceId: string }>
+      action: PayloadAction<{ workspaceId: string; memberRole?: string }>
     ) => {
       state.workspaceId = action.payload.workspaceId;
+      state.memberRole = action.payload?.memberRole
+        ? action.payload.memberRole
+        : "";
     },
     removeWorkspaceData: (state) => {
       state.workspaceId = "";

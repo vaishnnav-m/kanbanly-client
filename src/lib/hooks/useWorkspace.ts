@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createWorkspace,
   getAllWorkspaces,
+  getCurrentMember,
   getOneWorkspace,
   getWorkspaceMembers,
   sendInvititation,
@@ -70,6 +71,14 @@ export const useSendInvitation = () => {
         duration: 6000,
       });
     },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Workspace Creation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
   });
 };
 
@@ -94,6 +103,14 @@ export const useWorkspaceMembers = (workspaceId: string, page: number) => {
   return useQuery<ApiResponse<PaginatedResponse<WorkspaceMember[]>>, Error>({
     queryKey: ["getWorkspaceMembers", workspaceId],
     queryFn: () => getWorkspaceMembers({ workspaceId }, page),
+    enabled: !!workspaceId,
+  });
+};
+
+export const useGetCurrentMember = (workspaceId: string | null) => {
+  return useQuery<ApiResponse<WorkspaceMember>, Error>({
+    queryKey: ["getCurrentMember", workspaceId],
+    queryFn: () => getCurrentMember(workspaceId),
     enabled: !!workspaceId,
   });
 };

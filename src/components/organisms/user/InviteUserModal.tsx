@@ -73,12 +73,12 @@ export const InviteUserModal = ({
             onChange={(e) => setRole(e.target.value as workspaceRoles)}
             className="pl-10 pr-3 py-3 w-full appearance-none bg-transparent text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-lg cursor-pointer transition-colors duration-300"
           >
-            <option
+            {/* <option
               value=""
               className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
             >
               Role
-            </option>
+            </option> */}
             {roles &&
               roles.map((rol) => (
                 <option
@@ -102,12 +102,12 @@ export const InviteUserModal = ({
           </div>
         </div>
       </div>
-
+{/* 
       <div className="flex justify-center">
         <span className="text-md underline text-gray-300">
           or get an invite link to share
         </span>
-      </div>
+      </div> */}
     </BaseModal>
   );
 };
