@@ -1,0 +1,215 @@
+"use client";
+import { useState } from "react";
+import { Edit3, Save, X, Trash, User, Users } from "lucide-react";
+import { Button } from "@/components/atoms/button";
+import { Card, CardContent } from "@/components/atoms/card";
+import { Input } from "@/components/atoms/input";
+import { Textarea } from "@/components/atoms/textarea";
+import { workspaceIcons } from "@/constants/icons";
+import {
+  IWorkspace,
+  WorkspaceEditPayload,
+} from "@/lib/api/workspace/workspace.types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
+import { IProject } from "@/lib/api/project/project.types";
+
+interface ProjectManagementTemplateProps {
+  projectData: Omit<IProject, "workspaceId" | "slug" | "createdBy">;
+  handleDelete: () => void;
+  uploadEdited: (data: WorkspaceEditPayload) => void;
+  isDeleting: boolean;
+}
+
+export function ProjectManagementTemplate({
+  projectData,
+  handleDelete,
+  uploadEdited,
+  isDeleting,
+}: ProjectManagementTemplateProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<WorkspaceEditPayload | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
+
+  const handleSave = () => {
+    if (!editData) {
+      return;
+    }
+    uploadEdited(editData);
+    setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    // setEditData(projectData);
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    // setEditData(projectData);
+    setIsEditing(false);
+  };
+
+  const handleIconChange = (iconName: string) => {
+    setEditData({ ...editData, logo: iconName });
+  };
+
+  return (
+    <main className="flex-1 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-workspace-text-primary mb-2">
+              Project Details
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your project information and settings
+            </p>
+          </div>
+
+          {!isEditing && role === "owner" && (
+            <div className="flex gap-5">
+              <Button
+                disabled={isDeleting}
+                onClick={() => setIsModalOpen(true)}
+                className="bg-red-500/80 hover:bg-red-500"
+              >
+                <Trash className="w-4 h-4 mr-2" />
+                {isDeleting ? "Deleting" : "Delete Workspace"}
+              </Button>
+              <Button
+                onClick={handleEdit}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                Edit Details
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Workspace Card */}
+        <Card className="bg-blue-200/5 border-workspace-border">
+          <CardContent className="p-8">
+            <div className="flex items-start gap-8">
+              {/* Details Section */}
+              <div className="flex-1 space-y-6">
+                {isEditing ? (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-workspace-text-primary">
+                        Workspace Name
+                      </label>
+                      <Input
+                        value={
+                          editData?.name ? editData.name : projectData.name
+                        }
+                        onChange={(e) =>
+                          setEditData({ ...editData, name: e.target.value })
+                        }
+                        className="bg-background border-workspace-border text-workspace-text-primary"
+                        placeholder="Enter workspace name"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-workspace-text-primary">
+                        Description
+                      </label>
+                      <Textarea
+                        value={
+                          editData?.description
+                            ? editData.description
+                            : projectData.description
+                        }
+                        onChange={(e) =>
+                          setEditData({
+                            ...editData,
+                            description: e.target.value,
+                          })
+                        }
+                        className="bg-background border-workspace-border text-workspace-text-primary min-h-24"
+                        placeholder="Describe your workspace"
+                      />
+                    </div>
+
+                    <div className="flex space-x-3 pt-4">
+                      <Button
+                        onClick={handleSave}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </Button>
+                      <Button
+                        onClick={handleCancel}
+                        variant="outline"
+                        className="border-workspace-border text-workspace-text-primary hover:bg-primary/10"
+                      >
+                        <X className="w-4 h-4" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-1">
+                      <h2 className="text-2xl font-bold text-workspace-text-primary">
+                        {projectData.name}
+                      </h2>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                        Description
+                      </h3>
+                      <p className="text-workspace-text-primary leading-relaxed">
+                        {projectData.description}
+                      </p>
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="grid grid-cols-2 gap-6 pt-6 border-t border-workspace-border">
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                          Created
+                        </h3>
+                        <p className="text-workspace-text-primary">
+                          {/* {getDate(projectData.createdAt)} */}10-02-2006
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                          Members
+                        </h3>
+                        <div className="flex gap-5 items-center">
+                          <Users className="size-5" />
+                          {projectData.members.length || 0}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          handleDelete();
+          setIsModalOpen(false);
+        }}
+        title="Delete Project?"
+        description="This action will permanently delete the project and all associated tasks. This cannot be undone. Are you sure you want to proceed?"
+        cancelText="Cancel"
+        confirmText="Delete"
+      />
+    </main>
+  );
+}

@@ -4,6 +4,9 @@ import { Folder, Users, Plus, Star, Calendar, Activity } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { IProject } from "@/lib/api/project/project.types";
 import { getDate } from "@/lib/utils";
+import ProjectListSkeleton from "@/components/organisms/project/ProjectListSkeleton";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 interface ProjectListingPageTemplateProps {
   projects: IProject[];
@@ -14,6 +17,8 @@ function ProjectListingPageTemplate({
   projects,
   isLoading,
 }: ProjectListingPageTemplateProps) {
+  const params = useParams();
+  const slug = params.slug as string;
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -28,7 +33,7 @@ function ProjectListingPageTemplate({
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden max-w-7xl mx-auto">
+    <div className="relative overflow-hidden max-w-7xl mx-auto">
       <div className="relative z-10">
         <div className="p-6 md:p-8 h-full">
           <div className="h-full space-y-8">
@@ -90,41 +95,46 @@ function ProjectListingPageTemplate({
 
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.length ? (
+              {isLoading ? (
+                <ProjectListSkeleton />
+              ) : projects.length ? (
                 projects.map((project, index) => (
-                  <Card
-                    key={project.name}
-                    className="p-6 group cursor-pointer animate-scale-in relative"
+                  <Link
+                    href={`/workspaces/${slug}/projects/${project.projectId}/manage`}
                   >
-                    <div className="group-hover:opacity-100 opacity-0 h-1 rounded-b-lg bg-purple-400/40 absolute top-0 left-0 right-0 transition-opacity delay-200 ease-in"></div>
-                    {/* Project Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-full flex items-center space-x-3">
-                        <div className="p-2 rounded-lg bg-gradient-primary/20">
-                          <Folder className="h-6 w-6 text-primary" />
-                        </div>
-                        <div className="w-full flex flex-wrap gap-2 items-center justify-between">
-                          <h3 className="text-lg font-semibold text-foreground transition-all duration-300">
-                            {project.name}
-                          </h3>
-                          <div
-                            className={`rounded-lg px-2 border ${getStatusColor(
-                              project.status!
-                            )}`}
-                          >
-                            <p>{project.status}</p>
+                    <Card
+                      key={project.name}
+                      className="p-6 group cursor-pointer animate-scale-in relative"
+                    >
+                      <div className="group-hover:opacity-100 opacity-0 h-1 rounded-b-lg bg-purple-400/40 absolute top-0 left-0 right-0 transition-opacity delay-200 ease-in"></div>
+                      {/* Project Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="w-full flex items-center space-x-3">
+                          <div className="p-2 rounded-lg bg-gradient-primary/20">
+                            <Folder className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="w-full flex flex-wrap gap-2 items-center justify-between">
+                            <h3 className="text-lg font-semibold text-foreground transition-all duration-300">
+                              {project.name}
+                            </h3>
+                            <div
+                              className={`rounded-lg px-2 border ${getStatusColor(
+                                project.status!
+                              )}`}
+                            >
+                              <p>{project.status}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Project Description */}
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                      {project.description || "No description available"}
-                    </p>
+                      {/* Project Description */}
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                        {project.description || "No description available"}
+                      </p>
 
-                    {/* Progress Bar */}
-                    {/* <div className="mb-4">
+                      {/* Progress Bar */}
+                      {/* <div className="mb-4">
                     <div className="flex justify-between text-xs text-muted-foreground mb-1">
                       <span>Progress</span>
                       <span>{project.progress}%</span>
@@ -137,28 +147,29 @@ function ProjectListingPageTemplate({
                     </div>
                   </div> */}
 
-                    {/* Project Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          {project.members.length} member
-                          {project.members.length !== 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      {project.lastUpdated && (
-                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>{getDate(project.lastUpdated)}</span>
+                      {/* Project Footer */}
+                      <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {project.members.length} member
+                            {project.members.length !== 1 ? "s" : ""}
+                          </span>
                         </div>
-                      )}
-                    </div>
+                        {project.lastUpdated && (
+                          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{getDate(project.lastUpdated)}</span>
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Activity Indicator */}
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Activity className="h-4 w-4 text-primary animate-pulse" />
-                    </div>
-                  </Card>
+                      {/* Activity Indicator */}
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Activity className="h-4 w-4 text-primary animate-pulse" />
+                      </div>
+                    </Card>
+                  </Link>
                 ))
               ) : (
                 <div className="w-full p-10">

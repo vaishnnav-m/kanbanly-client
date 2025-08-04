@@ -1,3 +1,5 @@
+import { projectStatus } from "@/types/project.enum";
+
 export interface ProjectCreationPayload {
   name: string;
   description: string;
@@ -13,6 +15,6 @@ export interface IProject {
   name: string;
   description: string;
   members: string[];
-  status?: "active" | "completed" | "pending";
+  status?: projectStatus;
   lastUpdated?: string;
 }

@@ -2,7 +2,6 @@
 import ProjectListingPageTemplate from "@/components/templates/project/ProjectListingPageTemplate";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { RootState } from "@/store";
-import React from "react";
 import { useSelector } from "react-redux";
 
 function page() {
