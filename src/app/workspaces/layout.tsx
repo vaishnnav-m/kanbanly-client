@@ -5,7 +5,7 @@ import { useGetCurrentMember } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { setWorkspaceData } from "@/store/slices/workSpaceSlice";
 import { usePathname } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
@@ -24,11 +24,13 @@ function layout({ children }: { children: ReactNode }) {
     isLayoutNotNeeded ? null : workspaceId
   );
 
-  if (workspaceMember?.data) {
-    dispatch(
-      setWorkspaceData({ workspaceId, memberRole: workspaceMember.data.role })
-    );
-  }
+  useEffect(() => {
+    if (workspaceMember?.data) {
+      dispatch(
+        setWorkspaceData({ workspaceId, memberRole: workspaceMember.data.role })
+      );
+    }
+  },[workspaceId, workspaceMember?.data, dispatch]);
 
   if (isLayoutNotNeeded) {
     return <>{children}</>;

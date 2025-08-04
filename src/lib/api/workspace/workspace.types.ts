@@ -6,6 +6,13 @@ export interface WorkspaceCreatePayload {
   logo?: string;
 }
 
+export type WorkspaceEditPayload = Partial<WorkspaceCreatePayload>;
+
+export interface WorkspaceEditArgs {
+  workspaceId: string;
+  data: WorkspaceEditPayload;
+}
+
 export interface IWorkspace {
   workspaceId: string;
   name: string;

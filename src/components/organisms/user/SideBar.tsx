@@ -18,6 +18,7 @@ import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { useDispatch } from "react-redux";
 import { setprojectData } from "@/store/slices/projectSlice";
 import { IProject } from "@/lib/api/project/project.types";
+import { workspaceRoles } from "@/types/roles.enum";
 
 export default function SideBar({
   isSidebarOpen,
@@ -39,6 +40,7 @@ export default function SideBar({
   const { data, isPending } = useGetAllProjects(workspaceId);
 
   const projects = data ? data.data : [];
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   const navigation = [
     { name: "Home", href: `/workspaces/${params.slug}`, icon: Home },
@@ -63,7 +65,7 @@ export default function SideBar({
       `/workspaces/${params.slug}/projects/${project.projectId}/tasks`
     );
   }
-  
+
   return (
     <div
       className={`${
@@ -118,18 +120,20 @@ export default function SideBar({
               <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                 Projects
               </span>
-              <Button
-                onClick={() => setIsProjectModalOpen(true)}
-                size="sm"
-                variant="ghost"
-                className="h-5 w-5 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
+              {role === workspaceRoles.owner && (
+                <Button
+                  onClick={() => setIsProjectModalOpen(true)}
+                  size="sm"
+                  variant="ghost"
+                  className="h-5 w-5 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              )}
             </div>
           )}
-          <div className="flex flex-col gap-3">
-            {projects?.length &&
+          <div className="flex flex-col gap-3 items-center pb-2">
+            {projects?.length ? (
               projects.map((project) => (
                 <button
                   onClick={() => handleProjectClick(project)}
@@ -152,7 +156,10 @@ export default function SideBar({
                     )}
                   </div>
                 </button>
-              ))}
+              ))
+            ) : (
+              <span className="text-sm text-zinc-500">No Projects</span>
+            )}
           </div>
         </div>
 

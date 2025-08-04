@@ -1,10 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createWorkspace,
+  editWorkspace,
   getAllWorkspaces,
   getCurrentMember,
   getOneWorkspace,
   getWorkspaceMembers,
+  removeWorkspace,
   sendInvititation,
   verifyInvitation,
 } from "../api/workspace";
@@ -12,6 +14,7 @@ import {
   IWorkspace,
   SendInvititationArgs,
   WorkspaceCreatePayload,
+  WorkspaceEditArgs,
   WorkspaceMember,
 } from "../api/workspace/workspace.types";
 import { useToastMessage } from "./useToastMessage";
@@ -112,5 +115,47 @@ export const useGetCurrentMember = (workspaceId: string | null) => {
     queryKey: ["getCurrentMember", workspaceId],
     queryFn: () => getCurrentMember(workspaceId),
     enabled: !!workspaceId,
+  });
+};
+
+export const useEditWorkspace = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, WorkspaceEditArgs>({
+    mutationKey: ["editWorkspace"],
+    mutationFn: editWorkspace,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Edited",
+        description: response.message,
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({queryKey:["getOneWorkspace"]})
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Workspace Editing Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useRemoveWorkspace = () => {
+  const toast = useToastMessage();
+
+  return useMutation<ApiResponse, Error, { workspaceId: string }>({
+    mutationKey: ["removeWorkspace"],
+    mutationFn: removeWorkspace,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Deleted",
+        description: response.message,
+        duration: 6000,
+      });
+    },
   });
 };
