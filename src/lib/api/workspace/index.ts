@@ -2,6 +2,7 @@ import api from "../axios";
 import {
   SendInvititationArgs,
   WorkspaceCreatePayload,
+  WorkspaceEditArgs,
 } from "./workspace.types";
 
 export const createWorkspace = async (payload: WorkspaceCreatePayload) => {
@@ -37,6 +38,19 @@ export const verifyInvitation = async (payload: { token: string }) => {
   return response.data;
 };
 
+export const editWorkspace = async (payload: WorkspaceEditArgs) => {
+  const response = await api.put(
+    `/workspace/${payload.workspaceId}`,
+    payload.data
+  );
+  return response.data;
+};
+
+export const removeWorkspace = async (payload: { workspaceId: string }) => {
+  const response = await api.delete(`/workspace/${payload.workspaceId}`);
+  return response.data;
+};
+
 export const getWorkspaceMembers = async (
   payload: { workspaceId: string },
   page: number
@@ -44,5 +58,10 @@ export const getWorkspaceMembers = async (
   const response = await api.get(
     `/workspace/${payload.workspaceId}/members?page=${page}`
   );
+  return response.data;
+};
+
+export const getCurrentMember = async (workspaceId: string | null) => {
+  const response = await api.get(`/workspace/${workspaceId}/members/me`);
   return response.data;
 };

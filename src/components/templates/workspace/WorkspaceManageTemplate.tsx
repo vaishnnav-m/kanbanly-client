@@ -6,28 +6,46 @@ import { Card, CardContent } from "@/components/atoms/card";
 import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
 import { workspaceIcons } from "@/constants/icons";
-import { IWorkspace } from "@/lib/api/workspace/workspace.types";
+import {
+  IWorkspace,
+  WorkspaceEditPayload,
+} from "@/lib/api/workspace/workspace.types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 
 interface WorkspaceManageTemplateProps {
   workspaceData: Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">;
+  handleDelete: () => void;
+  uploadEdited: (data: WorkspaceEditPayload) => void;
 }
 
 export function WorkspaceManageTemplate({
   workspaceData,
+  handleDelete,
+  uploadEdited,
 }: WorkspaceManageTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<WorkspaceEditPayload | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [editData, setEditData] = useState(workspaceData);
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
-  const handleSave = () => {};
+  const handleSave = () => {
+    if (!editData) {
+      return;
+    }
+    uploadEdited(editData);
+    setIsEditing(false);
+  };
 
   const handleEdit = () => {
-    setEditData(workspaceData);
+    // setEditData(workspaceData);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    setEditData(workspaceData);
+    // setEditData(workspaceData);
     setIsEditing(false);
   };
 
@@ -35,8 +53,10 @@ export function WorkspaceManageTemplate({
     setEditData({ ...editData, logo: iconName });
   };
 
+  console.log("editData state", editData);
+
   const getCurrentIcon = () => {
-    const currentIconName = isEditing ? editData.logo : workspaceData.logo;
+    const currentIconName = isEditing ? editData?.logo : workspaceData.logo;
     return (
       workspaceIcons.find((item) => item.name === currentIconName) ||
       workspaceIcons[0]
@@ -69,10 +89,10 @@ export function WorkspaceManageTemplate({
             </p>
           </div>
 
-          {!isEditing && (
+          {!isEditing && role === "owner" && (
             <div className="flex gap-5">
               <Button
-                onClick={handleEdit}
+                onClick={() => setIsModalOpen(true)}
                 className="bg-red-500/80 hover:bg-red-500"
               >
                 <Trash className="w-4 h-4 mr-2" />
@@ -123,7 +143,7 @@ export function WorkspaceManageTemplate({
                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 ${
                               item.color
                             } ${
-                              editData.logo === item.name
+                              editData?.logo && editData.logo === item.name
                                 ? "ring-2 ring-primary"
                                 : ""
                             }`}
@@ -154,7 +174,9 @@ export function WorkspaceManageTemplate({
                         Workspace Name
                       </label>
                       <Input
-                        value={editData.name}
+                        value={
+                          editData?.name ? editData.name : workspaceData.name
+                        }
                         onChange={(e) =>
                           setEditData({ ...editData, name: e.target.value })
                         }
@@ -168,7 +190,7 @@ export function WorkspaceManageTemplate({
                         Description
                       </label>
                       <Textarea
-                        value={editData.description}
+                        value={ editData?.description ? editData.description : workspaceData.description}
                         onChange={(e) =>
                           setEditData({
                             ...editData,
@@ -241,6 +263,18 @@ export function WorkspaceManageTemplate({
           </CardContent>
         </Card>
       </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          handleDelete();
+          setIsModalOpen(false);
+        }}
+        title="Delete Workspace?"
+        description="This action will permanently delete the workspace and all associated projects, tasks, and members. This cannot be undone. Are you sure you want to proceed?"
+        cancelText="Cancel"
+        confirmText="Delete"
+      />
     </main>
   );
 }

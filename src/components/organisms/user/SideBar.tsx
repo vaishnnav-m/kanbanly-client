@@ -15,10 +15,10 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
-import { cn } from "@/lib/utils";
 import { useDispatch } from "react-redux";
 import { setprojectData } from "@/store/slices/projectSlice";
 import { IProject } from "@/lib/api/project/project.types";
+import { workspaceRoles } from "@/types/roles.enum";
 
 export default function SideBar({
   isSidebarOpen,
@@ -40,6 +40,7 @@ export default function SideBar({
   const { data, isPending } = useGetAllProjects(workspaceId);
 
   const projects = data ? data.data : [];
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   const navigation = [
     { name: "Home", href: `/workspaces/${params.slug}`, icon: Home },
@@ -64,33 +65,27 @@ export default function SideBar({
       `/workspaces/${params.slug}/projects/${project.projectId}/tasks`
     );
   }
+
   return (
     <div
       className={`${
-        isSidebarOpen ? "w-16" : "w-64"
+        isSidebarOpen ? "w-64" : "w-16"
       } fixed top-[75px] bottom-0 transition-all duration-300 animate-slide-up flex flex-col
       bg-white text-zinc-800 border-r border-zinc-200 
       dark:bg-background dark:text-zinc-100 dark:border-zinc-800`}
     >
-      <div
-        className={cn(
-          "px-3 transition-all duration-300",
-          isSidebarOpen
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
-        )}
-      >
-        {isSidebarOpen && (
+      {!isSidebarOpen && (
+        <div className="px-3 transition-all duration-300">
           <img
             className="cursor-pointer size-10"
             src="/collapse.svg"
             onClick={setIsSidebarOpen}
           />
-        )}
-      </div>
+        </div>
+      )}
       {/* Navigation */}
       <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {!isSidebarOpen && (
+        {isSidebarOpen && (
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2 px-2">
             Navigation
           </p>
@@ -106,10 +101,10 @@ export default function SideBar({
             >
               <item.icon
                 className={`${
-                  isSidebarOpen ? "mx-auto" : "mr-3"
+                  isSidebarOpen ? "mr-3" : "mx-auto"
                 } h-5 w-5 transition-transform duration-200 group-hover:scale-110`}
               />
-              {!isSidebarOpen && (
+              {isSidebarOpen && (
                 <span className="animate-fade-in">{item.name}</span>
               )}
             </div>
@@ -120,23 +115,25 @@ export default function SideBar({
 
         {/* Projects Section */}
         <div className="space-y-1">
-          {!isSidebarOpen && (
+          {isSidebarOpen && (
             <div className="flex items-center justify-between px-2 py-1 animate-fade-in">
               <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                 Projects
               </span>
-              <Button
-                onClick={() => setIsProjectModalOpen(true)}
-                size="sm"
-                variant="ghost"
-                className="h-5 w-5 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
+              {role === workspaceRoles.owner && (
+                <Button
+                  onClick={() => setIsProjectModalOpen(true)}
+                  size="sm"
+                  variant="ghost"
+                  className="h-5 w-5 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              )}
             </div>
           )}
-          <div className="flex flex-col gap-3">
-            {projects?.length &&
+          <div className="flex flex-col gap-3 items-center pb-2">
+            {projects?.length ? (
               projects.map((project) => (
                 <button
                   onClick={() => handleProjectClick(project)}
@@ -151,15 +148,18 @@ export default function SideBar({
                   >
                     <div
                       className={`${
-                        isSidebarOpen ? "mx-auto" : "mr-3"
+                        isSidebarOpen ? "mr-3" : "mx-auto"
                       } h-3 w-3 rounded-full bg-blue-500 transition-transform duration-200 group-hover:scale-110`}
                     />
-                    {!isSidebarOpen && (
+                    {isSidebarOpen && (
                       <span className="animate-fade-in">{project.name}</span>
                     )}
                   </div>
                 </button>
-              ))}
+              ))
+            ) : (
+              <span className="text-sm text-zinc-500">No Projects</span>
+            )}
           </div>
         </div>
 
@@ -167,7 +167,7 @@ export default function SideBar({
 
         {/* Team Section */}
         <div className="space-y-1">
-          {!isSidebarOpen && (
+          {isSidebarOpen && (
             <div className="px-2 py-1 animate-fade-in">
               <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                 Team
@@ -178,14 +178,14 @@ export default function SideBar({
           <div className="group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-pointer transition-colors duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
             <div
               className={`${
-                isSidebarOpen ? "mx-auto" : "mr-3"
+                isSidebarOpen ? "mr-3" : "mx-auto"
               } h-5 w-5 rounded-full p-4 bg-blue-100 dark:bg-blue-900 flex items-center justify-center transition-transform duration-200 group-hover:scale-110`}
             >
               <span className="text-xs text-blue-600 dark:text-blue-400">
                 MW
               </span>
             </div>
-            {!isSidebarOpen && (
+            {isSidebarOpen && (
               <Link
                 href={`/workspaces/${params.slug}/manage`}
                 className="animate-fade-in"
@@ -205,9 +205,9 @@ export default function SideBar({
           className="w-full justify-start hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200"
         >
           <Settings
-            className={`${isSidebarOpen ? "mx-auto" : "mr-2"} h-4 w-4`}
+            className={`${isSidebarOpen ? "mr-2" : "mx-auto"} h-4 w-4`}
           />
-          {!isSidebarOpen && <span className="animate-fade-in">Settings</span>}
+          {isSidebarOpen && <span className="animate-fade-in">Settings</span>}
         </Button>
 
         <Button
@@ -216,12 +216,12 @@ export default function SideBar({
           className="w-full justify-start hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200"
         >
           <HelpCircle
-            className={`${isSidebarOpen ? "mx-auto" : "mr-2"} h-4 w-4`}
+            className={`${isSidebarOpen ? "mr-2" : "mx-auto"} h-4 w-4`}
           />
-          {!isSidebarOpen && <span className="animate-fade-in">Help docs</span>}
+          {isSidebarOpen && <span className="animate-fade-in">Help docs</span>}
         </Button>
 
-        {!isSidebarOpen && (
+        {isSidebarOpen && (
           <div className="pt-2 text-xs text-zinc-400 dark:text-zinc-500 border-t border-zinc-200 dark:border-zinc-700">
             © 2025 Kanbanly
           </div>

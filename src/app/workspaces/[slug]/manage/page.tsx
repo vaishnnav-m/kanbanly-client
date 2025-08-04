@@ -1,10 +1,13 @@
 "use client";
-import InsufficientPermission from "@/components/templates/workspace/InsufficientPermission";
+import WorkspaceDetailsSkeleton from "@/components/organisms/workspace/WorkspaceManageSkeleton";
 import { WorkspaceManageTemplate } from "@/components/templates/workspace/WorkspaceManageTemplate";
-import { useGetOneWorkspace } from "@/lib/hooks/useWorkspace";
+import { WorkspaceEditPayload } from "@/lib/api/workspace/workspace.types";
+import {
+  useEditWorkspace,
+  useGetOneWorkspace,
+  useRemoveWorkspace,
+} from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
-import { useParams } from "next/navigation";
-import React from "react";
 import { useSelector } from "react-redux";
 
 function page() {
@@ -18,11 +21,28 @@ function page() {
     isLoading,
   } = useGetOneWorkspace(workspaceId);
 
-  if (!workspaceData?.data || isError) {
-    return <InsufficientPermission title="Workspace Details" subHeading="Manage your workspace information and settings" subject="details"/>;
+  const { mutate: removeWorkspace } = useRemoveWorkspace();
+  const { mutate: editWorkspace } = useEditWorkspace();
+
+  function handleEdit(data: WorkspaceEditPayload) {
+    editWorkspace({ workspaceId, data });
   }
 
-  return <WorkspaceManageTemplate workspaceData={workspaceData?.data} />;
+  function deleteWorkspace() {
+    removeWorkspace({ workspaceId });
+  }
+
+  if (isLoading || !workspaceData?.data) {
+    return <WorkspaceDetailsSkeleton />;
+  }
+
+  return (
+    <WorkspaceManageTemplate
+      workspaceData={workspaceData?.data}
+      handleDelete={deleteWorkspace}
+      uploadEdited={handleEdit}
+    />
+  );
 }
 
 export default page;

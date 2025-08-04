@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 import { ITask, TaskCreationArgs } from "../api/task/task.types";
@@ -6,6 +6,7 @@ import { createTask, getAllTasks, removeTask } from "../api/task";
 
 export const useCreateTask = () => {
   const toast = useToastMessage();
+  const queryClient = useQueryClient();
 
   return useMutation<ApiResponse, Error, TaskCreationArgs>({
     mutationFn: createTask,
@@ -15,6 +16,7 @@ export const useCreateTask = () => {
         title: "Task Creation Successfull",
         duration: 6000,
       });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
@@ -37,6 +39,7 @@ export const useGetAllTasks = (workspaceId: string, projectId: string) => {
 
 export const useRemoveTask = () => {
   const toast = useToastMessage();
+  const queryClient = useQueryClient();
 
   return useMutation<
     ApiResponse,
@@ -50,6 +53,7 @@ export const useRemoveTask = () => {
         title: "Task Deletion Successfull",
         duration: 6000,
       });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";

@@ -111,23 +111,25 @@ const WorkSpacesTemplate = ({
                   whileHover={{ y: -8, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={`relative h-full overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm ${
-                    getWorkspaceIcon(workspace.logo)?.color
+                    getWorkspaceIcon(workspace?.logo || "")?.color
                   }
                   bg-card/70 border-border
                   dark:bg-card/50 dark:border-border
                   shadow-lg hover:shadow-2xl transition-all duration-300`}
                 >
                   <div className="p-6">
-                    <div
-                      className={`w-16 h-16 rounded-2xl ${
-                        getWorkspaceIcon(workspace.logo)?.color
-                      } flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <WorkspaceIconDisplay name={workspace.logo} />
-                    </div>
+                    {workspace.logo && (
+                      <div
+                        className={`w-16 h-16 rounded-2xl ${
+                          getWorkspaceIcon(workspace.logo)?.color
+                        } flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform duration-300`}
+                      >
+                        <WorkspaceIconDisplay name={workspace.logo} />
+                      </div>
+                    )}
 
                     <h3
-                      className={`text-xl font-semibold mb-2 text-foreground`}
+                      className={`text-xl font-semibold mb-2 ml-2 text-foreground`}
                     >
                       {workspace.name}
                     </h3>
@@ -136,13 +138,13 @@ const WorkSpacesTemplate = ({
                       {workspace.description}
                     </p>
 
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs text-muted-foreground`}>
-                        {workspace.members.length} members
-                      </span>
+                    <div className="flex items-center justify-end">
+                      {/* <span className={`text-xs text-muted-foreground`}>
+                        {workspace.members || 0} members
+                      </span> */}
                       <div
                         className={`w-2 h-2 rounded-full ${
-                          getWorkspaceIcon(workspace.logo)?.color
+                          getWorkspaceIcon(workspace?.logo || "")?.color
                         }`}
                       ></div>
                     </div>
@@ -150,7 +152,7 @@ const WorkSpacesTemplate = ({
 
                   <div
                     className={`absolute inset-0 ${
-                      getWorkspaceIcon(workspace.logo)?.color
+                      getWorkspaceIcon(workspace?.logo || "")?.color
                     } opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
                   ></div>
                 </motion.div>
