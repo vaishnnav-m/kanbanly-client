@@ -136,6 +136,7 @@ export default function SideBar({
             {projects?.length ? (
               projects.map((project) => (
                 <button
+                  className="w-full"
                   onClick={() => handleProjectClick(project)}
                   key={project.name}
                 >

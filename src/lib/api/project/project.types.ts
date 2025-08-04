@@ -11,5 +11,8 @@ export interface ProjectCreationArgs {
 export interface IProject {
   projectId: string;
   name: string;
-  description?: string;
+  description: string;
+  members: string[];
+  status?: "active" | "completed" | "pending";
+  lastUpdated?: string;
 }

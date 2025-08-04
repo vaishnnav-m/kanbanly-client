@@ -13,6 +13,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
+import { getDate } from "@/lib/utils";
 
 interface WorkspaceManageTemplateProps {
   workspaceData: Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">;
@@ -61,18 +62,6 @@ export function WorkspaceManageTemplate({
       workspaceIcons.find((item) => item.name === currentIconName) ||
       workspaceIcons[0]
     );
-  };
-
-  const getDate = (isoString: Date) => {
-    const date = new Date(isoString);
-
-    const formatted = date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-
-    return formatted;
   };
 
   return (

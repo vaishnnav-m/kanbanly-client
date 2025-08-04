@@ -131,7 +131,7 @@ export const useEditWorkspace = () => {
         description: response.message,
         duration: 6000,
       });
-      queryClient.invalidateQueries({queryKey:["getOneWorkspace"]})
+      queryClient.invalidateQueries({ queryKey: ["getOneWorkspace"] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
@@ -146,6 +146,7 @@ export const useEditWorkspace = () => {
 
 export const useRemoveWorkspace = () => {
   const toast = useToastMessage();
+  const router = useRouter();
 
   return useMutation<ApiResponse, Error, { workspaceId: string }>({
     mutationKey: ["removeWorkspace"],
@@ -156,6 +157,7 @@ export const useRemoveWorkspace = () => {
         description: response.message,
         duration: 6000,
       });
+      router.replace("/workspaces");
     },
   });
 };
