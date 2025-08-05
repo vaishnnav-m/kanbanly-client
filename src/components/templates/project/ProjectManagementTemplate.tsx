@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Edit3, Save, X, Trash, Users } from "lucide-react";
+import { Edit3, Save, X, Trash, Users, Table, Plus } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Input } from "@/components/atoms/input";
@@ -14,11 +14,15 @@ import {
 } from "@/lib/api/project/project.types";
 import { getDate } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
+import DataTable from "@/components/organisms/DataTable";
+import { InviteUserProjectModal } from "@/components/organisms/project/InviteUserProjectModal";
 
 interface ProjectManagementTemplateProps {
   projectData: Omit<IProject, "workspaceId" | "slug" | "createdBy">;
   handleDelete: () => void;
   uploadEdited: (data: ProjectEditingPayload) => void;
+  handleMemberAdding: (data: { email: string }) => void;
+  isMemberAdding: boolean;
   isDeleting: boolean;
   isEditLoading: boolean;
 }
@@ -29,10 +33,13 @@ export function ProjectManagementTemplate({
   uploadEdited,
   isDeleting,
   isEditLoading,
+  handleMemberAdding,
+  isMemberAdding,
 }: ProjectManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProjectEditingPayload | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const role = useSelector((state: RootState) => state.workspace.memberRole);
 
@@ -54,6 +61,9 @@ export function ProjectManagementTemplate({
 
   const havePermission =
     role === workspaceRoles.owner || role === workspaceRoles.projectManager;
+
+  // members table
+  const headings = ["Name", "Email", "Role", "Action"];
 
   return (
     <main className="flex-1 p-8">
@@ -90,115 +100,138 @@ export function ProjectManagementTemplate({
           )}
         </div>
 
-        {/* Workspace Card */}
-        <Card className="bg-blue-200/5 border-workspace-border">
-          <CardContent className="p-8">
-            <div className="flex items-start gap-8">
-              {/* Details Section */}
-              <div className="flex-1 space-y-6">
-                {isEditing ? (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-workspace-text-primary">
-                        Workspace Name
-                      </label>
-                      <Input
-                        value={
-                          editData?.name ? editData.name : projectData.name
-                        }
-                        onChange={(e) =>
-                          setEditData({ ...editData, name: e.target.value })
-                        }
-                        className="bg-background border-workspace-border text-workspace-text-primary"
-                        placeholder="Enter workspace name"
-                      />
-                    </div>
+        <div className="space-y-6">
+          {/* Project Card */}
+          <Card className="bg-blue-200/5 border-workspace-border">
+            <CardContent className="p-8">
+              <div className="flex items-start gap-8 ">
+                {/* Details Section */}
+                <div className="flex-1 space-y-6">
+                  {isEditing ? (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-workspace-text-primary">
+                          Project Name
+                        </label>
+                        <Input
+                          value={
+                            editData?.name ? editData.name : projectData.name
+                          }
+                          onChange={(e) =>
+                            setEditData({ ...editData, name: e.target.value })
+                          }
+                          className="bg-background border-workspace-border text-workspace-text-primary"
+                          placeholder="Enter workspace name"
+                        />
+                      </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-workspace-text-primary">
-                        Description
-                      </label>
-                      <Textarea
-                        value={
-                          editData?.description
-                            ? editData.description
-                            : projectData.description
-                        }
-                        onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            description: e.target.value,
-                          })
-                        }
-                        className="bg-background border-workspace-border text-workspace-text-primary min-h-24"
-                        placeholder="Describe your workspace"
-                      />
-                    </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-workspace-text-primary">
+                          Description
+                        </label>
+                        <Textarea
+                          value={
+                            editData?.description
+                              ? editData.description
+                              : projectData.description
+                          }
+                          onChange={(e) =>
+                            setEditData({
+                              ...editData,
+                              description: e.target.value,
+                            })
+                          }
+                          className="bg-background border-workspace-border text-workspace-text-primary min-h-24"
+                          placeholder="Describe your workspace"
+                        />
+                      </div>
 
-                    <div className="flex space-x-3 pt-4">
-                      <Button
-                        onClick={handleSave}
-                        className="bg-primary hover:bg-primary/90"
-                      >
-                        <Save className="w-4 h-4 mr-2" />
-                        {isEditLoading ? "Saving..." : "Save Changes"}
-                      </Button>
-                      <Button
-                        onClick={handleCancel}
-                        variant="outline"
-                        className="border-workspace-border text-workspace-text-primary hover:bg-primary/10"
-                      >
-                        <X className="w-4 h-4" />
-                        Cancel
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-1">
-                      <h2 className="text-2xl font-bold text-workspace-text-primary">
-                        {projectData.name}
-                      </h2>
-                    </div>
+                      <div className="flex space-x-3 pt-4">
+                        <Button
+                          onClick={handleSave}
+                          className="bg-primary hover:bg-primary/90"
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          {isEditLoading ? "Saving..." : "Save Changes"}
+                        </Button>
+                        <Button
+                          onClick={handleCancel}
+                          variant="outline"
+                          className="border-workspace-border text-workspace-text-primary hover:bg-primary/10"
+                        >
+                          <X className="w-4 h-4" />
+                          Cancel
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-1">
+                        <h2 className="text-2xl font-bold text-workspace-text-primary">
+                          {projectData.name}
+                        </h2>
+                      </div>
 
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                        Description
-                      </h3>
-                      <p className="text-workspace-text-primary leading-relaxed">
-                        {projectData.description}
-                      </p>
-                    </div>
-
-                    {/* Additional Info */}
-                    <div className="grid grid-cols-2 gap-6 pt-6 border-t border-workspace-border">
-                      {projectData.createdAt && (
-                        <div className="space-y-2">
-                          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                            Created
-                          </h3>
-                          <p className="text-workspace-text-primary">
-                            {getDate(projectData.createdAt)}
-                          </p>
-                        </div>
-                      )}
                       <div className="space-y-2">
                         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                          Members
+                          Description
                         </h3>
-                        <div className="flex gap-5 items-center">
-                          <Users className="size-5" />
-                          {projectData.members.length || 0}
+                        <p className="text-workspace-text-primary leading-relaxed">
+                          {projectData.description}
+                        </p>
+                      </div>
+
+                      {/* Additional Info */}
+                      <div className="grid grid-cols-2 gap-6 pt-6 border-t border-workspace-border">
+                        {projectData.createdAt && (
+                          <div className="space-y-2">
+                            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                              Created
+                            </h3>
+                            <p className="text-workspace-text-primary">
+                              {getDate(projectData.createdAt)}
+                            </p>
+                          </div>
+                        )}
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                            Members
+                          </h3>
+                          <div className="flex gap-5 items-center">
+                            <Users className="size-5" />
+                            {projectData.members.length || 0}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Members Card */}
+          <Card className="bg-blue-200/5 border-workspace-border">
+            <CardContent className="p-8">
+              <div className="w-full text-end pb-5">
+                <Button onClick={() => setIsInviteModalOpen(true)}>
+                  <Plus />
+                  Add User
+                </Button>
+              </div>
+              <div className="flex items-start gap-8">
+                <DataTable headings={headings} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+      <InviteUserProjectModal
+        isOpen={isInviteModalOpen}
+        isLoading={isMemberAdding}
+        onClose={() => setIsInviteModalOpen(false)}
+        onInvite={handleMemberAdding}
+      />
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

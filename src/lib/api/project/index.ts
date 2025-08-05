@@ -41,3 +41,15 @@ export const removeProject = async (data: {
   );
   return response.data;
 };
+
+export const addMember = async (data: {
+  workspaceId: string;
+  projectId: string;
+  data: { email: string };
+}) => {
+  const response = await api.patch(
+    `/workspace/${data.workspaceId}/projects/${data.projectId}/members`,
+    data.data
+  );
+  return response.data;
+};

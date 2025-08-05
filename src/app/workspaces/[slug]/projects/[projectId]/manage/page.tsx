@@ -1,11 +1,9 @@
 "use client";
 import WorkspaceDetailsSkeleton from "@/components/organisms/workspace/WorkspaceManageSkeleton";
 import { ProjectManagementTemplate } from "@/components/templates/project/ProjectManagementTemplate";
+import { ProjectEditingPayload } from "@/lib/api/project/project.types";
 import {
-  ProjectCreationPayload,
-  ProjectEditingPayload,
-} from "@/lib/api/project/project.types";
-import {
+  useAddMember,
   useEditProject,
   useGetOneProject,
   useRemoveProject,
@@ -47,19 +45,24 @@ function page() {
     },
   });
 
+  function handleDelete() {
+    deleteProject({ workspaceId, projectId });
+  }
+  // project member adding
+  const { mutate: addMember, isPending: isMemberAdding } = useAddMember();
+  function handleMemberAdding(data: { email: string }) {
+    addMember({ workspaceId, projectId, data });
+  }
+
   // project editing
   const { mutate: editProject, isPending: isEditing } = useEditProject();
-
-  if (isLoading || !projectData?.data) {
-    return <WorkspaceDetailsSkeleton />;
-  }
 
   function handleEdit(data: ProjectEditingPayload) {
     editProject({ workspaceId, projectId, data });
   }
 
-  function handleDelete() {
-    deleteProject({ workspaceId, projectId });
+  if (isLoading || !projectData?.data) {
+    return <WorkspaceDetailsSkeleton />;
   }
 
   return (
@@ -69,6 +72,8 @@ function page() {
       projectData={projectData.data}
       isDeleting={isPending}
       isEditLoading={isEditing}
+      handleMemberAdding={handleMemberAdding}
+      isMemberAdding={isMemberAdding}
     />
   );
 }
