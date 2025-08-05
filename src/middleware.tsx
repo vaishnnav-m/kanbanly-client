@@ -10,10 +10,17 @@ function decodeJwt(token: string) {
 
 export function middleware(request: NextRequest) {
   // routes
-  const USER_PUBLIC_ROUTES = ["/login", "/signup", "/signup-success","/forgot-password","/reset-password"];
+  const USER_PUBLIC_ROUTES = [
+    "/login",
+    "/signup",
+    "/signup-success",
+    "/forgot-password",
+    "/reset-password",
+  ];
   const ADMIN_PUBLIC_ROUTES = ["/admin/login"];
   const ALWAYS_PUBLIC_ROUTES = ["/", "/verify-email"];
   const USER_PROTECTED_ROUTES = [
+    "/user",
     "/workspaces",
     "/workspaces/create",
     "/join-workspace",

@@ -39,7 +39,7 @@ function Header({
         <Link className="group" href={`/workspaces/${params.slug}/manage`}>
           <Settings className="w-5 h-5 transition-transform duration-500 ease-in group-hover:rotate-180" />
         </Link>
-        <Link className="group" href="/profile">
+        <Link className="group" href="/user">
           <User className="w-5 h-5 transition-transform duration-500 ease-in group-hover:scale-x-[-1]" />
         </Link>
       </div>

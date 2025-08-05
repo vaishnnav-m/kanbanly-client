@@ -77,7 +77,7 @@ export const useSendInvitation = () => {
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
-        title: "Workspace Creation Failed",
+        title: "Invitation Failed",
         description: errorMessage,
         duration: 6000,
       });
