@@ -1,5 +1,6 @@
+"use client";
 import { Card } from "@/components/atoms/card";
-import React from "react";
+import React, { useState } from "react";
 import { Folder, Users, Plus, Star, Calendar, Activity } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { IProject } from "@/lib/api/project/project.types";
@@ -7,6 +8,7 @@ import { getDate } from "@/lib/utils";
 import ProjectListSkeleton from "@/components/organisms/project/ProjectListSkeleton";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { CreateProjectModal } from "@/components/organisms/project/CreateProject";
 
 interface ProjectListingPageTemplateProps {
   projects: IProject[];
@@ -17,6 +19,7 @@ function ProjectListingPageTemplate({
   projects,
   isLoading,
 }: ProjectListingPageTemplateProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const params = useParams();
   const slug = params.slug as string;
   const getStatusColor = (status: string) => {
@@ -49,6 +52,7 @@ function ProjectListingPageTemplate({
               </p>
               <div className="text-end">
                 <Button
+                  onClick={() => setIsModalOpen(true)}
                   className="hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl group"
                   size="lg"
                 >
@@ -98,14 +102,12 @@ function ProjectListingPageTemplate({
               {isLoading ? (
                 <ProjectListSkeleton />
               ) : projects.length ? (
-                projects.map((project, index) => (
+                projects.map((project) => (
                   <Link
+                    key={project.projectId}
                     href={`/workspaces/${slug}/projects/${project.projectId}/manage`}
                   >
-                    <Card
-                      key={project.name}
-                      className="p-6 group cursor-pointer animate-scale-in relative"
-                    >
+                    <Card className="p-6 group cursor-pointer animate-scale-in relative">
                       <div className="group-hover:opacity-100 opacity-0 h-1 rounded-b-lg bg-purple-400/40 absolute top-0 left-0 right-0 transition-opacity delay-200 ease-in"></div>
                       {/* Project Header */}
                       <div className="flex items-start justify-between mb-4">
@@ -117,13 +119,13 @@ function ProjectListingPageTemplate({
                             <h3 className="text-lg font-semibold text-foreground transition-all duration-300">
                               {project.name}
                             </h3>
-                            <div
+                            {/* <div
                               className={`rounded-lg px-2 border ${getStatusColor(
                                 project.status!
                               )}`}
                             >
                               <p>{project.status}</p>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
@@ -180,6 +182,10 @@ function ProjectListingPageTemplate({
           </div>
         </div>
       </div>
+      <CreateProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

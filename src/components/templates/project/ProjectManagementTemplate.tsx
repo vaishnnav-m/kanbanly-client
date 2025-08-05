@@ -1,25 +1,26 @@
 "use client";
 import { useState } from "react";
-import { Edit3, Save, X, Trash, User, Users } from "lucide-react";
+import { Edit3, Save, X, Trash, Users } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
-import { workspaceIcons } from "@/constants/icons";
-import {
-  IWorkspace,
-  WorkspaceEditPayload,
-} from "@/lib/api/workspace/workspace.types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
-import { IProject } from "@/lib/api/project/project.types";
+import {
+  IProject,
+  ProjectEditingPayload,
+} from "@/lib/api/project/project.types";
+import { getDate } from "@/lib/utils";
+import { workspaceRoles } from "@/types/roles.enum";
 
 interface ProjectManagementTemplateProps {
   projectData: Omit<IProject, "workspaceId" | "slug" | "createdBy">;
   handleDelete: () => void;
-  uploadEdited: (data: WorkspaceEditPayload) => void;
+  uploadEdited: (data: ProjectEditingPayload) => void;
   isDeleting: boolean;
+  isEditLoading: boolean;
 }
 
 export function ProjectManagementTemplate({
@@ -27,9 +28,10 @@ export function ProjectManagementTemplate({
   handleDelete,
   uploadEdited,
   isDeleting,
+  isEditLoading,
 }: ProjectManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<WorkspaceEditPayload | null>(null);
+  const [editData, setEditData] = useState<ProjectEditingPayload | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const role = useSelector((state: RootState) => state.workspace.memberRole);
@@ -43,18 +45,15 @@ export function ProjectManagementTemplate({
   };
 
   const handleEdit = () => {
-    // setEditData(projectData);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    // setEditData(projectData);
     setIsEditing(false);
   };
 
-  const handleIconChange = (iconName: string) => {
-    setEditData({ ...editData, logo: iconName });
-  };
+  const havePermission =
+    role === workspaceRoles.owner || role === workspaceRoles.projectManager;
 
   return (
     <main className="flex-1 p-8">
@@ -70,7 +69,7 @@ export function ProjectManagementTemplate({
             </p>
           </div>
 
-          {!isEditing && role === "owner" && (
+          {!isEditing && havePermission && (
             <div className="flex gap-5">
               <Button
                 disabled={isDeleting}
@@ -78,7 +77,7 @@ export function ProjectManagementTemplate({
                 className="bg-red-500/80 hover:bg-red-500"
               >
                 <Trash className="w-4 h-4 mr-2" />
-                {isDeleting ? "Deleting" : "Delete Workspace"}
+                {isDeleting ? "Deleting" : "Delete Project"}
               </Button>
               <Button
                 onClick={handleEdit}
@@ -142,7 +141,7 @@ export function ProjectManagementTemplate({
                         className="bg-primary hover:bg-primary/90"
                       >
                         <Save className="w-4 h-4 mr-2" />
-                        Save Changes
+                        {isEditLoading ? "Saving..." : "Save Changes"}
                       </Button>
                       <Button
                         onClick={handleCancel}
@@ -173,14 +172,16 @@ export function ProjectManagementTemplate({
 
                     {/* Additional Info */}
                     <div className="grid grid-cols-2 gap-6 pt-6 border-t border-workspace-border">
-                      <div className="space-y-2">
-                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                          Created
-                        </h3>
-                        <p className="text-workspace-text-primary">
-                          {/* {getDate(projectData.createdAt)} */}10-02-2006
-                        </p>
-                      </div>
+                      {projectData.createdAt && (
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                            Created
+                          </h3>
+                          <p className="text-workspace-text-primary">
+                            {getDate(projectData.createdAt)}
+                          </p>
+                        </div>
+                      )}
                       <div className="space-y-2">
                         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                           Members

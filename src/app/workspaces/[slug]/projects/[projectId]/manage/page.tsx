@@ -1,7 +1,15 @@
 "use client";
 import WorkspaceDetailsSkeleton from "@/components/organisms/workspace/WorkspaceManageSkeleton";
 import { ProjectManagementTemplate } from "@/components/templates/project/ProjectManagementTemplate";
-import { useGetOneProject, useRemoveProject } from "@/lib/hooks/useProject";
+import {
+  ProjectCreationPayload,
+  ProjectEditingPayload,
+} from "@/lib/api/project/project.types";
+import {
+  useEditProject,
+  useGetOneProject,
+  useRemoveProject,
+} from "@/lib/hooks/useProject";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { RootState } from "@/store";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,20 +47,28 @@ function page() {
     },
   });
 
+  // project editing
+  const { mutate: editProject, isPending: isEditing } = useEditProject();
+
   if (isLoading || !projectData?.data) {
     return <WorkspaceDetailsSkeleton />;
   }
 
-  function handleEdit() {}
+  function handleEdit(data: ProjectEditingPayload) {
+    editProject({ workspaceId, projectId, data });
+  }
+
   function handleDelete() {
     deleteProject({ workspaceId, projectId });
   }
+
   return (
     <ProjectManagementTemplate
       handleDelete={handleDelete}
       uploadEdited={handleEdit}
       projectData={projectData.data}
       isDeleting={isPending}
+      isEditLoading={isEditing}
     />
   );
 }

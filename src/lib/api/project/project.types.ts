@@ -10,6 +10,14 @@ export interface ProjectCreationArgs {
   data: ProjectCreationPayload;
 }
 
+export type ProjectEditingPayload = Partial<ProjectCreationPayload>;
+
+export interface ProjectEditingArgs {
+  workspaceId: string;
+  projectId: string;
+  data: ProjectEditingPayload;
+}
+
 export interface IProject {
   projectId: string;
   name: string;
@@ -17,4 +25,5 @@ export interface IProject {
   members: string[];
   status?: projectStatus;
   lastUpdated?: string;
+  createdAt?: string;
 }
