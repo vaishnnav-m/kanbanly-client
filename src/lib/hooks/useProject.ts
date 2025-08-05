@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "../api/common.types";
 import {
+  addMember,
   createProject,
   editProject,
   getAllProjects,
@@ -63,7 +64,7 @@ export const useEditProject = () => {
   return useMutation<ApiResponse, Error, ProjectEditingArgs>({
     mutationFn: editProject,
     mutationKey: ["editProject"],
-    onSuccess: (response,variables) => {
+    onSuccess: (response, variables) => {
       toast.showSuccess({
         title: "Project Editing Successfull",
         description: response.message,
@@ -71,7 +72,9 @@ export const useEditProject = () => {
       });
 
       queryClient.invalidateQueries({ queryKey: ["getProjects"] });
-      queryClient.refetchQueries({ queryKey: ["getOneProject", variables.projectId] });
+      queryClient.refetchQueries({
+        queryKey: ["getOneProject", variables.projectId],
+      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
@@ -96,5 +99,33 @@ export const useRemoveProject = (options?: {
     mutationKey: ["removeProject"],
     mutationFn: removeProject,
     ...options,
+  });
+};
+
+export const useAddMember = () => {
+  const toast = useToastMessage();
+
+  return useMutation<
+    ApiResponse,
+    Error,
+    { workspaceId: string; projectId: string; data: { email: string } }
+  >({
+    mutationKey: ["addMember"],
+    mutationFn: addMember,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Member added Successfully",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Member adding Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
   });
 };

@@ -4,17 +4,22 @@ import { Card } from "@/components/atoms/card";
 import SearchBar from "@/components/molecules/SearchBar";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
-import { WorkspaceInvitationPayload, WorkspaceMember } from "@/lib/api/workspace/workspace.types";
+import {
+  WorkspaceInvitationPayload,
+  WorkspaceMember,
+} from "@/lib/api/workspace/workspace.types";
+import { RootState } from "@/store";
 import { ButtonConfig } from "@/types/table.types";
 import { EllipsisIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 // props type
 interface IWorkspaceMembersTemplateProps {
   handleInvite: (data: WorkspaceInvitationPayload) => void;
   isLoading: boolean;
   isMembersLoading: boolean;
-  members: WorkspaceMember[]
+  members: WorkspaceMember[];
   total: number;
 }
 
@@ -23,12 +28,18 @@ function WorkspaceMembersTemplates({
   isLoading,
   isMembersLoading,
   members,
-  total=0,
+  total = 0,
 }: IWorkspaceMembersTemplateProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // table customization
   const headings = ["Name", "Role", "Last Activity", "Manage"];
+
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
+  if (role === "member") {
+    headings.pop();
+  }
+
   const cols: (keyof WorkspaceMember)[] = ["name", "role", "email"];
   const buttonConfigs: ButtonConfig<WorkspaceMember>[] = [
     {
@@ -78,7 +89,7 @@ function WorkspaceMembersTemplates({
                   headings={headings}
                   data={members}
                   columns={cols}
-                  buttonConfigs={buttonConfigs}
+                  buttonConfigs={role !== "member" ? buttonConfigs : undefined}
                   isLoading={isMembersLoading}
                 />
               </div>
