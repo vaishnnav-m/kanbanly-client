@@ -18,9 +18,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable}`}>
+      <head>
+        <link rel="icon" href="/logo.svg" sizes="any" />
+      </head>
       <body className="font-inter">
         <Providers>{children}</Providers>
         <div id="modal-root"></div>

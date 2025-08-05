@@ -40,3 +40,15 @@ export const removeStorageItem = (key: string) => {
 export const getWorkspaceIcon = (name: string) => {
   return workspaceIcons.find((iconData) => iconData.name === name);
 };
+
+export const getDate = (isoString: Date | string) => {
+  const date = new Date(isoString);
+
+  const formatted = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  return formatted;
+};

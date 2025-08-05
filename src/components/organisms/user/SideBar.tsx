@@ -8,6 +8,7 @@ import {
   Plus,
   Settings,
   HelpCircle,
+  Folders,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { CreateProjectModal } from "../project/CreateProject";
@@ -19,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { setprojectData } from "@/store/slices/projectSlice";
 import { IProject } from "@/lib/api/project/project.types";
 import { workspaceRoles } from "@/types/roles.enum";
+import { Skeleton } from "@/components/atoms/skeleton";
 
 export default function SideBar({
   isSidebarOpen,
@@ -133,11 +135,14 @@ export default function SideBar({
             </div>
           )}
           <div className="flex flex-col gap-3 items-center pb-2">
-            {projects?.length ? (
+            {isPending ? (
+              <Skeleton className="h-6 w-full" />
+            ) : projects?.length ? (
               projects.map((project) => (
                 <button
+                  className="w-full"
                   onClick={() => handleProjectClick(project)}
-                  key={project.name}
+                  key={project.projectId}
                 >
                   <div
                     className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
@@ -160,6 +165,13 @@ export default function SideBar({
             ) : (
               <span className="text-sm text-zinc-500">No Projects</span>
             )}
+            <Link
+              className="w-full px-3 flex text-md text-zinc-400 items-center gap-2"
+              href={`/workspaces/${params.slug}/projects`}
+            >
+              <Folders className="size-4" />
+              <span>All Projects</span>
+            </Link>
           </div>
         </div>
 
