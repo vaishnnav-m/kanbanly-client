@@ -4,15 +4,22 @@ import { WorkspaceMember } from "../workspace/workspace.types";
 export interface TaskCreationPayload {
   task: string;
   description?: string;
-  priority?: TaskPriority;
+  priority: TaskPriority;
   assignedTo?: string;
-  dueDate?: Date | string;
+  dueDate: Date | string;
 }
 
 export interface TaskCreationArgs {
   data: TaskCreationPayload;
   workspaceId: string;
   projectId: string;
+}
+
+export interface StatusChangingArgs {
+  workspaceId: string;
+  projectId: string;
+  taskId: string;
+  data: { newStatus: TaskStatus };
 }
 
 export interface ITask {
@@ -26,6 +33,7 @@ export interface ITask {
 }
 
 export interface ITaskDetails {
+  taskId: string;
   task: string;
   description?: string;
   status: string;

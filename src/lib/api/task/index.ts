@@ -1,5 +1,5 @@
 import api from "../axios";
-import { TaskCreationArgs } from "./task.types";
+import { StatusChangingArgs, TaskCreationArgs } from "./task.types";
 
 export const createTask = async (payload: TaskCreationArgs) => {
   const response = await api.post(
@@ -26,6 +26,14 @@ export const getOnetask = async (data: {
 }) => {
   const response = await api.get(
     `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks/${data.taskId}`
+  );
+  return response.data;
+};
+
+export const changeStatus = async (data: StatusChangingArgs) => {
+  const response = await api.patch(
+    `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks/${data.taskId}/status`,
+    data.data
   );
   return response.data;
 };

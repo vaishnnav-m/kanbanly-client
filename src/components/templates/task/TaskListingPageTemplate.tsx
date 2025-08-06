@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   User,
   Trash,
+  Ellipsis,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
@@ -33,7 +34,7 @@ import {
 interface TaskListingPageTemplateProps {
   projectId: string;
   tasks: TaskListing[] | [];
-  refetchTasks: () => void;
+  changeStatus: (newStatus: TaskStatus, taskId: string) => void;
   isRemoving: boolean;
   removeTask: (taskId: string) => void;
   workspaceId: string;
@@ -42,15 +43,19 @@ interface TaskListingPageTemplateProps {
 function TaskListingPageTemplate({
   tasks,
   projectId,
-  refetchTasks,
   isRemoving,
   removeTask,
   workspaceId,
+  changeStatus,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const role = useSelector((state: RootState) => state.workspace.memberRole);
 
+  // editing states
+  // const [editingStatus, setEditingStaus] = useState<TaskStatus | null>(null);
+
+  // task fetching according to id
   const { data: taskData } = useGetOneTask(
     workspaceId,
     projectId,
@@ -67,13 +72,17 @@ function TaskListingPageTemplate({
     (state: RootState) => state.project.projectName
   );
 
+  // modals
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
+  // priorities and status
   const statusValues = Object.keys(TaskStatus);
   const priorites = Object.keys(TaskPriority);
 
-  const toggleTaskComplete = (taskId: string) => {};
+  // function handle status change
+  function handleChange(value: TaskStatus, taskId: string) {
+    changeStatus(value, taskId);
+  }
 
   return (
     <div className="min-h-screen bg-background max-w-7xl mx-auto">
@@ -164,10 +173,6 @@ function TaskListingPageTemplate({
           {tasks.length ? (
             tasks.map((task) => (
               <div
-                onClick={() => {
-                  setSelectedTask(task.taskId);
-                  setIsTaskModalOpen(true);
-                }}
                 key={task.taskId}
                 className="grid grid-cols-[1fr_200px_200px_200px_40px] gap-4 p-4 border-b border-border hover:bg-muted/30 transition-colors group"
               >
@@ -184,7 +189,12 @@ function TaskListingPageTemplate({
                 </div>
 
                 <div className="flex items-center">
-                  <Select value={task.status}>
+                  <Select
+                    value={task.status}
+                    onValueChange={(value: string) =>
+                      handleChange(value as TaskStatus, task.taskId)
+                    }
+                  >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select a fruit" />
                     </SelectTrigger>
@@ -208,7 +218,7 @@ function TaskListingPageTemplate({
                   {role !== "member" ? (
                     <Select value={task.priority}>
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select a fruit" />
+                        <SelectValue placeholder="Select The Priority" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -253,13 +263,14 @@ function TaskListingPageTemplate({
                 <div className="flex items-center relative">
                   <Button
                     onClick={() => {
-                      setIsConfirmationOpen(true);
+                      setSelectedTask(task.taskId);
+                      setIsTaskModalOpen(true);
                     }}
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent"
                   >
-                    <Trash className="w-4 h-4" />
+                    <Ellipsis className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -273,22 +284,10 @@ function TaskListingPageTemplate({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         projectId={projectId}
-        refetchTasks={refetchTasks}
       />
-      <ConfirmationModal
-        isOpen={isConfirmationOpen}
-        onClose={() => setIsConfirmationOpen(false)}
-        onConfirm={() => {
-          removeTask(selectedTask);
-          setSelectedTask("");
-          setIsConfirmationOpen(false);
-        }}
-        title="Are you sure you want to remove this task?"
-        description="This action cannot be undone. The task will be permanently deleted from the project."
-        cancelText="Cancel"
-        confirmText="Delete Task"
-      />
+
       <TaskDetails
+        removeTask={removeTask}
         isVisible={isTaskModalOpen}
         close={() => setIsTaskModalOpen(false)}
         task={taskData && taskData.data}

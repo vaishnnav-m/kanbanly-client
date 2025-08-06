@@ -6,8 +6,19 @@ import {
 } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
-import { ITask, ITaskDetails, TaskCreationArgs } from "../api/task/task.types";
-import { createTask, getAllTasks, getOnetask, removeTask } from "../api/task";
+import {
+  ITask,
+  ITaskDetails,
+  StatusChangingArgs,
+  TaskCreationArgs,
+} from "../api/task/task.types";
+import {
+  changeStatus,
+  createTask,
+  getAllTasks,
+  getOnetask,
+  removeTask,
+} from "../api/task";
 
 export const useCreateTask = () => {
   const toast = useToastMessage();
@@ -55,6 +66,39 @@ export const useGetOneTask = (
     queryKey: ["getOnetask", workspaceId, projectId, taskId],
     queryFn: () => getOnetask({ workspaceId, projectId, taskId }),
     ...options,
+  });
+};
+
+export const useChangeStatus = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, StatusChangingArgs>({
+    mutationFn: changeStatus,
+    mutationKey: ["changeStatus"],
+    onSuccess: (response, variables) => {
+      toast.showSuccess({
+        title: "Status Updated Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "getOnetask",
+          variables.workspaceId,
+          variables.projectId,
+          variables.taskId,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Status Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
   });
 };
 

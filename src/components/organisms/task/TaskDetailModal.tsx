@@ -27,15 +27,23 @@ import {
 } from "@/components/atoms/tabs";
 import { getDate, getPriorityColor } from "@/lib/utils";
 import { ITaskDetails } from "@/lib/api/task/task.types";
+import { ConfirmationModal } from "../admin/ConfirmationModal";
 
 interface TaskDetailsProps {
   isVisible: boolean;
   close: () => void;
   task: ITaskDetails | undefined;
+  removeTask: (taskId: string) => void;
 }
 
-export const TaskDetails = ({ isVisible, close, task }: TaskDetailsProps) => {
+export const TaskDetails = ({
+  isVisible,
+  close,
+  task,
+  removeTask,
+}: TaskDetailsProps) => {
   if (!isVisible || !task) return null;
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   function getAssignedTo(assignedTo: { name: string; email: string }) {
     return assignedTo.email[0].toUpperCase();
@@ -54,6 +62,7 @@ export const TaskDetails = ({ isVisible, close, task }: TaskDetailsProps) => {
             </div>
             <div className="flex items-center gap-1">
               <Button
+                onClick={() => setIsConfirmationOpen(true)}
                 className="hover:bg-muted-foreground/20"
                 variant="ghost"
                 size="sm"
@@ -82,7 +91,9 @@ export const TaskDetails = ({ isVisible, close, task }: TaskDetailsProps) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Due date <PenBox className="inline size-3 cursor-pointer"/></span>
+              <span>
+                Due date <PenBox className="inline size-3 cursor-pointer" />
+              </span>
               <span className="font-medium text-foreground">
                 {getDate(task.dueDate)}
               </span>
@@ -120,7 +131,10 @@ export const TaskDetails = ({ isVisible, close, task }: TaskDetailsProps) => {
 
           {/* Description */}
           <div className="space-y-2">
-            <h3 className="font-medium text-foreground">Description <PenBox className="size-3 cursor-pointer inline ml-2"/></h3>
+            <h3 className="font-medium text-foreground">
+              Description{" "}
+              <PenBox className="size-3 cursor-pointer inline ml-2" />
+            </h3>
             {task.description ? (
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {task.description}
@@ -251,6 +265,19 @@ export const TaskDetails = ({ isVisible, close, task }: TaskDetailsProps) => {
             </TabsContent>
           </Tabs> */}
         </CardContent>
+        <ConfirmationModal
+          isOpen={isConfirmationOpen}
+          onClose={() => setIsConfirmationOpen(false)}
+          onConfirm={() => {
+            removeTask(task.taskId);
+            setIsConfirmationOpen(false);
+            close();
+          }}
+          title="Are you sure you want to remove this task?"
+          description="This action cannot be undone. The task will be permanently deleted from the project."
+          cancelText="Cancel"
+          confirmText="Delete Task"
+        />
       </Card>
     </div>
   );
