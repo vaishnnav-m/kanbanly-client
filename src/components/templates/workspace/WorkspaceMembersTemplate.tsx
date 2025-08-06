@@ -74,14 +74,16 @@ function WorkspaceMembersTemplates({
                 <div className="flex-1">
                   <span>This workspace has {total} members</span>
                 </div>
-                <div className="flex-1">
+                {/* <div className="flex-1">
                   <SearchBar placeholder="Search Members" />
-                </div>
+                </div> */}
                 <div className="flex-1 text-end">
-                  <Button onClick={() => setIsModalOpen(true)}>
-                    <UserPlus />
-                    Invite Members
-                  </Button>
+                  {role === "owner" && (
+                    <Button onClick={() => setIsModalOpen(true)}>
+                      <UserPlus />
+                      Invite Members
+                    </Button>
+                  )}
                 </div>
               </div>
               <div className="px-5">
@@ -89,7 +91,7 @@ function WorkspaceMembersTemplates({
                   headings={headings}
                   data={members}
                   columns={cols}
-                  buttonConfigs={role !== "member" ? buttonConfigs : undefined}
+                  buttonConfigs={role === "owner" ? buttonConfigs : undefined}
                   isLoading={isMembersLoading}
                 />
               </div>

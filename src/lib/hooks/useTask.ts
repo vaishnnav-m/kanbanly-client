@@ -1,8 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
-import { ITask, TaskCreationArgs } from "../api/task/task.types";
-import { createTask, getAllTasks, removeTask } from "../api/task";
+import { ITask, ITaskDetails, TaskCreationArgs } from "../api/task/task.types";
+import { createTask, getAllTasks, getOnetask, removeTask } from "../api/task";
 
 export const useCreateTask = () => {
   const toast = useToastMessage();
@@ -34,6 +39,22 @@ export const useGetAllTasks = (workspaceId: string, projectId: string) => {
     queryKey: ["getTasks", workspaceId],
     queryFn: () => getAllTasks({ workspaceId, projectId }),
     enabled: !!workspaceId || !!projectId,
+  });
+};
+
+export const useGetOneTask = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+  options?: Omit<
+    UseQueryOptions<ApiResponse<ITaskDetails>, Error>,
+    "queryKey" | "queryFn"
+  >
+) => {
+  return useQuery<ApiResponse<ITaskDetails>, Error>({
+    queryKey: ["getOnetask", workspaceId, projectId, taskId],
+    queryFn: () => getOnetask({ workspaceId, projectId, taskId }),
+    ...options,
   });
 };
 

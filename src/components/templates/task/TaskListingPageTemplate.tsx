@@ -13,11 +13,22 @@ import {
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import { TaskListing } from "@/lib/api/task/task.types";
-import { TaskStatus } from "@/types/task.enum";
+import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { CreateTaskModal } from "@/components/organisms/task/CreateTask";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
+import { TaskDetails } from "@/components/organisms/task/TaskDetailModal";
+import { useGetOneTask } from "@/lib/hooks/useTask";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/atoms/select";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -25,6 +36,7 @@ interface TaskListingPageTemplateProps {
   refetchTasks: () => void;
   isRemoving: boolean;
   removeTask: (taskId: string) => void;
+  workspaceId: string;
 }
 
 function TaskListingPageTemplate({
@@ -33,11 +45,23 @@ function TaskListingPageTemplate({
   refetchTasks,
   isRemoving,
   removeTask,
+  workspaceId,
 }: TaskListingPageTemplateProps) {
+  const [selectedTask, setSelectedTask] = useState("");
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
+
+  const { data: taskData } = useGetOneTask(
+    workspaceId,
+    projectId,
+    selectedTask,
+    {
+      enabled: isTaskModalOpen && !!selectedTask,
+    }
+  );
+
   const [activeTab, setActiveTab] = useState("List");
   const tabs = ["Overview", "List", "Board", "Timeline"];
-
-  const [selectedTask, setSelectedTask] = useState("");
 
   const projectName = useSelector(
     (state: RootState) => state.project.projectName
@@ -45,6 +69,9 @@ function TaskListingPageTemplate({
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+  const statusValues = Object.keys(TaskStatus);
+  const priorites = Object.keys(TaskPriority);
 
   const toggleTaskComplete = (taskId: string) => {};
 
@@ -126,35 +153,24 @@ function TaskListingPageTemplate({
         {/* Task Table */}
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           {/* Table Header */}
-          <div className="grid grid-cols-[40px_1fr_200px_200px_40px] gap-4 p-4 bg-muted/50 border-b border-border text-sm font-medium text-muted-foreground">
-            <div></div>
+          <div className="grid grid-cols-[1fr_200px_200px_200px_40px] gap-4 p-4 bg-muted/50 border-b border-border text-sm font-medium text-muted-foreground">
             <div>Name</div>
-            <div>Assignee</div>
-            <div>Due date</div>
+            <div>Status</div>
+            <div>Priority</div>
+            <div>Due Date</div>
           </div>
 
           {/* Tasks */}
           {tasks.length ? (
             tasks.map((task) => (
               <div
+                onClick={() => {
+                  setSelectedTask(task.taskId);
+                  setIsTaskModalOpen(true);
+                }}
                 key={task.taskId}
-                className="grid grid-cols-[40px_1fr_200px_200px_40px] gap-4 p-4 border-b border-border hover:bg-muted/30 transition-colors group"
+                className="grid grid-cols-[1fr_200px_200px_200px_40px] gap-4 p-4 border-b border-border hover:bg-muted/30 transition-colors group"
               >
-                <div className="flex items-center">
-                  <button
-                    onClick={() => toggleTaskComplete(task.taskId)}
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      task.status === TaskStatus.Completed
-                        ? "bg-accent border-accent "
-                        : "border-muted-foreground hover:border-accent"
-                    }`}
-                  >
-                    {task.status === TaskStatus.Completed && (
-                      <CheckCircle2 className="w-full h-full" />
-                    )}
-                  </button>
-                </div>
-
                 <div className="flex items-center">
                   <span
                     className={`${
@@ -168,13 +184,49 @@ function TaskListingPageTemplate({
                 </div>
 
                 <div className="flex items-center">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 hover:bg-transparent"
-                  >
-                    <User className="w-4 h-4 text-muted-foreground" />
-                  </Button>
+                  <Select value={task.status}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select a fruit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {statusValues.map((value) => (
+                          <SelectItem
+                            key={value}
+                            className="focus:bg-slate-500/40"
+                            value={value.toLowerCase()}
+                          >
+                            {value}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center px-3">
+                  {role !== "member" ? (
+                    <Select value={task.priority}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {priorites.map((value) => (
+                            <SelectItem
+                              key={value}
+                              className="focus:bg-slate-500/40"
+                              value={value.toLowerCase()}
+                            >
+                              {value}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span>{task.priority}</span>
+                  )}
                 </div>
 
                 <div className="flex items-center">
@@ -201,7 +253,6 @@ function TaskListingPageTemplate({
                 <div className="flex items-center relative">
                   <Button
                     onClick={() => {
-                      setSelectedTask(task.taskId);
                       setIsConfirmationOpen(true);
                     }}
                     variant="ghost"
@@ -236,6 +287,11 @@ function TaskListingPageTemplate({
         description="This action cannot be undone. The task will be permanently deleted from the project."
         cancelText="Cancel"
         confirmText="Delete Task"
+      />
+      <TaskDetails
+        isVisible={isTaskModalOpen}
+        close={() => setIsTaskModalOpen(false)}
+        task={taskData && taskData.data}
       />
     </div>
   );

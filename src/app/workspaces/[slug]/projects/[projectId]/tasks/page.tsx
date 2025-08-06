@@ -3,11 +3,12 @@ import TaskListingPageTemplate from "@/components/templates/task/TaskListingPage
 import {
   useCreateTask,
   useGetAllTasks,
+  useGetOneTask,
   useRemoveTask,
 } from "@/lib/hooks/useTask";
 import { RootState } from "@/store";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
 function page() {
@@ -31,6 +32,7 @@ function page() {
       refetchTasks={refetch}
       isRemoving={isLoading}
       removeTask={handleRemoveTask}
+      workspaceId={workspaceId}
     />
   );
 }
