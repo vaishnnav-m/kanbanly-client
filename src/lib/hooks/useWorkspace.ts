@@ -2,15 +2,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createWorkspace,
   editWorkspace,
+  editWorkspaceMember,
   getAllWorkspaces,
   getCurrentMember,
   getOneWorkspace,
   getWorkspaceMembers,
   removeWorkspace,
+  removeWorkspaceMember,
   sendInvititation,
   verifyInvitation,
 } from "../api/workspace";
 import {
+  EditWorkspaceMember,
   IWorkspace,
   SendInvititationArgs,
   WorkspaceCreatePayload,
@@ -158,6 +161,62 @@ export const useRemoveWorkspace = () => {
         duration: 6000,
       });
       router.replace("/workspaces");
+    },
+  });
+};
+
+export const useEditWorkspaceMember = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, EditWorkspaceMember>({
+    mutationKey: ["editWorkspaceMember"],
+    mutationFn: editWorkspaceMember,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Updated",
+        description: response.message,
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getWorkspaceMembers"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Workspace Member Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useRemoveWorkspaceMember = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ApiResponse,
+    Error,
+    { workspaceId: string; memberId: string }
+  >({
+    mutationKey: ["removeWorkspaceMember"],
+    mutationFn: removeWorkspaceMember,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Deleted",
+        description: response.message,
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getWorkspaceMembers"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Workspace Member Deletion Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
     },
   });
 };

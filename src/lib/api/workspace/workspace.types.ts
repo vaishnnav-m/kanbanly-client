@@ -39,4 +39,10 @@ export interface WorkspaceMember {
   name: string;
   email: string;
   role: workspaceRoles;
+  isActive: boolean;
+}
+
+export interface EditWorkspaceMember {
+  workspaceId: string;
+  data: { memberId: string; role?: workspaceRoles; isActive?: boolean };
 }

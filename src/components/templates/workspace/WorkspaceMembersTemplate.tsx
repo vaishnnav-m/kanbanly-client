@@ -1,7 +1,16 @@
 "use client";
 import { Button } from "@/components/atoms/button";
 import { Card } from "@/components/atoms/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/atoms/select";
 import SearchBar from "@/components/molecules/SearchBar";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
 import {
@@ -9,8 +18,15 @@ import {
   WorkspaceMember,
 } from "@/lib/api/workspace/workspace.types";
 import { RootState } from "@/store";
+import { workspaceRoles } from "@/types/roles.enum";
 import { ButtonConfig } from "@/types/table.types";
-import { EllipsisIcon, UserPlus } from "lucide-react";
+import {
+  EllipsisIcon,
+  ToggleLeft,
+  ToggleRight,
+  Trash,
+  UserPlus,
+} from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -21,6 +37,9 @@ interface IWorkspaceMembersTemplateProps {
   isMembersLoading: boolean;
   members: WorkspaceMember[];
   total: number;
+  handleRoleChange: (memberId: string, role: workspaceRoles) => void;
+  handleStatusUpdate: (memberId: string, isActive: boolean) => void;
+  handleRemoveMember: (memberId: string) => void;
 }
 
 function WorkspaceMembersTemplates({
@@ -29,25 +48,100 @@ function WorkspaceMembersTemplates({
   isMembersLoading,
   members,
   total = 0,
+  handleRoleChange,
+  handleStatusUpdate,
+  handleRemoveMember,
 }: IWorkspaceMembersTemplateProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState("");
 
   // table customization
-  const headings = ["Name", "Role", "Last Activity", "Manage"];
+  const headings = ["Name", "Email", "Role", "Status", "Manage"];
 
   const role = useSelector((state: RootState) => state.workspace.memberRole);
-  if (role === "member") {
+  if (role !== "owner") {
     headings.pop();
   }
 
-  const cols: (keyof WorkspaceMember)[] = ["name", "role", "email"];
+  const roles = Object.values(workspaceRoles);
+
+  function getRolesTag(member: WorkspaceMember) {
+    const isOwner = member.role === "owner";
+
+    if (isOwner) {
+      return (
+        <Select value={member.role} disabled={true}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="owner">owner</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      );
+    }
+
+    return (
+      <Select
+        onValueChange={(value) =>
+          handleRoleChange(member._id, value as workspaceRoles)
+        }
+        value={member.role}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue />
+        </SelectTrigger>
+
+        <SelectContent>
+          <SelectGroup>
+            {roles
+              .filter((role) => role !== "owner")
+              .map((role) => (
+                <SelectItem
+                  key={role}
+                  value={role}
+                  className="focus:bg-slate-500/40"
+                >
+                  {role}
+                </SelectItem>
+              ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    );
+  }
+
+  const cols: (keyof WorkspaceMember)[] = ["name", "email"];
   const buttonConfigs: ButtonConfig<WorkspaceMember>[] = [
     {
+      action: (data) => {},
+      styles: "bg-none",
+      icon: (member) => getRolesTag(member),
+    },
+    {
       action: (data) => {
-        console.log("button clicked", data);
+        handleStatusUpdate(data._id, !data.isActive);
       },
       styles: "bg-none",
-      icon: (member) => <EllipsisIcon />,
+      icon: (member) =>
+        member.role !== "owner" &&
+        (member.isActive ? (
+          <ToggleRight className="text-green-500" />
+        ) : (
+          <ToggleLeft className="text-red-500" />
+        )),
+    },
+    {
+      action: (data) => {
+        setSelectedMemberId(data._id);
+        setIsConfirmModalOpen(true);
+      },
+      styles: "bg-none",
+      icon: (member) => member.role !== "owner" && <Trash className="size-4" />,
     },
   ];
 
@@ -105,6 +199,18 @@ function WorkspaceMembersTemplates({
           </div>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={() => {
+          handleRemoveMember(selectedMemberId);
+          setIsConfirmModalOpen(false);
+        }}
+        title="Remove Member?"
+        description="This action will permanently remove the member from the workspace. Are you sure you want to proceed?"
+        cancelText="Cancel"
+        confirmText="Delete"
+      />
     </main>
   );
 }
