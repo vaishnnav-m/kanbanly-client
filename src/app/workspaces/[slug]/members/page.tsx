@@ -3,6 +3,7 @@ import WorkspaceMembersTemplates from "@/components/templates/workspace/Workspac
 import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
 import {
   useEditWorkspaceMember,
+  useRemoveWorkspaceMember,
   useSendInvitation,
   useWorkspaceMembers,
 } from "@/lib/hooks/useWorkspace";
@@ -29,6 +30,9 @@ function page() {
   const { mutate: updateMember, isPending: isUpdating } =
     useEditWorkspaceMember();
 
+  // member deletion hook
+  const { mutate: removeMember } = useRemoveWorkspaceMember();
+
   function sendInvite(data: WorkspaceInvitationPayload) {
     SendInvitation({ workspaceId, data });
   }
@@ -42,6 +46,10 @@ function page() {
     updateMember({ workspaceId, data: { memberId, isActive } });
   }
 
+  function handleRemoveMember(memberId: string) {
+    removeMember({ workspaceId, memberId });
+  }
+
   return (
     <WorkspaceMembersTemplates
       handleInvite={sendInvite}
@@ -51,6 +59,7 @@ function page() {
       total={total}
       handleRoleChange={handleRoleChange}
       handleStatusUpdate={handleStatusUpdate}
+      handleRemoveMember={handleRemoveMember}
     />
   );
 }

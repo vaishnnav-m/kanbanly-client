@@ -75,3 +75,13 @@ export const editWorkspaceMember = async (payload: EditWorkspaceMember) => {
   );
   return response.data;
 };
+
+export const removeWorkspaceMember = async (payload: {
+  workspaceId: string;
+  memberId: string;
+}) => {
+  const response = await api.delete(
+    `/workspace/${payload.workspaceId}/members/${payload.memberId}`
+  );
+  return response.data;
+};

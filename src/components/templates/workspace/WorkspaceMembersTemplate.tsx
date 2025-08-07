@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/atoms/select";
 import SearchBar from "@/components/molecules/SearchBar";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
 import {
@@ -38,6 +39,7 @@ interface IWorkspaceMembersTemplateProps {
   total: number;
   handleRoleChange: (memberId: string, role: workspaceRoles) => void;
   handleStatusUpdate: (memberId: string, isActive: boolean) => void;
+  handleRemoveMember: (memberId: string) => void;
 }
 
 function WorkspaceMembersTemplates({
@@ -48,8 +50,11 @@ function WorkspaceMembersTemplates({
   total = 0,
   handleRoleChange,
   handleStatusUpdate,
+  handleRemoveMember,
 }: IWorkspaceMembersTemplateProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState("");
 
   // table customization
   const headings = ["Name", "Email", "Role", "Status", "Manage"];
@@ -132,7 +137,8 @@ function WorkspaceMembersTemplates({
     },
     {
       action: (data) => {
-        console.log("button clicked", data);
+        setSelectedMemberId(data._id);
+        setIsConfirmModalOpen(true);
       },
       styles: "bg-none",
       icon: (member) => member.role !== "owner" && <Trash className="size-4" />,
@@ -193,6 +199,18 @@ function WorkspaceMembersTemplates({
           </div>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={() => {
+          handleRemoveMember(selectedMemberId);
+          setIsConfirmModalOpen(false);
+        }}
+        title="Remove Member?"
+        description="This action will permanently remove the member from the workspace. Are you sure you want to proceed?"
+        cancelText="Cancel"
+        confirmText="Delete"
+      />
     </main>
   );
 }
