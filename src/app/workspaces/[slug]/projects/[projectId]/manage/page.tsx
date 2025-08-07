@@ -6,7 +6,9 @@ import {
   useAddMember,
   useEditProject,
   useGetOneProject,
+  useGetProjectMembers,
   useRemoveProject,
+  useRemoveProjectMember,
 } from "@/lib/hooks/useProject";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { RootState } from "@/store";
@@ -54,11 +56,32 @@ function page() {
     addMember({ workspaceId, projectId, data });
   }
 
+  const { data: projectMembers, isFetching: isProjectMembersFetching } =
+    useGetProjectMembers(workspaceId, projectId);
+
   // project editing
   const { mutate: editProject, isPending: isEditing } = useEditProject();
 
   function handleEdit(data: ProjectEditingPayload) {
     editProject({ workspaceId, projectId, data });
+  }
+
+  // project member removing
+  const { mutate: removeProjectMember, isPending: isMemberRemoving } =
+    useRemoveProjectMember({
+      onSuccess: (response) => {
+        toast.showSuccess({
+          title: "Member Deletion Successfull",
+          description: response.message,
+          duration: 6000,
+        });
+        queryClient.invalidateQueries({ queryKey: ["getProjects"] });
+        queryClient.invalidateQueries({ queryKey: ["getProjectMembers"] });
+      },
+    });
+
+  function handleMemberRemoving(userId: string) {
+    removeProjectMember({ workspaceId, projectId, memberId: userId });
   }
 
   if (isLoading || !projectData?.data) {
@@ -74,6 +97,10 @@ function page() {
       isEditLoading={isEditing}
       handleMemberAdding={handleMemberAdding}
       isMemberAdding={isMemberAdding}
+      members={projectMembers?.data}
+      isProjectMembersFetching={isProjectMembersFetching}
+      handleMemberRemoving={handleMemberRemoving}
+      isMemberRemoving={isMemberRemoving}
     />
   );
 }
