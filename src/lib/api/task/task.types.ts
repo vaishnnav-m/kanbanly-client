@@ -32,6 +32,13 @@ export interface ITask {
   dueDate: Date;
 }
 
+export interface TaskEditArgs {
+  workspaceId: string;
+  projectId: string;
+  taskId: string;
+  data: Partial<TaskCreationPayload>;
+}
+
 export interface ITaskDetails {
   taskId: string;
   task: string;

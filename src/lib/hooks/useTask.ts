@@ -11,10 +11,12 @@ import {
   ITaskDetails,
   StatusChangingArgs,
   TaskCreationArgs,
+  TaskEditArgs,
 } from "../api/task/task.types";
 import {
   changeStatus,
   createTask,
+  editTask,
   getAllTasks,
   getOnetask,
   removeTask,
@@ -95,6 +97,39 @@ export const useChangeStatus = () => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Status Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useEditTask = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, TaskEditArgs>({
+    mutationFn: editTask,
+    mutationKey: ["editTask"],
+    onSuccess: (response, variables) => {
+      toast.showSuccess({
+        title: "Task Updated Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "getOnetask",
+          variables.workspaceId,
+          variables.projectId,
+          variables.taskId,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Task Updation Failed",
         description: errorMessage,
         duration: 6000,
       });
