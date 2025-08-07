@@ -2,10 +2,12 @@
 import WorkspaceMembersTemplates from "@/components/templates/workspace/WorkspaceMembersTemplate";
 import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
 import {
+  useEditWorkspaceMember,
   useSendInvitation,
   useWorkspaceMembers,
 } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
+import { workspaceRoles } from "@/types/roles.enum";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -23,8 +25,21 @@ function page() {
   const totalPages = members?.data?.totalPages ?? 0;
   const total = members?.data?.total ?? 0;
 
+  // member updation hook
+  const { mutate: updateMember, isPending: isUpdating } =
+    useEditWorkspaceMember();
+
   function sendInvite(data: WorkspaceInvitationPayload) {
     SendInvitation({ workspaceId, data });
+  }
+
+  // function to change the role
+  function handleRoleChange(memberId: string, role: workspaceRoles) {
+    updateMember({ workspaceId, data: { memberId, role } });
+  }
+
+  function handleStatusUpdate(memberId: string, isActive: boolean) {
+    updateMember({ workspaceId, data: { memberId, isActive } });
   }
 
   return (
@@ -34,6 +49,8 @@ function page() {
       members={users}
       isMembersLoading={isPending}
       total={total}
+      handleRoleChange={handleRoleChange}
+      handleStatusUpdate={handleStatusUpdate}
     />
   );
 }

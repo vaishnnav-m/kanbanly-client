@@ -1,5 +1,7 @@
+import { workspaceRoles } from "@/types/roles.enum";
 import api from "../axios";
 import {
+  EditWorkspaceMember,
   SendInvititationArgs,
   WorkspaceCreatePayload,
   WorkspaceEditArgs,
@@ -63,5 +65,13 @@ export const getWorkspaceMembers = async (
 
 export const getCurrentMember = async (workspaceId: string | null) => {
   const response = await api.get(`/workspace/${workspaceId}/members/me`);
+  return response.data;
+};
+
+export const editWorkspaceMember = async (payload: EditWorkspaceMember) => {
+  const response = await api.put(
+    `/workspace/${payload.workspaceId}/members/`,
+    payload.data
+  );
   return response.data;
 };
