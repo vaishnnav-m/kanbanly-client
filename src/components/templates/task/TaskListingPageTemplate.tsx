@@ -139,13 +139,15 @@ function TaskListingPageTemplate({
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-primary/90"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add task
-            </Button>
+            {role !== "member" && (
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add task
+              </Button>
+            )}
             <div className="flex items-center gap-2">
               <Button
                 className="hover:bg-primary/10"

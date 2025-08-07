@@ -53,3 +53,21 @@ export const addMember = async (data: {
   );
   return response.data;
 };
+
+export const getMembers = async (workspaceId: string, projectId: string) => {
+  const response = await api.get(
+    `/workspace/${workspaceId}/projects/${projectId}/members`
+  );
+  return response.data;
+};
+
+export const removeProjectMember = async (payload: {
+  workspaceId: string;
+  projectId: string;
+  memberId: string;
+}) => {
+  const response = await api.delete(
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/members/${payload.memberId}`
+  );
+  return response.data;
+};

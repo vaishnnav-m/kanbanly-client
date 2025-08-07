@@ -77,7 +77,7 @@ export const TaskDetails = ({
 
     handleEditTask(task?.taskId as string, data);
 
-    setTaskName(null)
+    setTaskName(null);
     setDescription(null);
     setDueDate(null);
   }
@@ -94,14 +94,16 @@ export const TaskDetails = ({
               </Badge>
             </div>
             <div className="flex items-center gap-1">
-              <Button
-                onClick={() => setIsConfirmationOpen(true)}
-                className="hover:bg-muted-foreground/20"
-                variant="ghost"
-                size="sm"
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
+              {role !== "member" && (
+                <Button
+                  onClick={() => setIsConfirmationOpen(true)}
+                  className="hover:bg-muted-foreground/20"
+                  variant="ghost"
+                  size="sm"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 className="hover:bg-muted-foreground/20"
                 variant="ghost"
