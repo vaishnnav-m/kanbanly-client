@@ -72,23 +72,32 @@ export const CreateTaskModal = ({
   };
 
   const validate = () => {
+    const newErrors: {
+      task?: string;
+      dueDate?: string;
+      priority?: string;
+    } = {};
+
     if (!formState.task.trim()) {
-      setErrors((prev) => ({ ...prev, task: "Task is required" }));
+      newErrors.task = "Task is required";
     }
     if (!formState.dueDate) {
-      setErrors((prev) => ({ ...prev, dueDate: "Due date is required" }));
+      newErrors.dueDate = "Due date is required";
     }
     if (!formState.priority.trim()) {
-      setErrors((prev) => ({ ...prev, priority: "Priority date is required" }));
+      newErrors.priority = "Priority is required";
     }
+
+    return newErrors;
   };
 
   const handleCreate = () => {
     if (!workspaceId) return;
-    setErrors(null);
-    validate();
-    console.log(errors);
-    if (errors) return;
+
+    const validationErrors = validate();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     createTask({ data: formState, workspaceId, projectId });
 
@@ -156,7 +165,7 @@ export const CreateTaskModal = ({
           className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-inherit text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors duration-300"
         />
         {errors?.dueDate && <p className="text-red-500">{errors.dueDate}</p>}
-        
+
         <select
           name="priority"
           value={formState.priority}

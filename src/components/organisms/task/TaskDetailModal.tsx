@@ -106,7 +106,7 @@ export const TaskDetails = ({
                 {task.assignedTo ? (
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold p-1 rounded-full">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
                       {getAssignedTo(task.assignedTo)}
                     </AvatarFallback>
                   </Avatar>
