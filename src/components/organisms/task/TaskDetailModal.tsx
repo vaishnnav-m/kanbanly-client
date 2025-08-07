@@ -26,14 +26,24 @@ import {
   TabsTrigger,
 } from "@/components/atoms/tabs";
 import { getDate, getPriorityColor } from "@/lib/utils";
-import { ITaskDetails } from "@/lib/api/task/task.types";
+import {
+  ITask,
+  ITaskDetails,
+  TaskCreationPayload,
+} from "@/lib/api/task/task.types";
 import { ConfirmationModal } from "../admin/ConfirmationModal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { AddMemberModal } from "./AddMemberTaskModal";
+import { Input } from "@/components/atoms/input";
 
 interface TaskDetailsProps {
   isVisible: boolean;
   close: () => void;
   task: ITaskDetails | undefined;
   removeTask: (taskId: string) => void;
+  handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
+  isEditing: boolean;
 }
 
 export const TaskDetails = ({
@@ -41,12 +51,35 @@ export const TaskDetails = ({
   close,
   task,
   removeTask,
+  handleEditTask,
+  isEditing,
 }: TaskDetailsProps) => {
   if (!isVisible || !task) return null;
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [isInvitingUser, setIsInvitingUser] = useState(false);
+  const [description, setDescription] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState<string | null>(null);
+  const [taskName, setTaskName] = useState<string | null>(null);
 
   function getAssignedTo(assignedTo: { name: string; email: string }) {
     return assignedTo.email[0].toUpperCase();
+  }
+
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
+
+  // funtion to handle the submit of editing
+  function handleSubmit() {
+    const data: Partial<TaskCreationPayload> = {
+      ...(description && { description }),
+      ...(taskName && { task: taskName }),
+      ...(dueDate && { dueDate }),
+    };
+
+    handleEditTask(task?.taskId as string, data);
+
+    setTaskName(null)
+    setDescription(null);
+    setDueDate(null);
   }
 
   return (
@@ -80,9 +113,22 @@ export const TaskDetails = ({
             </div>
           </div>
 
-          <h2 className="text-xl font-semibold text-foreground mt-2">
-            {task.task}
-          </h2>
+          {taskName !== null && role !== "member" ? (
+            <Input
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+            />
+          ) : (
+            <h2 className="text-xl font-semibold text-foreground mt-2">
+              {task.task}
+              {role !== "member" && (
+                <PenBox
+                  onClick={() => setTaskName(task.task || "")}
+                  className="size-3 cursor-pointer inline ml-2"
+                />
+              )}
+            </h2>
+          )}
         </CardHeader>
 
         {/* Content */}
@@ -92,28 +138,59 @@ export const TaskDetails = ({
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>
-                Due date <PenBox className="inline size-3 cursor-pointer" />
+                Due date{" "}
+                {role !== "member" && (
+                  <PenBox
+                    onClick={() =>
+                      setDueDate(
+                        new Date(task.dueDate).toISOString().slice(0, 10)
+                      )
+                    }
+                    className="inline size-3 cursor-pointer"
+                  />
+                )}
               </span>
               <span className="font-medium text-foreground">
-                {getDate(task.dueDate)}
+                {dueDate !== null ? (
+                  <Input
+                    type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+                ) : (
+                  getDate(task.dueDate)
+                )}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Assignee</span>
+              {task.assignedTo && role !== "member" && (
+                <PenBox
+                  onClick={() => setIsInvitingUser(true)}
+                  className="size-3 text-muted-foreground cursor-pointer inline ml-2"
+                />
+              )}
               <div className="flex items-center gap-2">
                 {task.assignedTo ? (
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src="/placeholder-user.jpg" />
+                    {/* <AvatarImage/> */}
                     <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
                       {getAssignedTo(task.assignedTo)}
                     </AvatarFallback>
                   </Avatar>
                 ) : (
-                  <Button variant="ghost" className="p-0 hover:bg-transparent">
-                    <CircleFadingPlus className="size-6 text-muted-foreground" />
-                  </Button>
+                  role !== "member" && (
+                    <Button
+                      onClick={() => setIsInvitingUser(true)}
+                      variant="ghost"
+                      className="p-0 hover:bg-transparent"
+                    >
+                      <CircleFadingPlus className="size-6 text-muted-foreground" />
+                    </Button>
+                  )
                 )}
               </div>
             </div>
@@ -133,9 +210,19 @@ export const TaskDetails = ({
           <div className="space-y-2">
             <h3 className="font-medium text-foreground">
               Description{" "}
-              <PenBox className="size-3 cursor-pointer inline ml-2" />
+              {role !== "member" && (
+                <PenBox
+                  onClick={() => setDescription(task?.description || "")}
+                  className="size-3 cursor-pointer inline ml-2"
+                />
+              )}
             </h3>
-            {task.description ? (
+            {description !== null && role !== "member" ? (
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            ) : task.description ? (
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {task.description}
               </p>
@@ -143,6 +230,24 @@ export const TaskDetails = ({
               <span className="text-slate-500">No Description</span>
             )}
           </div>
+          {(description !== null || dueDate !== null || taskName !== null) && (
+            <div className="w-full flex">
+              <Button onClick={handleSubmit} className="w-full">
+                Save Changes
+              </Button>
+              <Button
+                onClick={() => {
+                  setDescription(null);
+                  setDueDate(null);
+                  setTaskName(null);
+                }}
+                variant="outline"
+                className="w-full hover:bg-transparent"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
 
           {/* Attachments */}
           {/* <div className="space-y-3">
@@ -265,6 +370,14 @@ export const TaskDetails = ({
             </TabsContent>
           </Tabs> */}
         </CardContent>
+
+        <AddMemberModal
+          isLoading={isEditing}
+          isOpen={isInvitingUser}
+          onClose={() => setIsInvitingUser(false)}
+          onInvite={handleEditTask}
+          taskId={task.taskId}
+        />
         <ConfirmationModal
           isOpen={isConfirmationOpen}
           onClose={() => setIsConfirmationOpen(false)}

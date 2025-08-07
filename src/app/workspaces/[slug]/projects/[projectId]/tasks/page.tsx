@@ -1,8 +1,10 @@
 "use client";
 import TaskListingPageTemplate from "@/components/templates/task/TaskListingPageTemplate";
+import { ITask, TaskCreationPayload } from "@/lib/api/task/task.types";
 import {
   useChangeStatus,
   useCreateTask,
+  useEditTask,
   useGetAllTasks,
   useGetOneTask,
   useRemoveTask,
@@ -30,12 +32,23 @@ function page() {
   // hook to change status
   const { mutate: changeStatus } = useChangeStatus();
 
+  const { mutate: editTask, isPending: isEditing } = useEditTask();
+
   function handleChangeStatus(newStatus: TaskStatus, taskId: string) {
     changeStatus({ workspaceId, taskId, projectId, data: { newStatus } });
   }
 
   function handleRemoveTask(taskId: string) {
     removeTask({ taskId, workspaceId, projectId });
+  }
+
+  function handleEditTask(taskId: string, data: Partial<TaskCreationPayload>) {
+    editTask({
+      taskId,
+      workspaceId,
+      projectId,
+      data,
+    });
   }
 
   return (
@@ -46,6 +59,8 @@ function page() {
       isRemoving={isLoading}
       removeTask={handleRemoveTask}
       workspaceId={workspaceId}
+      handleEditTask={handleEditTask}
+      isEditing={isEditing}
     />
   );
 }

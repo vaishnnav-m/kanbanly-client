@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
-import { TaskListing } from "@/lib/api/task/task.types";
+import { ITask, TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -38,6 +38,8 @@ interface TaskListingPageTemplateProps {
   isRemoving: boolean;
   removeTask: (taskId: string) => void;
   workspaceId: string;
+  handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
+  isEditing: boolean;
 }
 
 function TaskListingPageTemplate({
@@ -47,6 +49,8 @@ function TaskListingPageTemplate({
   removeTask,
   workspaceId,
   changeStatus,
+  handleEditTask,
+  isEditing,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -287,10 +291,12 @@ function TaskListingPageTemplate({
       />
 
       <TaskDetails
+        handleEditTask={handleEditTask}
         removeTask={removeTask}
         isVisible={isTaskModalOpen}
         close={() => setIsTaskModalOpen(false)}
         task={taskData && taskData.data}
+        isEditing={isEditing}
       />
     </div>
   );
