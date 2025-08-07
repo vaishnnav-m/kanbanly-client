@@ -13,7 +13,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
-import { ITask, TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
+import {
+  ITask,
+  TaskCreationPayload,
+  TaskListing,
+} from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -86,6 +90,11 @@ function TaskListingPageTemplate({
   // function handle status change
   function handleChange(value: TaskStatus, taskId: string) {
     changeStatus(value, taskId);
+  }
+
+  // function to handle priority change
+  function handlePriorityChange(value: TaskPriority, taskId: string) {
+    handleEditTask(taskId, { priority: value });
   }
 
   return (
@@ -220,7 +229,12 @@ function TaskListingPageTemplate({
 
                 <div className="flex items-center px-3">
                   {role !== "member" ? (
-                    <Select value={task.priority}>
+                    <Select
+                      value={task.priority}
+                      onValueChange={(value: string) =>
+                        handlePriorityChange(value as TaskPriority, task.taskId)
+                      }
+                    >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select The Priority" />
                       </SelectTrigger>
