@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import { Folder, Users, Plus, Star, Calendar, Activity } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { IProject } from "@/lib/api/project/project.types";
-import { getDate } from "@/lib/utils";
+import { getDate, getStatusColor } from "@/lib/utils";
 import ProjectListSkeleton from "@/components/organisms/project/ProjectListSkeleton";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { CreateProjectModal } from "@/components/organisms/project/CreateProject";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 interface ProjectListingPageTemplateProps {
   projects: IProject[];
@@ -22,18 +24,8 @@ function ProjectListingPageTemplate({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const params = useParams();
   const slug = params.slug as string;
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
-      case "completed":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-      case "pending":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-    }
-  };
+
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   return (
     <div className="relative overflow-hidden max-w-7xl mx-auto">
@@ -51,14 +43,14 @@ function ProjectListingPageTemplate({
                 Welcome back! Here's what's happening with your projects today.
               </p>
               <div className="text-end">
-                <Button
+                {role === "owner" && <Button
                   onClick={() => setIsModalOpen(true)}
                   className="hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl group"
                   size="lg"
                 >
                   <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                   Create New Project
-                </Button>
+                </Button>}
               </div>
             </div>
 

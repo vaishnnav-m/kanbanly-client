@@ -1,11 +1,12 @@
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
+import { WorkspaceMember } from "../workspace/workspace.types";
 
 export interface TaskCreationPayload {
   task: string;
   description?: string;
-  priority?: TaskPriority;
+  priority: TaskPriority;
   assignedTo?: string;
-  dueDate?: Date | string;
+  dueDate: Date | string;
 }
 
 export interface TaskCreationArgs {
@@ -14,14 +15,34 @@ export interface TaskCreationArgs {
   projectId: string;
 }
 
+export interface StatusChangingArgs {
+  workspaceId: string;
+  projectId: string;
+  taskId: string;
+  data: { newStatus: TaskStatus };
+}
+
 export interface ITask {
   taskId: string;
   task: string;
   description: string;
   priority: TaskPriority;
   status: TaskStatus;
-  assignedTo?: string;
+  assignedTo?: string | WorkspaceMember;
   dueDate: Date;
 }
 
-export type TaskListing = Omit<ITask, "description" | "priority">;
+export interface ITaskDetails {
+  taskId: string;
+  task: string;
+  description?: string;
+  status: string;
+  assignedTo: {
+    email: string;
+    name: string;
+  } | null;
+  priority: TaskPriority;
+  dueDate: Date;
+}
+
+export type TaskListing = Omit<ITask, "description">;
