@@ -42,10 +42,12 @@ function page() {
     updateMember({ workspaceId, data: { memberId, role } });
   }
 
+  // member status updation function
   function handleStatusUpdate(memberId: string, isActive: boolean) {
     updateMember({ workspaceId, data: { memberId, isActive } });
   }
 
+  // remove member function
   function handleRemoveMember(memberId: string) {
     removeMember({ workspaceId, memberId });
   }
