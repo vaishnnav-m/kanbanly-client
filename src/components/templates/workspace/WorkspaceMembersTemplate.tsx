@@ -11,15 +11,17 @@ import {
 } from "@/components/atoms/select";
 import SearchBar from "@/components/molecules/SearchBar";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
+import CustomTable from "@/components/organisms/CustomTable";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
 import {
   WorkspaceInvitationPayload,
   WorkspaceMember,
 } from "@/lib/api/workspace/workspace.types";
+import { createMemberColumns } from "@/lib/columns/member.column";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
-import { ButtonConfig } from "@/types/table.types";
+import { ButtonConfig, TableColumn } from "@/types/table.types";
 import {
   EllipsisIcon,
   ToggleLeft,
@@ -55,95 +57,19 @@ function WorkspaceMembersTemplates({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState("");
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   // table customization
-  const headings = ["Name", "Email", "Role", "Status", "Manage"];
+  const handleRemove = (id: string) => {
+    setSelectedMemberId(id);
+    setIsConfirmModalOpen(true);
+  };
 
-  const role = useSelector((state: RootState) => state.workspace.memberRole);
-  if (role !== "owner") {
-    headings.pop();
-  }
-
-  const roles = Object.values(workspaceRoles);
-
-  function getRolesTag(member: WorkspaceMember) {
-    const isOwner = member.role === "owner";
-
-    if (isOwner) {
-      return (
-        <Select value={member.role} disabled={true}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="owner">owner</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      );
-    }
-
-    return (
-      <Select
-        onValueChange={(value) =>
-          handleRoleChange(member._id, value as workspaceRoles)
-        }
-        value={member.role}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue />
-        </SelectTrigger>
-
-        <SelectContent>
-          <SelectGroup>
-            {roles
-              .filter((role) => role !== "owner")
-              .map((role) => (
-                <SelectItem
-                  key={role}
-                  value={role}
-                  className="focus:bg-slate-500/40"
-                >
-                  {role}
-                </SelectItem>
-              ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    );
-  }
-
-  const cols: (keyof WorkspaceMember)[] = ["name", "email"];
-  const buttonConfigs: ButtonConfig<WorkspaceMember>[] = [
-    {
-      action: (data) => {},
-      styles: "bg-none",
-      icon: (member) => getRolesTag(member),
-    },
-    {
-      action: (data) => {
-        handleStatusUpdate(data._id, !data.isActive);
-      },
-      styles: "bg-none",
-      icon: (member) =>
-        member.role !== "owner" &&
-        (member.isActive ? (
-          <ToggleRight className="text-green-500" />
-        ) : (
-          <ToggleLeft className="text-red-500" />
-        )),
-    },
-    {
-      action: (data) => {
-        setSelectedMemberId(data._id);
-        setIsConfirmModalOpen(true);
-      },
-      styles: "bg-none",
-      icon: (member) => member.role !== "owner" && <Trash className="size-4" />,
-    },
-  ];
+  const columns = createMemberColumns(
+    handleRoleChange,
+    handleStatusUpdate,
+    handleRemove
+  );
 
   return (
     <main className="flex-1 overflow-auto">
@@ -181,12 +107,12 @@ function WorkspaceMembersTemplates({
                 </div>
               </div>
               <div className="px-5">
-                <DataTable<WorkspaceMember>
-                  headings={headings}
+                <CustomTable<WorkspaceMember>
                   data={members}
-                  columns={cols}
-                  buttonConfigs={role === "owner" ? buttonConfigs : undefined}
+                  columns={columns}
+                  emptyMessage="No Members"
                   isLoading={isMembersLoading}
+                  skeletonRows={4}
                 />
               </div>
             </Card>
