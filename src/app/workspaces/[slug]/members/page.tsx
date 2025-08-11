@@ -5,6 +5,7 @@ import {
   useEditWorkspaceMember,
   useRemoveWorkspaceMember,
   useSendInvitation,
+  useWorkspaceInvitations,
   useWorkspaceMembers,
 } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
@@ -33,6 +34,11 @@ function page() {
   // member deletion hook
   const { mutate: removeMember } = useRemoveWorkspaceMember();
 
+  // invitations hook
+  const { data: invitationsData, isFetching: isInvitationsLoading } =
+    useWorkspaceInvitations(workspaceId);
+  const invitations = invitationsData?.data ?? [];
+
   function sendInvite(data: WorkspaceInvitationPayload) {
     SendInvitation({ workspaceId, data });
   }
@@ -59,6 +65,7 @@ function page() {
       members={users}
       isMembersLoading={isPending}
       total={total}
+      invitations={invitations}
       handleRoleChange={handleRoleChange}
       handleStatusUpdate={handleStatusUpdate}
       handleRemoveMember={handleRemoveMember}
