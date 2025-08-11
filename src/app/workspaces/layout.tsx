@@ -1,4 +1,5 @@
 "use client";
+import { SidebarProvider } from "@/components/atoms/sidebar";
 import Header from "@/components/organisms/user/Header";
 import Sidebar from "@/components/organisms/user/SideBar";
 import { useGetCurrentMember } from "@/lib/hooks/useWorkspace";
@@ -30,7 +31,7 @@ function layout({ children }: { children: ReactNode }) {
         setWorkspaceData({ workspaceId, memberRole: workspaceMember.data.role })
       );
     }
-  },[workspaceId, workspaceMember?.data, dispatch]);
+  }, [workspaceId, workspaceMember?.data, dispatch]);
 
   if (isLayoutNotNeeded) {
     return <>{children}</>;

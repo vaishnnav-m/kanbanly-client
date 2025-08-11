@@ -3,6 +3,7 @@ import {
   createWorkspace,
   editWorkspace,
   editWorkspaceMember,
+  getAllInvitations,
   getAllWorkspaces,
   getCurrentMember,
   getOneWorkspace,
@@ -14,6 +15,7 @@ import {
 } from "../api/workspace";
 import {
   EditWorkspaceMember,
+  InvitationList,
   IWorkspace,
   SendInvititationArgs,
   WorkspaceCreatePayload,
@@ -66,61 +68,6 @@ export const useGetOneWorkspace = (workspaceId: string) => {
   });
 };
 
-export const useSendInvitation = () => {
-  const toast = useToastMessage();
-  return useMutation<ApiResponse, Error, SendInvititationArgs>({
-    mutationFn: sendInvititation,
-    onSuccess: (response) => {
-      toast.showSuccess({
-        title: "Successfully Sent",
-        description: response.message,
-        duration: 6000,
-      });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || "Unexpected Error";
-      toast.showError({
-        title: "Invitation Failed",
-        description: errorMessage,
-        duration: 6000,
-      });
-    },
-  });
-};
-
-export const useVerifyInvitation = () => {
-  const toast = useToastMessage();
-  const router = useRouter();
-
-  return useMutation<ApiResponse, Error, { token: string }>({
-    mutationFn: verifyInvitation,
-    onSuccess: (response) => {
-      toast.showSuccess({
-        title: "Successfully Veryfied",
-        description: response.message,
-        duration: 6000,
-      });
-      router.replace("/workspaces");
-    },
-  });
-};
-
-export const useWorkspaceMembers = (workspaceId: string, page: number) => {
-  return useQuery<ApiResponse<PaginatedResponse<WorkspaceMember[]>>, Error>({
-    queryKey: ["getWorkspaceMembers", workspaceId],
-    queryFn: () => getWorkspaceMembers({ workspaceId }, page),
-    enabled: !!workspaceId,
-  });
-};
-
-export const useGetCurrentMember = (workspaceId: string | null) => {
-  return useQuery<ApiResponse<WorkspaceMember>, Error>({
-    queryKey: ["getCurrentMember", workspaceId],
-    queryFn: () => getCurrentMember(workspaceId),
-    enabled: !!workspaceId,
-  });
-};
-
 export const useEditWorkspace = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
@@ -162,6 +109,71 @@ export const useRemoveWorkspace = () => {
       });
       router.replace("/workspaces");
     },
+  });
+};
+
+// invitations
+export const useSendInvitation = () => {
+  const toast = useToastMessage();
+  return useMutation<ApiResponse, Error, SendInvititationArgs>({
+    mutationFn: sendInvititation,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Sent",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Invitation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useVerifyInvitation = () => {
+  const toast = useToastMessage();
+  const router = useRouter();
+
+  return useMutation<ApiResponse, Error, { token: string }>({
+    mutationFn: verifyInvitation,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Veryfied",
+        description: response.message,
+        duration: 6000,
+      });
+      router.replace("/workspaces");
+    },
+  });
+};
+
+export const useWorkspaceInvitations = (workspaceId: string) => {
+  return useQuery<ApiResponse<InvitationList[]>, Error>({
+    queryKey: ["getAllInvitations", workspaceId],
+    queryFn: () => getAllInvitations(workspaceId),
+    enabled: !!workspaceId,
+  });
+};
+
+// workspace members
+export const useWorkspaceMembers = (workspaceId: string, page: number) => {
+  return useQuery<ApiResponse<PaginatedResponse<WorkspaceMember[]>>, Error>({
+    queryKey: ["getWorkspaceMembers", workspaceId],
+    queryFn: () => getWorkspaceMembers({ workspaceId }, page),
+    enabled: !!workspaceId,
+  });
+};
+
+export const useGetCurrentMember = (workspaceId: string | null) => {
+  return useQuery<ApiResponse<WorkspaceMember>, Error>({
+    queryKey: ["getCurrentMember", workspaceId],
+    queryFn: () => getCurrentMember(workspaceId),
+    enabled: !!workspaceId,
   });
 };
 

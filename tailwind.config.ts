@@ -73,12 +73,12 @@ export default {
     				'4': 'hsl(var(--chart-4))',
     				'5': 'hsl(var(--chart-5))'
     			},
-				gradientFromLight: 'hsl(var(--color-bg-gradient-from-light))',
-            gradientViaLight: 'hsl(var(--color-bg-gradient-via-light))',
-            gradientToLight: 'hsl(var(--color-bg-gradient-to-light))',
-            gradientFromDark: 'hsl(var(--color-bg-gradient-from-dark))',
-            gradientViaDark: 'hsl(var(--color-bg-gradient-via-dark))',
-            gradientToDark: 'hsl(var(--color-bg-gradient-to-dark))',
+    			gradientFromLight: 'hsl(var(--color-bg-gradient-from-light))',
+    			gradientViaLight: 'hsl(var(--color-bg-gradient-via-light))',
+    			gradientToLight: 'hsl(var(--color-bg-gradient-to-light))',
+    			gradientFromDark: 'hsl(var(--color-bg-gradient-from-dark))',
+    			gradientViaDark: 'hsl(var(--color-bg-gradient-via-dark))',
+    			gradientToDark: 'hsl(var(--color-bg-gradient-to-dark))'
     		},
     		borderRadius: {
     			lg: 'var(--radius)',

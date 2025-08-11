@@ -15,9 +15,11 @@ import CustomTable from "@/components/organisms/CustomTable";
 import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
 import {
+  InvitationList,
   WorkspaceInvitationPayload,
   WorkspaceMember,
 } from "@/lib/api/workspace/workspace.types";
+import { createInvitationColumns } from "@/lib/columns/invitaions.column";
 import { createMemberColumns } from "@/lib/columns/member.column";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
@@ -39,6 +41,7 @@ interface IWorkspaceMembersTemplateProps {
   isMembersLoading: boolean;
   members: WorkspaceMember[];
   total: number;
+  invitations: InvitationList[];
   handleRoleChange: (memberId: string, role: workspaceRoles) => void;
   handleStatusUpdate: (memberId: string, isActive: boolean) => void;
   handleRemoveMember: (memberId: string) => void;
@@ -50,6 +53,7 @@ function WorkspaceMembersTemplates({
   isMembersLoading,
   members,
   total = 0,
+  invitations,
   handleRoleChange,
   handleStatusUpdate,
   handleRemoveMember,
@@ -71,6 +75,8 @@ function WorkspaceMembersTemplates({
     handleRemove
   );
 
+  const invitationColumns = createInvitationColumns(() => {});
+
   return (
     <main className="flex-1 overflow-auto">
       <div className="p-6 md:p-8 h-full">
@@ -88,7 +94,7 @@ function WorkspaceMembersTemplates({
             </p>
           </div>
 
-          <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
+          <div className="animate-slide-up space-y-6" style={{ animationDelay: "0.2s" }}>
             <Card className="p-6 animate-fade-in">
               <div className="w-full flex justify-between items-center px-5 pb-5">
                 <div className="flex-1">
@@ -111,6 +117,23 @@ function WorkspaceMembersTemplates({
                   data={members}
                   columns={columns}
                   emptyMessage="No Members"
+                  isLoading={isMembersLoading}
+                  skeletonRows={4}
+                />
+              </div>
+            </Card>
+
+            <Card className="p-6 animate-fade-in">
+              <div className="w-full flex justify-between items-center px-5 pb-5">
+                <div className="flex-1">
+                  <span>Pending invitations {invitations?.length}</span>
+                </div>
+              </div>
+              <div className="px-5">
+                <CustomTable<InvitationList>
+                  data={invitations}
+                  columns={invitationColumns}
+                  emptyMessage="No Invitations"
                   isLoading={isMembersLoading}
                   skeletonRows={4}
                 />
