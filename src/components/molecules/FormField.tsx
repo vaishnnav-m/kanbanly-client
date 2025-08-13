@@ -3,18 +3,9 @@ import { Label } from "../atoms/label";
 import { Input } from "../atoms/input";
 import { Eye, EyeOff } from "lucide-react";
 import OTPInput from "./OtpField";
-
-interface FormFieldProps {
-  id: string;
-  label?: string;
-  placeholder?: string;
-  type?: string;
-  value: string;
-  otpLength?: number;
-  errors?: Record<string, string>;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onLink?: () => void;
-}
+import { FormFieldProps } from "@/types/form.types";
+import { TagInput } from "./TagInput";
+import { Textarea } from "../atoms/textarea";
 
 const FormField = ({
   id,
@@ -25,11 +16,15 @@ const FormField = ({
   otpLength = 6,
   errors,
   onLink,
+  tagsField,
+  onTagsChange,
+  placeholder,
   ...props
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPasswordField = type === "password";
   const isOtpField = type === "otp";
+  const isTextArea = type === "textarea";
 
   return (
     <div className="space-y-2">
@@ -50,8 +45,19 @@ const FormField = ({
         </div>
       )}
 
-      {/* otp field rendering */}
-      {isOtpField ? (
+      {tagsField ? (
+        <TagInput placeholder={placeholder} onTagsChange={onTagsChange} />
+      ) : isTextArea ? (
+        <Textarea
+          id={id}
+          name={id}
+          autoComplete={isPasswordField ? "new-password" : "on"}
+          value={value || ""}
+          onChange={(e) => onChange(e)}
+          placeholder={placeholder}
+          {...props}
+        />
+      ) : isOtpField ? (
         <OTPInput
           length={otpLength}
           value={value || ""}
@@ -59,7 +65,6 @@ const FormField = ({
             const syntheticEvent = {
               target: {
                 name: id,
-
                 value: otpValue,
               },
             } as React.ChangeEvent<HTMLInputElement>;
@@ -78,6 +83,7 @@ const FormField = ({
             autoComplete={isPasswordField ? "new-password" : "on"}
             value={value || ""}
             onChange={onChange}
+            placeholder={placeholder}
             {...props}
           />
 

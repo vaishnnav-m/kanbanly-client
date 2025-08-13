@@ -1,14 +1,15 @@
-import { z } from "zod";
-
 export interface FormFieldProps {
   id: string;
-  className?: string;
   label?: string;
   placeholder?: string;
   type?: string;
   value: string;
-  required: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  otpLength?: number;
+  errors?: Record<string, string>;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onTagsChange?: (tags: string[]) => void;
+  tagsField?: boolean;
+  onLink?: () => void;
 }
 
 export interface FieldGroupRowProps {
@@ -24,6 +25,7 @@ export type SingleField = {
   required?: boolean;
   otpLength?: number;
   onLink?: () => void;
+  tagsField?: boolean;
 };
 
 export type GroupField = {
@@ -38,5 +40,10 @@ export interface FormProps<T extends object> {
   onSubmit: (values: T) => void;
   isLoading: boolean;
   errors?: Record<string, string>;
-  // schema: z.ZodSchema<T>;
+}
+
+export interface TagInputProps {
+  placeholder?: string;
+  className?: string;
+  onTagsChange?: (tags: string[]) => void;
 }
