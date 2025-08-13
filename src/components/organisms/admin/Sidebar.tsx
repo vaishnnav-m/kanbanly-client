@@ -75,7 +75,7 @@ export function AppSidebar() {
             </li>
             <li>
               <Link
-                href="/admin/dashbord"
+                href="/admin/plans"
                 className="flex items-center gap-2 px-2 py-2 rounded-md transition-colors
                     hover:bg-zinc-100 hover:text-zinc-900
                     dark:hover:bg-zinc-800 dark:hover:text-zinc-100"

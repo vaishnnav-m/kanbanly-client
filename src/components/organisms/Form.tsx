@@ -18,7 +18,9 @@ const Form = <T extends object>({
     {} as T & Record<string, string>
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
