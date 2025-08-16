@@ -1,46 +1,39 @@
 import React, { useState, useRef } from "react";
 import { X } from "lucide-react";
 import { TagInputProps } from "@/types/form.types";
-import { Input } from "../atoms/input";
+import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 
-export const TagInput: React.FC<TagInputProps> = ({
+export const TagInput: React.FC<TagInputProps & { value?: string[] }> = ({
   placeholder = "Add tags...",
   className = "",
   onTagsChange,
+  value = [], // default empty array
 }) => {
-  const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // tag adding
+  const tags = value; // controlled from parent
+
   const addTag = (tagText: string): void => {
     const trimmedTag = tagText.trim();
     if (trimmedTag && !tags.includes(trimmedTag)) {
-      const newTags = [...tags, trimmedTag];
-      setTags(newTags);
-      onTagsChange?.(newTags);
+      onTagsChange?.([...tags, trimmedTag]);
     }
     setInputValue("");
   };
 
-  // tag removing
   const removeTag = (indexToRemove: number): void => {
-    const newTags = tags.filter((_, index) => index !== indexToRemove);
-    setTags(newTags);
-    onTagsChange?.(newTags);
+    onTagsChange?.(tags.filter((_, index) => index !== indexToRemove));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const value = e.target.value;
-
-    // Check if comma was typed
-    if (value.includes(",")) {
-      const newTag = value.replace(",", "");
-      addTag(newTag);
+    const val = e.target.value;
+    if (val.includes(",")) {
+      addTag(val.replace(",", ""));
       return;
     }
-
-    setInputValue(value);
+    setInputValue(val);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -52,14 +45,12 @@ export const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  const handleTagRemove = (index: number): void => {
-    removeTag(index);
-    inputRef.current?.focus();
-  };
-
   return (
     <div
-      className={`flex flex-wrap items-center gap-1 min-h-[40px] px-3 py-2 border border-ring rounded-md focus-within:ring-2 ${className}`}
+      className={cn(
+        "flex flex-wrap items-center gap-1 min-h-[40px] px-3 py-2 border border-ring rounded-md focus-within:ring-2",
+        className
+      )}
       onClick={() => inputRef.current?.focus()}
     >
       {tags.map((tag, index) => (
@@ -72,7 +63,7 @@ export const TagInput: React.FC<TagInputProps> = ({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              handleTagRemove(index);
+              removeTag(index);
             }}
             className="inline-flex items-center justify-center w-4 h-4 text-blue-600 hover:text-blue-800 hover:bg-blue-200 rounded-full transition-colors"
           >

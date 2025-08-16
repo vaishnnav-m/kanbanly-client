@@ -1,28 +1,27 @@
-"use client"
+"use client";
 import { Button } from "@/components/atoms/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/atoms/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/atoms/card";
+import { IPlan } from "@/lib/api/plans/plans.type";
 import { Check, Pencil, Trash2 } from "lucide-react";
 
 export type BillingCycle = "monthly" | "yearly";
 
-export interface Plan {
-  id: string;
-  name: string;
-  priceMonthly: number;
-  priceYearly: number;
-  description: string;
-  features: string[];
-}
-
 interface PlanCardProps {
-  plan: Plan;
+  plan: IPlan;
   billing: BillingCycle;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
 export function PlanCard({ plan, billing, onEdit, onDelete }: PlanCardProps) {
-  const price = billing === "monthly" ? plan.priceMonthly : plan.priceYearly;
+  const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
   const suffix = billing === "monthly" ? "/mo" : "/yr";
 
   return (
@@ -39,19 +38,37 @@ export function PlanCard({ plan, billing, onEdit, onDelete }: PlanCardProps) {
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">
-          {plan.features.map((feature, idx) => (
-            <li key={idx} className="flex items-start gap-2">
-              <Check className="mt-0.5 h-4 w-4 text-primary" />
-              <span>{feature}</span>
-            </li>
-          ))}
+          <li className="flex items-start gap-2">
+            {plan.workspaceLimit} Workspaces
+          </li>
+          <li className="flex items-start gap-2">{plan.memberLimit} Members</li>
+          <li className="flex items-start gap-2">
+            {plan.projectLimit} Projects
+          </li>
+          <li className="flex items-start gap-2">{plan.taskLimit} Tasks</li>
+          
+          {plan.features &&
+            plan.features.map((feature, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 text-primary" />
+                <span>{feature}</span>
+              </li>
+            ))}
         </ul>
       </CardContent>
       <CardFooter className="flex items-center justify-end gap-2">
-        <Button variant="outline" onClick={() => onEdit(plan.id)} aria-label={`Edit ${plan.name}`}>
+        <Button
+          variant="outline"
+          onClick={() => onEdit(plan.planId)}
+          aria-label={`Edit ${plan.name}`}
+        >
           <Pencil className="mr-2 h-4 w-4" /> Edit
         </Button>
-        <Button variant="destructive" onClick={() => onDelete(plan.id)} aria-label={`Delete ${plan.name}`}>
+        <Button
+          variant="destructive"
+          onClick={() => onDelete(plan.planId)}
+          aria-label={`Delete ${plan.name}`}
+        >
           <Trash2 className="mr-2 h-4 w-4" /> Delete
         </Button>
       </CardFooter>

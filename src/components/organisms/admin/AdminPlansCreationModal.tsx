@@ -1,136 +1,318 @@
-"use client"
+"use client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plan } from "./PlanCard";
-import { FieldConfig } from "@/types/form.types";
-import Form from "../Form";
 import { BaseModal } from "@/components/molecules/BaseModal";
+import { Button } from "@/components/atoms/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/atoms/form";
+import { Input } from "@/components/atoms/input";
+import { Infinity } from "lucide-react";
+import { TagInput } from "@/components/molecules/TagInput";
+import { PlanCreationPayload } from "@/lib/api/plans/plans.type";
+import { Textarea } from "@/components/atoms/textarea";
 
-const PlanSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  priceMonthly: z.coerce.number().min(0, "Monthly price must be >= 0"),
-  priceYearly: z.coerce.number().min(0, "Yearly price must be >= 0"),
-  description: z.string().optional().default(""),
-  features: z.array(z.string()).default([]),
+const formSchema = z.object({
+  name: z.string().min(1, "Plan name is required"),
+  description: z.string().min(1, "Description is required"),
+  monthlyPrice: z.preprocess(
+    (val) => (val === "" ? undefined : Number(val)),
+    z
+      .number({ invalid_type_error: "Price must be a number" })
+      .nonnegative("Price must be 0 or greater")
+  ),
+  yearlyPrice: z.preprocess(
+    (val) => (val === "" ? undefined : Number(val)),
+    z
+      .number({ invalid_type_error: "Price must be a number" })
+      .nonnegative("Price must be 0 or greater")
+  ),
+  workspaceLimit: z.string().default("Unlimited"),
+  memberLimit: z.string().default("Unlimited"),
+  projectLimit: z.string().default("Unlimited"),
+  taskLimit: z.string().default("Unlimited"),
+  features: z
+    .array(z.string().min(1, "Feature cannot be empty"))
+    .min(1, "At least one feature is required"),
 });
 
-type FormValues = z.infer<typeof PlanSchema>;
-  
 export function AddPlanDialog({
   onAdd,
   isOpen,
   onClose,
 }: {
-  onAdd: (plan: Plan) => void;
+  onAdd: (plan: PlanCreationPayload) => void;
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const form = useForm<FormValues>({
-    resolver: zodResolver(PlanSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      priceMonthly: 0,
-      priceYearly: 0,
       description: "",
+      yearlyPrice: undefined,
+      monthlyPrice: undefined,
+      workspaceLimit: "Unlimited",
+      memberLimit: "Unlimited",
+      projectLimit: "Unlimited",
+      taskLimit: "Unlimited",
       features: [],
     },
   });
 
-  const className =
-    "h-12 border-primary bg-transparent focus:ring-2 focus:ring-primary transition-all duration-200";
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    onAdd(values);
+    onClose();
+  }
 
-  const formFields: FieldConfig[] = [
-    {
-      id: "name",
-      label: "Name",
-      placeholder: "Proffosional",
-      type: "email",
-      className,
-      required: true,
-    },
-    {
-      group: [
-        {
-          id: "priceMonthly",
-          type: "number",
-          label: "Price (Monthly)",
-          className,
-        },
-        {
-          id: "priceYearly",
-          type: "number",
-          label: "Price (Yearly)",
-          className,
-        },
-      ],
-    },
-    {
-      id: "description",
-      label: "Description",
-      placeholder: "Short description",
-      type: "textarea",
-      className,
-      required: true,
-    },
-    {
-      id: "features",
-      label: "Features",
-      placeholder: "Add the features and press enter or comma",
-      tagsField: true,
-      className,
-      required: true,
-    },
-  ];
-
-  const onSubmit = (values: FormValues) => {
-    const features = Array.from(
-      new Set((values.features || []).map((s) => s.trim()).filter(Boolean))
-    );
-
-    const idBase = values.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-    const id = `${idBase || "plan"}-${Date.now().toString(36)}`;
-
-    const newPlan: Plan = {
-      id,
-      name: values.name,
-      priceMonthly: values.priceMonthly,
-      priceYearly: values.priceYearly,
-      description: values.description || "",
-      features,
+  const UnlimitedField = ({
+    value,
+    onChange,
+    placeholder,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+  }) => {
+    const handleInfinityClick = () => {
+      onChange(value === "Unlimited" ? "" : "Unlimited");
     };
 
-    onAdd(newPlan);
-    onClose();
-    form.reset();
+    return (
+      <div className="relative">
+        <Input
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="bg-transparent px-5 py-5"
+        />
+        <button
+          type="button"
+          onClick={handleInfinityClick}
+          className="absolute inset-y-0 right-0 flex items-center px-3 hover:bg-zinc-800 rounded-r-md transition-colors"
+        >
+          <Infinity
+            className={`h-4 w-4 ${
+              value === "Unlimited" ? "text-primary" : "text-muted-foreground"
+            }`}
+          />
+        </button>
+      </div>
+    );
   };
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create New Task"
+      title="Create New Plan"
       text=""
-      footer={
-        <div className="w-full">
-          <button
-            className="w-full px-10 py-2 bg-gray-200 dark:bg-transparent dark:border rounded hover:bg-gray-300"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-        </div>
-      }
     >
-      <Form
-        fields={formFields}
-        onSubmit={onSubmit}
-        isLoading={false}
-        submitLabel="Add"
-      />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Plan name <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="bg-transparent px-5 py-5"
+                    placeholder="Professional"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Descripiton <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="bg-transparent px-5 py-5"
+                    placeholder="Type anything about this plan"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex gap-5">
+            <FormField
+              control={form.control}
+              name="monthlyPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-muted-foreground">
+                    Monthly Price <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-transparent px-5 py-5"
+                      placeholder="$14"
+                      type="number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="yearlyPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-muted-foreground">
+                    Yearly Price <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-transparent px-5 py-5"
+                      placeholder="$100"
+                      type="number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="workspaceLimit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Minimum Workspaces <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <UnlimitedField
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Unlimited"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="memberLimit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Members Limit <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <UnlimitedField
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Unlimited"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="projectLimit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Minimum Projects <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <UnlimitedField
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Unlimited"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="taskLimit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Minimum Tasks <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <UnlimitedField
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Unlimited"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="features"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  features
+                </FormLabel>
+                <FormControl>
+                  <TagInput
+                    className="border border-input focus-within:border-ring p-5"
+                    onTagsChange={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
+              className="hover:bg-zinc-800 bg-transparent"
+              type="button"
+              variant="outline"
+              onClick={() => onClose()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Add</Button>
+          </div>
+        </form>
+      </Form>
     </BaseModal>
   );
 }
