@@ -6,7 +6,9 @@ export interface FormFieldProps {
   value: string;
   otpLength?: number;
   errors?: Record<string, string>;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   onTagsChange?: (tags: string[]) => void;
   tagsField?: boolean;
   onLink?: () => void;
@@ -45,5 +47,6 @@ export interface FormProps<T extends object> {
 export interface TagInputProps {
   placeholder?: string;
   className?: string;
+  value?: string[];
   onTagsChange?: (tags: string[]) => void;
 }
