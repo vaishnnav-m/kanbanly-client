@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-function page() {
+export default function SignupSuccessPage() {
   const router = useRouter();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -16,12 +16,10 @@ function page() {
       router.replace("/workspaces");
     }
   }, [isAuthenticated, router]);
-  
+
   return (
     <main>
       <SignupSuccessTemplate />
     </main>
   );
 }
-
-export default page;

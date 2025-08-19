@@ -3,7 +3,7 @@ import AdminDashboardTemplate from "@/components/templates/admin/AdminDashboardT
 import { useAdminLogout } from "@/lib/hooks/useAuth";
 import React from "react";
 
-function page() {
+export default function AdminDashboardPage() {
   const { mutate: logout } = useAdminLogout();
 
   function handleLogout() {
@@ -11,5 +11,3 @@ function page() {
   }
   return <AdminDashboardTemplate handleLogout={handleLogout} />;
 }
-
-export default page;

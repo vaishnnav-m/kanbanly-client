@@ -5,7 +5,7 @@ import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
-function page() {
+export default function ResetPasswordPage() {
   const { mutate: resetPassword } = useResetPassword();
   const [error, setError] = useState<Record<string, string>>();
   const router = useRouter();
@@ -56,5 +56,3 @@ function page() {
     />
   );
 }
-
-export default page;

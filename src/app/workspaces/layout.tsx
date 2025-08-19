@@ -1,5 +1,4 @@
 "use client";
-import { SidebarProvider } from "@/components/atoms/sidebar";
 import Header from "@/components/organisms/user/Header";
 import Sidebar from "@/components/organisms/user/SideBar";
 import { useGetCurrentMember } from "@/lib/hooks/useWorkspace";
@@ -10,9 +9,9 @@ import { ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
-function layout({ children }: { children: ReactNode }) {
+export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  let isLayoutNotNeeded =
+  const isLayoutNotNeeded =
     pathname === "/workspaces" || pathname === "/workspaces/create";
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -59,5 +58,3 @@ function layout({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
-export default layout;

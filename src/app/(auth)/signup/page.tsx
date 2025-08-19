@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const SignupPage = () => {
+export default function SignupPage() {
   const router = useRouter();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -84,6 +84,7 @@ const SignupPage = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPass, ...dataToSend } = values;
       signupUser(dataToSend);
     }
@@ -100,5 +101,3 @@ const SignupPage = () => {
     </main>
   );
 };
-
-export default SignupPage;

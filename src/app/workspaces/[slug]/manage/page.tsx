@@ -10,16 +10,12 @@ import {
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 
-function page() {
+export default function WorkspaceManagementPage() {
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
 
-  const {
-    data: workspaceData,
-    isError,
-    isLoading,
-  } = useGetOneWorkspace(workspaceId);
+  const { data: workspaceData, isLoading } = useGetOneWorkspace(workspaceId);
 
   const { mutate: removeWorkspace } = useRemoveWorkspace();
   const { mutate: editWorkspace } = useEditWorkspace();
@@ -44,5 +40,3 @@ function page() {
     />
   );
 }
-
-export default page;

@@ -4,10 +4,10 @@ import { User } from "@/lib/api/auth/auth.types";
 import { useGetUsers, useUpdateUserStatus } from "@/lib/hooks/useAdmin";
 import { useState } from "react";
 
-function page() {
+export default function AdminCustomersPage() {
   const [page, setPage] = useState(1);
   const { data, isPending } = useGetUsers(page);
-  const { mutate: updateStatus, isPending: isLoading } = useUpdateUserStatus();
+  const { mutate: updateStatus } = useUpdateUserStatus();
 
   const users = data?.data?.users ?? [];
   const totalPages = data?.data?.totalPages ?? 0;
@@ -32,5 +32,3 @@ function page() {
     />
   );
 }
-
-export default page;

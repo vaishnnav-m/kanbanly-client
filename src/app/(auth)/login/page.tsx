@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-const LoginPage = () => {
+export default function LoginPage() {
   const { mutate: loginUser, isPending, error } = useLogin();
   const { mutate: googleAuth } = useGoogleAuth();
 
@@ -48,6 +48,4 @@ const LoginPage = () => {
       />
     </main>
   );
-};
-
-export default LoginPage;
+}

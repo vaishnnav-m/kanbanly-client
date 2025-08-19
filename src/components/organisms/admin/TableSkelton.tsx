@@ -6,7 +6,7 @@ interface TableSkeletonProps {
   title?: string;
 }
 
-const TableSkeleton = ({ rows = 5, title }: TableSkeletonProps) => {
+const TableSkeleton = ({ rows = 5 }: TableSkeletonProps) => {
   return (
     <Card className="border-0 shadow-md bg-white dark:bg-gray-800">
       <CardHeader>

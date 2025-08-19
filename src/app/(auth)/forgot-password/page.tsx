@@ -3,7 +3,7 @@ import ForgotPasswordTemplate from "@/components/templates/auth/ForgotPasswordTe
 import { useForgotPassword } from "@/lib/hooks/useAuth";
 import React, { useState } from "react";
 
-function page() {
+export default function ForgotPasswordPage() {
   const [error, setError] = useState<Record<string, string>>();
   const { mutate: sendForgotPassword, isPending: isLoading } =
     useForgotPassword();
@@ -27,5 +27,3 @@ function page() {
     />
   );
 }
-
-export default page;

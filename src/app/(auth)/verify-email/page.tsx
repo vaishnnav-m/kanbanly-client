@@ -35,7 +35,7 @@ const VerifyEmailPage = () => {
     if (token && !isLoading && !isSuccess && !isError) {
       verifyEmail({ token });
     }
-  }, [token, verifyEmail]);
+  }, [token, verifyEmail, isError, isLoading, isSuccess]);
 
   if (isLoading) {
     return <CustomLoader span="Please Wait" title="Verifying Email" />;

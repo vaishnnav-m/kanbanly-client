@@ -14,7 +14,7 @@ function InitAuth() {
       try {
         dispatch(setCredentials({ isAuthenticated }));
       } catch (error) {
-        console.log("failed to parse userData");
+        console.log("failed to parse userData", error);
       }
     }
   });

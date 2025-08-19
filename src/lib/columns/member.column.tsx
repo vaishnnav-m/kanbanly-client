@@ -7,7 +7,8 @@ import { workspaceRoles } from "@/types/roles.enum";
 export const createMemberColumns = (
   onRoleChange: (memberId: string, role: workspaceRoles) => void,
   onStatusChange: (id: string, newStatus: boolean) => void,
-  onRemove: (id: string) => void
+  onRemove: (id: string) => void,
+  userRole: workspaceRoles
 ): TableColumn<WorkspaceMember>[] => [
   {
     key: "name",
@@ -40,7 +41,7 @@ export const createMemberColumns = (
         value: "projectManager",
       },
     ],
-    disabled: (row) => row.role === "owner",
+    disabled: (row) => userRole !== "owner" || row.role === "owner",
   },
   {
     key: "isActive",

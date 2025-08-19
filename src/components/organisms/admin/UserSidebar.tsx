@@ -9,15 +9,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/atoms/sidebar";
-import {
-  Calendar,
-  Home,
-  Inbox,
-  MessageSquare,
-  Search,
-  Settings,
-  Users,
-} from "lucide-react";
+import { Home, MessageSquare, Users } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -45,7 +38,7 @@ function UserSidebar() {
         <SidebarHeader>
           <Link href="/workspaces" className="font-bold text-2xl">
             <div className="w-full pb-5 flex items-center gap-3">
-              <img className="size-6" src="/logo.svg" />
+              <Image alt="logo" className="size-6" src="/logo.svg" />
               Kanbanly
             </div>
           </Link>

@@ -1,21 +1,18 @@
 "use client";
 import TaskListingPageTemplate from "@/components/templates/task/TaskListingPageTemplate";
-import { ITask, TaskCreationPayload } from "@/lib/api/task/task.types";
+import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import {
   useChangeStatus,
-  useCreateTask,
   useEditTask,
   useGetAllTasks,
-  useGetOneTask,
   useRemoveTask,
 } from "@/lib/hooks/useTask";
 import { RootState } from "@/store";
 import { TaskStatus } from "@/types/task.enum";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
-function page() {
+export default function TasksListingPage() {
   const params = useParams();
   const projectId = params.projectId as string;
   const workspaceId = useSelector(
@@ -23,7 +20,7 @@ function page() {
   );
 
   // hook to fetch all tasks
-  const { data, refetch, isPending } = useGetAllTasks(workspaceId, projectId);
+  const { data } = useGetAllTasks(workspaceId, projectId);
 
   // remove task hook
   const { mutate: removeTask, isPending: isLoading } = useRemoveTask();
@@ -64,5 +61,3 @@ function page() {
     />
   );
 }
-
-export default page;

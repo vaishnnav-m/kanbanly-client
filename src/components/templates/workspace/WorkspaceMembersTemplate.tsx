@@ -1,18 +1,8 @@
 "use client";
 import { Button } from "@/components/atoms/button";
 import { Card } from "@/components/atoms/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/atoms/select";
-import SearchBar from "@/components/molecules/SearchBar";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import CustomTable from "@/components/organisms/CustomTable";
-import DataTable from "@/components/organisms/DataTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
 import {
   InvitationList,
@@ -23,14 +13,7 @@ import { createInvitationColumns } from "@/lib/columns/invitaions.column";
 import { createMemberColumns } from "@/lib/columns/member.column";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
-import { ButtonConfig, TableColumn } from "@/types/table.types";
-import {
-  EllipsisIcon,
-  ToggleLeft,
-  ToggleRight,
-  Trash,
-  UserPlus,
-} from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -42,6 +25,7 @@ interface IWorkspaceMembersTemplateProps {
   members: WorkspaceMember[];
   total: number;
   invitations: InvitationList[];
+  isInvitationsLoading: boolean;
   handleRoleChange: (memberId: string, role: workspaceRoles) => void;
   handleStatusUpdate: (memberId: string, isActive: boolean) => void;
   handleRemoveMember: (memberId: string) => void;
@@ -54,6 +38,7 @@ function WorkspaceMembersTemplates({
   members,
   total = 0,
   invitations,
+  isInvitationsLoading,
   handleRoleChange,
   handleStatusUpdate,
   handleRemoveMember,
@@ -72,7 +57,8 @@ function WorkspaceMembersTemplates({
   const columns = createMemberColumns(
     handleRoleChange,
     handleStatusUpdate,
-    handleRemove
+    handleRemove,
+    role as workspaceRoles
   );
 
   const invitationColumns = createInvitationColumns(() => {});
@@ -94,7 +80,10 @@ function WorkspaceMembersTemplates({
             </p>
           </div>
 
-          <div className="animate-slide-up space-y-6" style={{ animationDelay: "0.2s" }}>
+          <div
+            className="animate-slide-up space-y-6"
+            style={{ animationDelay: "0.2s" }}
+          >
             <Card className="p-6 animate-fade-in">
               <div className="w-full flex justify-between items-center px-5 pb-5">
                 <div className="flex-1">
@@ -134,7 +123,7 @@ function WorkspaceMembersTemplates({
                   data={invitations}
                   columns={invitationColumns}
                   emptyMessage="No Invitations"
-                  isLoading={isMembersLoading}
+                  isLoading={isInvitationsLoading}
                   skeletonRows={4}
                 />
               </div>

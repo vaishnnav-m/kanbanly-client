@@ -10,9 +10,8 @@ import {
   useUpdateUserPassword,
   useUpdateUserProfile,
 } from "@/lib/hooks/useUser";
-import React from "react";
 
-function page() {
+export default function UserProfile() {
   const { data, isFetching } = useGetUserProfile();
   const { mutate: updateProfile, isPending: isEditLoading } =
     useUpdateUserProfile();
@@ -41,5 +40,3 @@ function page() {
     />
   );
 }
-
-export default page;

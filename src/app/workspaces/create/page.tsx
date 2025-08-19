@@ -4,12 +4,12 @@ import { WorkspaceCreatePayload } from "@/lib/api/workspace/workspace.types";
 import { useCreateWorkspace } from "@/lib/hooks/useWorkspace";
 import React from "react";
 
-function page() {
+export default function WorkspaceCreatePage() {
   const { mutate: createWorkspace, isPending } = useCreateWorkspace();
   function handleCreateWorkspace(payload: WorkspaceCreatePayload): void {
     createWorkspace(payload);
   }
-  
+
   return (
     <div>
       <WorkSpaceCreateTemplate
@@ -19,5 +19,3 @@ function page() {
     </div>
   );
 }
-
-export default page;
