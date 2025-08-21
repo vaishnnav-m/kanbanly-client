@@ -8,7 +8,7 @@ function HomeTemplate() {
   return (
     <main className="flex-1 overflow-auto">
       <div className="p-6 md:p-8 h-full">
-        <div className="max-w-7xl mx-auto h-full space-y-8">
+        <div className="h-full space-y-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-1 animate-fade-in">
               Dashboard
@@ -17,7 +17,8 @@ function HomeTemplate() {
               className="text-muted-foreground animate-fade-in"
               style={{ animationDelay: "0.1s" }}
             >
-              Welcome back! Here's what's happening with your projects today.
+              Welcome back! Here&#39;s what&#39;s happening with your projects
+              today.
             </p>
           </div>
 

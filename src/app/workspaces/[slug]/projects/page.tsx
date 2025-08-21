@@ -4,7 +4,7 @@ import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 
-function page() {
+export default function ProjectListingPage() {
   const worksapceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
@@ -14,5 +14,3 @@ function page() {
     <ProjectListingPageTemplate projects={projects} isLoading={isFetching} />
   );
 }
-
-export default page;

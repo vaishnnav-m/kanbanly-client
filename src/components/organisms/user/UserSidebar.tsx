@@ -1,0 +1,79 @@
+"use client";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenuButton,
+} from "@/components/atoms/sidebar";
+import NavLinks from "@/components/molecules/user-sidebar/NavLinks";
+import NavProjects from "@/components/molecules/user-sidebar/NavProjects";
+import NavWorkspace from "@/components/molecules/user-sidebar/NavWorkspace";
+import { useGetAllProjects } from "@/lib/hooks/useProject";
+import { RootState } from "@/store";
+import { workspaceRoles } from "@/types/roles.enum";
+import { HelpCircle, Home, MessageSquare, Users } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useSelector } from "react-redux";
+
+function UserSidebar() {
+  const params = useParams();
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const { data, isPending: isProjectLoading } = useGetAllProjects(workspaceId);
+
+  const role = useSelector((state: RootState) => state.workspace.memberRole);
+
+  const navigation = [
+    { title: "Home", url: `/workspaces/${params.slug}`, icon: Home },
+    {
+      title: "Chats",
+      url: `/workspaces/${params.slug}/chats`,
+      icon: MessageSquare,
+    },
+    {
+      title: "Members",
+      url: `/workspaces/${params.slug}/members`,
+      icon: Users,
+    },
+  ];
+
+  return (
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="py-5">
+        <SidebarMenuButton className="group-data-[state=collapsed]:!px-0 group-data-[state=collapsed]:!pl-1 hover:bg-transparent">
+          <Link href="/workspaces" className="font-bold text-2xl">
+            <div className="w-full flex items-center gap-3">
+              <Image alt="logo" width={24} height={24} src="/logo.svg" />
+              Kanbanly
+            </div>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarHeader>
+      <SidebarContent>
+        <NavLinks links={navigation} />
+        <NavProjects
+          isLoading={isProjectLoading}
+          projects={data?.data}
+          role={role as workspaceRoles}
+        />
+        <NavWorkspace />
+      </SidebarContent>
+      <SidebarFooter className="group-data-[state=collapsed]:hidden">
+        <SidebarMenuButton>
+          <HelpCircle className="h-4 w-4" />
+          Get Help
+        </SidebarMenuButton>
+        <div className="pt-2 text-center text-xs text-zinc-400 dark:text-zinc-500 border-t border-zinc-200 dark:border-zinc-700">
+          © 2025 Kanbanly
+        </div>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+export default UserSidebar;

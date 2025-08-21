@@ -13,9 +13,9 @@ import { workspaceRoles } from "@/types/roles.enum";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
-function page() {
+export default function WorkspaceMemberPage() {
   const { mutate: SendInvitation, isPending: isLoading } = useSendInvitation();
-  const [pageno, setPageno] = useState(1);
+  const [pageno] = useState(1);
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
@@ -24,11 +24,11 @@ function page() {
   // members fetching
   const { data: members, isPending } = useWorkspaceMembers(workspaceId, pageno);
   const users = members?.data?.data ?? [];
-  const totalPages = members?.data?.totalPages ?? 0;
+  // const totalPages = members?.data?.totalPages ?? 0;
   const total = members?.data?.total ?? 0;
 
   // member updation hook
-  const { mutate: updateMember, isPending: isUpdating } =
+  const { mutate: updateMember } =
     useEditWorkspaceMember();
 
   // member deletion hook
@@ -69,8 +69,7 @@ function page() {
       handleRoleChange={handleRoleChange}
       handleStatusUpdate={handleStatusUpdate}
       handleRemoveMember={handleRemoveMember}
+      isInvitationsLoading={isInvitationsLoading}
     />
   );
 }
-
-export default page;

@@ -17,7 +17,7 @@ import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { useSelector } from "react-redux";
 
-function page() {
+export default function ProjectManageMentPage() {
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
@@ -104,5 +104,3 @@ function page() {
     />
   );
 }
-
-export default page;

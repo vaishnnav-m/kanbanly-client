@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { X } from "lucide-react";
 import { TagInputProps } from "@/types/form.types";
-import { twMerge } from "tailwind-merge";
 import { cn } from "@/lib/utils";
 
 export const TagInput: React.FC<TagInputProps & { value?: string[] }> = ({

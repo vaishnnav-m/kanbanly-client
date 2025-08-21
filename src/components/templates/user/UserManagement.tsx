@@ -27,7 +27,6 @@ import {
   UpdateUserProfilePayload,
   UserProfileData,
 } from "@/lib/api/user/user.types";
-import Header from "@/components/organisms/user/Header";
 import Link from "next/link";
 
 interface UserManagementTemplateProps {
