@@ -272,7 +272,7 @@ export const useAdminLogin = () => {
   return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
     mutationKey: ["adminLogin"],
     mutationFn: adminLogin,
-    onSuccess: (response) => {
+    onSuccess: () => {
       toast.showSuccess({
         title: "Welcome back",
         description: "You've successfully logged in.",

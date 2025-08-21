@@ -1,19 +1,25 @@
 "use client";
+import {
+  SidebarInset,
+  SidebarProvider,
+  useSidebar,
+} from "@/components/atoms/sidebar";
 import Header from "@/components/organisms/user/Header";
-import Sidebar from "@/components/organisms/user/SideBar";
+// import Sidebar from "@/components/organisms/user/SideBar";
+import UserSidebar from "@/components/organisms/user/UserSidebar";
 import { useGetCurrentMember } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { setWorkspaceData } from "@/store/slices/workSpaceSlice";
 import { usePathname } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
-export default function WorkspaceLayout({ children }: { children: ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+
   const isLayoutNotNeeded =
     pathname === "/workspaces" || pathname === "/workspaces/create";
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
@@ -35,26 +41,26 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   if (isLayoutNotNeeded) {
     return <>{children}</>;
   }
+  return (
+    <SidebarProvider>
+      <WorkspaceLayout>{children}</WorkspaceLayout>
+    </SidebarProvider>
+  );
+}
 
+function WorkspaceLayout({ children }: { children: ReactNode }) {
+  const { state } = useSidebar();
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300">
-      <Header
-        setIsSidebarOpen={() => setIsSidebarOpen((prev) => !prev)}
-        isSidebarOpen={isSidebarOpen}
-      />
-      <main className="min-h-screen relative flex">
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={() => setIsSidebarOpen((prev) => !prev)}
-        />
+      <UserSidebar />
+      <SidebarInset>
+        <Header />
         <div
-          className={`px-4 pt-[75px] ${
-            isSidebarOpen ? "pl-16" : "pl-64"
-          } py-6 w-full`}
+          className={`pt-[75px] ${state === "collapsed" ? "pl-16 " : "pl-64"}`}
         >
           {children}
         </div>
-      </main>
+      </SidebarInset>
     </div>
   );
 }
