@@ -25,12 +25,12 @@ export function PlanCard({ plan, billing, onEdit, onDelete }: PlanCardProps) {
   const suffix = billing === "monthly" ? "/mo" : "/yr";
 
   return (
-    <Card className="group transition-transform duration-200 hover:-translate-y-0.5">
+    <Card className="group transition-transform duration-200 hover:-translate-y-0.5 shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-baseline justify-between">
           <span>{plan.name}</span>
           <span className="text-2xl font-semibold">
-            ${price}
+            ₹{price}
             <span className="ml-1 text-sm text-muted-foreground">{suffix}</span>
           </span>
         </CardTitle>
@@ -39,14 +39,22 @@ export function PlanCard({ plan, billing, onEdit, onDelete }: PlanCardProps) {
       <CardContent>
         <ul className="space-y-2">
           <li className="flex items-start gap-2">
-            {plan.workspaceLimit} Workspaces
+            <Check className="mt-0.5 h-4 w-4 text-primary" />
+            <span>{plan.workspaceLimit} Workspaces</span>
           </li>
-          <li className="flex items-start gap-2">{plan.memberLimit} Members</li>
           <li className="flex items-start gap-2">
-            {plan.projectLimit} Projects
+            <Check className="mt-0.5 h-4 w-4 text-primary" />
+            <span>{plan.memberLimit} Members</span>
           </li>
-          <li className="flex items-start gap-2">{plan.taskLimit} Tasks</li>
-          
+          <li className="flex items-start gap-2">
+            <Check className="mt-0.5 h-4 w-4 text-primary" />
+            <span>{plan.projectLimit} Projects</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="mt-0.5 h-4 w-4 text-primary" />
+            <span>{plan.taskLimit} Tasks</span>
+          </li>
+
           {plan.features &&
             plan.features.map((feature, idx) => (
               <li key={idx} className="flex items-start gap-2">

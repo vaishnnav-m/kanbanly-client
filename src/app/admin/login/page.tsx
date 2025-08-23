@@ -4,7 +4,7 @@ import { LoginPayload } from "@/lib/api/auth/auth.types";
 import { useAdminLogin } from "@/lib/hooks/useAuth";
 import React from "react";
 
-function page() {
+export default function AdminLoginPage() {
   const { mutate: adminLogin, isPending: isLoading } = useAdminLogin();
 
   function handleLogin(data: LoginPayload) {
@@ -17,5 +17,3 @@ function page() {
     </main>
   );
 }
-
-export default page;

@@ -17,6 +17,7 @@ import { Infinity } from "lucide-react";
 import { TagInput } from "@/components/molecules/TagInput";
 import { PlanCreationPayload } from "@/lib/api/plans/plans.type";
 import { Textarea } from "@/components/atoms/textarea";
+// import { MultiSelect } from "@/components/molecules/MultiSelect";
 
 const formSchema = z.object({
   name: z.string().min(1, "Plan name is required"),
@@ -107,6 +108,17 @@ export function AddPlanDialog({
     );
   };
 
+  // const options = [
+  //   {
+  //     title: "Kanban Board",
+  //     value: "kanban",
+  //   },
+  //   {
+  //     title: "Agile Workflow",
+  //     value: "agile",
+  //   },
+  // ];
+
   return (
     <BaseModal
       isOpen={isOpen}
@@ -115,7 +127,10 @@ export function AddPlanDialog({
       text=""
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 max-h-[70vh] overflow-y-auto hide-scrollbar"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -294,6 +309,7 @@ export function AddPlanDialog({
                     onTagsChange={field.onChange}
                     value={field.value}
                   />
+                  {/* <MultiSelect options={options} value={field.value}/> */}
                 </FormControl>
                 <FormMessage />
               </FormItem>

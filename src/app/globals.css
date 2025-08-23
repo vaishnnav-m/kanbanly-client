@@ -8,7 +8,7 @@
     --background: 0 0% 100%; /* Light background */
     --foreground: 222.2 84% 4.9%; /* Dark text */
 
-    --card: 0 0% 100%;
+    --card: 0 0% 98%;
     --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
@@ -25,7 +25,7 @@
     --muted-foreground: 215.4 16.3% 46.9%;
 
     /* Accent color: Vibrant Teal for CTAs */
-    --accent: 170 78% 44%;
+    --accent: 210, 90%, 55%;
     --accent-foreground: 0 0% 100%; /* White text on accent */
 
     --destructive: 0 84.2% 60.2%;
@@ -90,7 +90,7 @@
     --muted-foreground: 215 20.2% 65.1%;
 
     /* Accent color: Vibrant Teal for CTAs (Dark Mode) */
-    --accent: 170 70% 50%; /* Slightly adjusted for dark mode */
+    --accent: 220 8.9% 46.1% / 0.2;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
@@ -180,4 +180,8 @@
 .group:hover .bell-icon {
   animation: bell-ring 1s ease-in-out;
   transform-origin: top center;
+}
+
+.hide-scrollbar::-webkit-scrollbar{
+  display: none;
 }
