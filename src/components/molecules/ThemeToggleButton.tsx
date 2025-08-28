@@ -40,7 +40,7 @@ export function ThemeToggleButton() {
 
   return (
     <motion.button
-      className="relative w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg focus:outline-none overflow-hidden"
+      className="relative w-10 h-10 rounded-full  focus:outline-none overflow-hidden"
       onClick={handleToggle}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -49,14 +49,8 @@ export function ThemeToggleButton() {
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
       aria-label={`Switch to ${getNextThemeLabel()} mode`}
     >
-      {/* Background gradient based on resolved theme */}
       <motion.div
         className="absolute inset-0 rounded-full"
-        style={{
-          background: isDarkResolved
-            ? "conic-gradient(from 0deg, hsl(259 80% 70%), hsl(170 70% 50%), hsl(259 80% 70%))"
-            : "conic-gradient(from 0deg, hsl(259 94% 66%), hsl(170 78% 44%), hsl(259 94% 66%))",
-        }}
         animate={isHovered ? { rotate: [0, 360] } : { rotate: 0 }}
         transition={
           isHovered
@@ -72,7 +66,7 @@ export function ThemeToggleButton() {
       />
       {/* Inner circle with icon */}
       <motion.div
-        className="absolute inset-1 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center"
+        className="absolute inset-1 rounded-full flex items-center justify-center"
         animate={{
           scale: isClicked ? 0.8 : 1,
         }}

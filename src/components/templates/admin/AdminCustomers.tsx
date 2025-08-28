@@ -1,6 +1,4 @@
-import { ThemeToggleButton } from "@/components/molecules/ThemeToggleButton";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
-import TableSkeleton from "@/components/organisms/admin/TableSkelton";
 import DataTable from "@/components/organisms/DataTable";
 import { User } from "@/lib/api/auth/auth.types";
 import { ButtonConfig } from "@/types/table.types";
@@ -51,7 +49,6 @@ function AdminCustomers({
       {/* Header with Theme Toggle */}
       <div className="w-full flex justify-between py-5">
         <h1 className="text-xl font-bold">Customers</h1>
-        <ThemeToggleButton />
       </div>
 
       {/* Dashboard Content */}
@@ -71,7 +68,7 @@ function AdminCustomers({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={() => {
-          selectedUser && updateStatus(selectedUser);
+          if (selectedUser) updateStatus(selectedUser);
           setIsModalOpen(false);
         }}
         title={`${selectedUser?.isActive ? "Block" : "Unblock"} User`}

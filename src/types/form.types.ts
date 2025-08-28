@@ -50,3 +50,10 @@ export interface TagInputProps {
   value?: string[];
   onTagsChange?: (tags: string[]) => void;
 }
+
+export interface MultiSelectProps {
+  options: { title: string; value: string }[];
+  className?: string;
+  value?: string[];
+  onTagsChange?: (tags: string[]) => void;
+}

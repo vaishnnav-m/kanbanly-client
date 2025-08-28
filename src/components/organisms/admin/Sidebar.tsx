@@ -1,13 +1,7 @@
 "use client";
 import { Button } from "@/components/atoms/button";
-import {
-  BarChart3,
-  ChevronLeft,
-  Home,
-  FileText,
-  Users,
-  Map,
-} from "lucide-react";
+import { ChevronLeft, Home, FileText, Users, Map } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -25,9 +19,7 @@ export function AppSidebar() {
       {/* Header */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-            <BarChart3 className="h-5 w-5 text-white" />
-          </div>
+          <Image width={25} height={25} alt="logo" src="/logo.svg" />
           {!collapsed && <h2 className="text-lg font-bold">Kanbanly</h2>}
         </div>
         <Button

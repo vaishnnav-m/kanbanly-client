@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   TrendingUp,
   TrendingDown,
@@ -17,12 +17,15 @@ const MetricsCards = () => {
     projects: 0,
   });
 
-  const targetValues = {
-    sales: 124500,
-    totalUsers: 1847,
-    activeUsers: 892,
-    projects: 23,
-  };
+  const targetValues = useMemo(
+    () => ({
+      sales: 124500,
+      totalUsers: 1847,
+      activeUsers: 892,
+      projects: 23,
+    }),
+    []
+  );
 
   useEffect(() => {
     const animateNumbers = () => {

@@ -3,34 +3,17 @@ import { useState } from "react";
 import {
   Calendar,
   User,
-  FileText,
-  CheckCircle2,
-  Circle,
-  Download,
-  Share,
-  MoreHorizontal,
   X,
   Trash,
   CircleFadingPlus,
-  Pen,
   PenBox,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { Badge } from "@/components/atoms/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/atoms/tabs";
 import { getDate, getPriorityColor } from "@/lib/utils";
-import {
-  ITask,
-  ITaskDetails,
-  TaskCreationPayload,
-} from "@/lib/api/task/task.types";
+import { ITaskDetails, TaskCreationPayload } from "@/lib/api/task/task.types";
 import { ConfirmationModal } from "../admin/ConfirmationModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -54,7 +37,6 @@ export const TaskDetails = ({
   handleEditTask,
   isEditing,
 }: TaskDetailsProps) => {
-  if (!isVisible || !task) return null;
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [isInvitingUser, setIsInvitingUser] = useState(false);
   const [description, setDescription] = useState<string | null>(null);
@@ -66,6 +48,7 @@ export const TaskDetails = ({
   }
 
   const role = useSelector((state: RootState) => state.workspace.memberRole);
+  if (!isVisible || !task) return null;
 
   // funtion to handle the submit of editing
   function handleSubmit() {
