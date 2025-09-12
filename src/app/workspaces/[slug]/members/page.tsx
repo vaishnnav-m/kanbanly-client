@@ -3,6 +3,7 @@ import WorkspaceMembersTemplates from "@/components/templates/workspace/Workspac
 import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
 import {
   useEditWorkspaceMember,
+  useRemoveInvitation,
   useRemoveWorkspaceMember,
   useSendInvitation,
   useWorkspaceInvitations,
@@ -28,8 +29,7 @@ export default function WorkspaceMemberPage() {
   const total = members?.data?.total ?? 0;
 
   // member updation hook
-  const { mutate: updateMember } =
-    useEditWorkspaceMember();
+  const { mutate: updateMember } = useEditWorkspaceMember();
 
   // member deletion hook
   const { mutate: removeMember } = useRemoveWorkspaceMember();
@@ -38,6 +38,8 @@ export default function WorkspaceMemberPage() {
   const { data: invitationsData, isFetching: isInvitationsLoading } =
     useWorkspaceInvitations(workspaceId);
   const invitations = invitationsData?.data ?? [];
+
+  const { mutate: removeInvitation } = useRemoveInvitation();
 
   function sendInvite(data: WorkspaceInvitationPayload) {
     SendInvitation({ workspaceId, data });
@@ -58,6 +60,14 @@ export default function WorkspaceMemberPage() {
     removeMember({ workspaceId, memberId });
   }
 
+  function handleRemoveInvitation(memberEmail: string) {
+    removeInvitation({ workspaceId, userEmail: memberEmail });
+  }
+
+  function handleResend(data:WorkspaceInvitationPayload){
+    SendInvitation({ workspaceId, data });
+  }
+
   return (
     <WorkspaceMembersTemplates
       handleInvite={sendInvite}
@@ -70,6 +80,8 @@ export default function WorkspaceMemberPage() {
       handleStatusUpdate={handleStatusUpdate}
       handleRemoveMember={handleRemoveMember}
       isInvitationsLoading={isInvitationsLoading}
+      handleRemoveInvitation={handleRemoveInvitation}
+      handleResend={handleResend}
     />
   );
 }
