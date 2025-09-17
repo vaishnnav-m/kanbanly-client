@@ -18,7 +18,7 @@ function PricingPageTemplate({ onPlanSelection,isLoading }: PricingPageTemplate)
       <main>
         <PricingSection
           onPlanSelection={onPlanSelection}
-          buttonLabel="Upgrade Plan"
+          buttonLabel="Choose Plan"
           isLoading={isLoading}
         />
       </main>

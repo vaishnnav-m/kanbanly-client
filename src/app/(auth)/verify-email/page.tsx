@@ -16,7 +16,7 @@ const VerifyEmailPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace("/workspaces");
+      router.replace("/billing/pricing");
     }
   }, [isAuthenticated, router]);
 

@@ -18,3 +18,8 @@ export const verifyCheckoutSession = async (sessionId: string) => {
   );
   return result.data;
 };
+
+export const getUserSubscription = async () => {
+  const result = await api.get("/subscriptions/me");
+  return result.data;
+};

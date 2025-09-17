@@ -23,6 +23,9 @@ function UserSidebar() {
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
+  const planName = useSelector(
+    (state: RootState) => state.subscription.planName
+  );
 
   const { data, isPending: isProjectLoading } = useGetAllProjects(workspaceId);
 
@@ -46,8 +49,9 @@ function UserSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="py-5">
         <SidebarMenuButton className="group-data-[state=collapsed]:!px-0 group-data-[state=collapsed]:!pl-1 hover:bg-transparent">
-          <Link href="/workspaces" className="font-bold text-2xl">
+          <Link href="/workspaces" className="flex gap-1 items-center font-bold text-2xl">
             <Logo />
+            <span className="font-light text-xs mt-3">({planName.split(" ")[0]})</span>
           </Link>
         </SidebarMenuButton>
       </SidebarHeader>

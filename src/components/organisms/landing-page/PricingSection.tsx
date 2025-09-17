@@ -14,7 +14,6 @@ import { useGetAllPlans } from "@/lib/hooks/usePlan";
 import { useState } from "react";
 import { Switch } from "@/components/atoms/switch";
 import { checkoutCreationPayload } from "@/lib/api/subscription/subscription.types";
-// import { useRouter } from "next/navigation";
 
 interface PricingSectionProps {
   buttonLabel: string;

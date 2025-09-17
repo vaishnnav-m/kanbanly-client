@@ -15,13 +15,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setCredentials: (
-      state,
-      action: PayloadAction<{
-        isAuthenticated?: boolean;
-        isAdminAuthenticated?: boolean;
-      }>
-    ) => {
+    setCredentials: (state, action: PayloadAction<Partial<AuthState>>) => {
       if (action.payload.isAdminAuthenticated) {
         state.isAdminAuthenticated = true;
       }
