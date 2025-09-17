@@ -43,7 +43,7 @@ export const useSignup = () => {
   >({
     mutationKey: ["signup"],
     mutationFn: signup,
-    onSuccess: (response) => {
+    onSuccess: () => {
       router.push("/signup-success");
     },
     onError: (error: any) => {
@@ -60,14 +60,13 @@ export const useSignup = () => {
 
 export const useLogin = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
   return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
     mutationKey: ["login"],
     mutationFn: userLogin,
-    onSuccess: (response) => {
+    onSuccess: () => {
       toast.showSuccess({
         title: "Welcome back, Commander!",
         description:
@@ -104,7 +103,7 @@ export const useGoogleAuth = () => {
   return useMutation<ApiResponse<LoginResponseData>, Error, { token: string }>({
     mutationKey: ["googleAuth"],
     mutationFn: googleAuth,
-    onSuccess: (response) => {
+    onSuccess: () => {
       toast.showSuccess({
         title: "Welcome aboard!",
         description:
@@ -155,7 +154,7 @@ export const useVerifyEmail = () => {
         })
       );
 
-      router.replace("/workspaces");
+      router.replace("/billing/pricing");
     },
     onError: (error: any) => {
       console.log("Email verification failed:", error);

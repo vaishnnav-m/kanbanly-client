@@ -11,7 +11,7 @@ import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { setToastMessageInstance } from "@/lib/api/axios";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { appConfig } from "@/lib/config";
-import InitAuth from "@/app/InitAuth";
+import InitApp from "@/app/InitAuth";
 
 interface IProps {
   children: React.ReactNode;
@@ -37,7 +37,7 @@ export function Providers({ children }: IProps) {
             <ToastContainer />
             <ToastSetupWrapper>
               <ReduxProvider store={store}>
-                <InitAuth />
+                <InitApp />
                 {children}
               </ReduxProvider>
             </ToastSetupWrapper>

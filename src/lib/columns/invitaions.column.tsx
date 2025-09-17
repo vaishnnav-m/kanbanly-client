@@ -1,11 +1,14 @@
 "use client";
 import { TableColumn } from "@/types/table.types";
-import { InvitationList } from "../api/workspace/workspace.types";
-import { Trash } from "lucide-react";
-import { workspaceRoles } from "@/types/roles.enum";
+import {
+  InvitationList,
+  WorkspaceInvitationPayload,
+} from "../api/workspace/workspace.types";
+import { RefreshCcw, Trash } from "lucide-react";
 
 export const createInvitationColumns = (
-  onRemove: (id: string) => void
+  onRemove: (email: string) => void,
+  onResend: (data: WorkspaceInvitationPayload) => void
 ): TableColumn<InvitationList>[] => [
   {
     key: "invitedEmail",
@@ -46,5 +49,15 @@ export const createInvitationColumns = (
     variant: "ghost",
     icon: (row) => row.role !== "owner" && <Trash />,
     onClick: (row) => onRemove(row.invitedEmail),
+  },
+  {
+    key: "resend",
+    label: "Resend",
+    type: "button",
+    cellClassName: "hover:bg-transperant",
+    variant: "ghost",
+    icon: () => <RefreshCcw />,
+    onClick: (row) =>
+      onResend({ invitedEmail: row.invitedEmail, role: row.role }),
   },
 ];

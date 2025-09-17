@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, LoaderCircle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -13,17 +13,32 @@ import { Button } from "../../atoms/button";
 import { useGetAllPlans } from "@/lib/hooks/usePlan";
 import { useState } from "react";
 import { Switch } from "@/components/atoms/switch";
-import { useRouter } from "next/navigation";
+import { checkoutCreationPayload } from "@/lib/api/subscription/subscription.types";
 
-const PricingSection = () => {
+interface PricingSectionProps {
+  buttonLabel: string;
+  onPlanSelection: (data: checkoutCreationPayload) => void;
+  isLoading: boolean;
+}
+
+const PricingSection = ({
+  buttonLabel,
+  onPlanSelection,
+  isLoading,
+}: PricingSectionProps) => {
   const { data: plansData } = useGetAllPlans();
   const [billing, setBilling] = useState("monthly");
-  const router = useRouter();
+  const [selectedPlanId, setSelectedPlanId] = useState("");
 
   const plans = plansData ? plansData.data : [];
   function handleBillingCycle() {
     setBilling((prev) => (prev === "monthly" ? "yearly" : "monthly"));
   }
+
+  const handlePlanSelection = (planId: string) => {
+    setSelectedPlanId(planId);
+    onPlanSelection({ billingCycle: billing, planId });
+  };
 
   return (
     <section id="pricing" className="py-16 md:py-24 bg-background">
@@ -51,7 +66,7 @@ const PricingSection = () => {
             <span>yearly</span>
           </div>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto">
           {plans &&
             plans.map((plan, index) => (
               <motion.div
@@ -71,7 +86,7 @@ const PricingSection = () => {
                 >
                   {plan.name.toLowerCase() === "professional" && (
                     <div className="bg-primary text-primary-foreground text-sm font-semibold py-1 px-4 rounded-t-md -mb-px text-center w-fit mx-auto relative -top-3">
-                      Most Popular
+                      Recommended
                     </div>
                   )}
                   <CardHeader className="text-center">
@@ -129,7 +144,7 @@ const PricingSection = () => {
                   </CardContent>
                   <CardFooter className="mt-auto">
                     <Button
-                      onClick={() => router.push("/register")}
+                      onClick={() => handlePlanSelection(plan.planId)}
                       size="lg"
                       className={`w-full text-lg ${
                         plan.name.toLowerCase() === "professional"
@@ -142,7 +157,11 @@ const PricingSection = () => {
                           : "outline"
                       }
                     >
-                      Get Started
+                      {isLoading && selectedPlanId === plan.planId ? (
+                        <LoaderCircle className="animate-spin" />
+                      ) : (
+                        buttonLabel
+                      )}
                     </Button>
                   </CardFooter>
                 </Card>

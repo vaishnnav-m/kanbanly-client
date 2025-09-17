@@ -24,8 +24,14 @@ export function middleware(request: NextRequest) {
     "/workspaces",
     "/workspaces/create",
     "/join-workspace",
+    "/billing/pricing",
+    "/billing/checkout",
   ];
-  const ADMIN_PROTECTED_ROUTES = ["/admin/dashboard", "/admin/users","/admin/plans"];
+  const ADMIN_PROTECTED_ROUTES = [
+    "/admin/dashboard",
+    "/admin/users",
+    "/admin/plans",
+  ];
 
   const { pathname } = request.nextUrl;
 

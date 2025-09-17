@@ -21,7 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable}`}>
       <head>
-        <link rel="icon" href="/logo.svg" sizes="any" />
+        <link rel="icon" href="/kanbanly-light.svg" sizes="any" media="(prefers-color-scheme: dark)" />
+        <link rel="icon" href="/kanbanly.svg" sizes="any" media="(prefers-color-scheme: light)" />
       </head>
       <body className="font-inter">
         <Providers>{children}</Providers>

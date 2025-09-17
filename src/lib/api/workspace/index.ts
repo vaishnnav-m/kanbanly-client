@@ -59,6 +59,19 @@ export const getAllInvitations = async (workspaceId: string) => {
   return response.data;
 };
 
+export const removeInvitation = async ({
+  workspaceId,
+  userEmail,
+}: {
+  workspaceId: string;
+  userEmail: string;
+}) => {
+  const response = await api.delete(
+    `/invitations/workspace/${workspaceId}/${userEmail}`
+  );
+  return response.data;
+};
+
 // workspace members
 export const getWorkspaceMembers = async (
   payload: { workspaceId: string },

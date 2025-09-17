@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { setWorkspaceData } from "@/store/slices/workSpaceSlice";
+import Logo from "@/components/atoms/logo";
 
 interface WorkSpacesTemplateProps {
   handleLogout: () => void;
@@ -42,12 +43,7 @@ const WorkSpacesTemplate = ({
         className="flex justify-between items-center p-6 lg:px-12"
       >
         <div className="flex items-center space-x-3">
-          <div
-            className={`w-10 h-10 rounded-xl from-blue-500 to-purple-600 flex items-center justify-center`}
-          >
-            <span className="text-white font-bold text-lg">K</span>
-          </div>
-          <h1 className={`text-2xl font-bold text-foreground`}>Kanbanly</h1>
+          <Logo />
         </div>
 
         <div className="flex items-center space-x-4">

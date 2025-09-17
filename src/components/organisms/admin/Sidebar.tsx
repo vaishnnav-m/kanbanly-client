@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/atoms/button";
+import Logo from "@/components/atoms/logo";
 import { ChevronLeft, Home, FileText, Users, Map } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -19,8 +19,7 @@ export function AppSidebar() {
       {/* Header */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-          <Image width={25} height={25} alt="logo" src="/logo.svg" />
-          {!collapsed && <h2 className="text-lg font-bold">Kanbanly</h2>}
+          <Logo isCollapsed={collapsed} />
         </div>
         <Button
           size="icon"

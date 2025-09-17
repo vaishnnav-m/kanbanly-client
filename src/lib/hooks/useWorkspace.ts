@@ -8,6 +8,7 @@ import {
   getCurrentMember,
   getOneWorkspace,
   getWorkspaceMembers,
+  removeInvitation,
   removeWorkspace,
   removeWorkspaceMember,
   sendInvititation,
@@ -115,9 +116,14 @@ export const useRemoveWorkspace = () => {
 // invitations
 export const useSendInvitation = () => {
   const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
   return useMutation<ApiResponse, Error, SendInvititationArgs>({
     mutationFn: sendInvititation,
     onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["getWorkspaceMembers", "getAllInvitations"],
+      });
       toast.showSuccess({
         title: "Successfully Sent",
         description: response.message,
@@ -160,6 +166,30 @@ export const useWorkspaceInvitations = (workspaceId: string) => {
   });
 };
 
+export const useRemoveInvitation = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ApiResponse,
+    Error,
+    { workspaceId: string; userEmail: string }
+  >({
+    mutationKey: ["removeInvitation"],
+    mutationFn: removeInvitation,
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["getAllInvitations"],
+      });
+      toast.showSuccess({
+        title: "Successfully Deleted",
+        description: response.message,
+        duration: 6000,
+      });
+    },
+  });
+};
+
 // workspace members
 export const useWorkspaceMembers = (workspaceId: string, page: number) => {
   return useQuery<ApiResponse<PaginatedResponse<WorkspaceMember[]>>, Error>({
@@ -190,7 +220,9 @@ export const useEditWorkspaceMember = () => {
         description: response.message,
         duration: 6000,
       });
-      queryClient.invalidateQueries({ queryKey: ["getWorkspaceMembers"] });
+      queryClient.invalidateQueries({
+        queryKey: ["getWorkspaceMembers", "getAllInvitations"],
+      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";

@@ -29,6 +29,8 @@ interface IWorkspaceMembersTemplateProps {
   handleRoleChange: (memberId: string, role: workspaceRoles) => void;
   handleStatusUpdate: (memberId: string, isActive: boolean) => void;
   handleRemoveMember: (memberId: string) => void;
+  handleRemoveInvitation: (memberEmail: string) => void;
+  handleResend: (data: WorkspaceInvitationPayload) => void;
 }
 
 function WorkspaceMembersTemplates({
@@ -42,9 +44,15 @@ function WorkspaceMembersTemplates({
   handleRoleChange,
   handleStatusUpdate,
   handleRemoveMember,
+  handleRemoveInvitation,
+  handleResend,
 }: IWorkspaceMembersTemplateProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  // const [confirmationConfig, setConfirmationConfig] = useState<{
+  //   title: "";
+  //   description: "";
+  // } | null>();
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const role = useSelector((state: RootState) => state.workspace.memberRole);
 
@@ -61,7 +69,10 @@ function WorkspaceMembersTemplates({
     role as workspaceRoles
   );
 
-  const invitationColumns = createInvitationColumns(() => {});
+  const invitationColumns = createInvitationColumns(
+    handleRemoveInvitation,
+    handleResend
+  );
 
   return (
     <main className="flex-1 overflow-auto">
