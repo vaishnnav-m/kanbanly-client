@@ -1,24 +1,16 @@
 "use client";
-import { Button } from "@/components/atoms/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandList,
-} from "@/components/atoms/command";
-import { SidebarTrigger, useSidebar } from "@/components/atoms/sidebar";
-// import SearchBar from "@/components/molecules/SearchBar";
-import { useLogout } from "@/lib/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Bell, LogOut, Settings, User } from "lucide-react";
-// import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Bell, LogOut, Settings, User } from "lucide-react";
+import { Button } from "@/components/atoms/button";
+import { SidebarTrigger, useSidebar } from "@/components/atoms/sidebar";
+import { useLogout } from "@/lib/hooks/useAuth";
 
 function Header() {
   const params = useParams();
@@ -40,12 +32,12 @@ function Header() {
       </div>
       <div>
         {/* <SearchBar placeholder="Search" /> */}
-        <Command className="flex justify-center rounded-lg border shadow-md md:min-w-[450px]">
+        {/* <Command className="flex justify-center rounded-lg border shadow-md md:min-w-[450px]">
           <CommandInput placeholder="Search something..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
           </CommandList>
-        </Command>
+        </Command> */}
       </div>
       <div className="flex gap-5">
         <Link

@@ -1,10 +1,10 @@
 "use client";
 import { Card } from "@/components/atoms/card";
 import React, { useState } from "react";
-import { Folder, Users, Plus, Star, Calendar, Activity } from "lucide-react";
+import { Folder, Users, Plus, Calendar, Activity } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { IProject } from "@/lib/api/project/project.types";
-import { getDate, getStatusColor } from "@/lib/utils";
+import { getDate } from "@/lib/utils";
 import ProjectListSkeleton from "@/components/organisms/project/ProjectListSkeleton";
 import Link from "next/link";
 import { useParams } from "next/navigation";

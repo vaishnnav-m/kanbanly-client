@@ -110,7 +110,7 @@ const PricingSection = ({
                         ? plan.monthlyPrice
                         : plan.yearlyPrice}
                       <span className="text-base font-normal text-foreground/60">
-                        {billing === "monthly" ? "/mo" : "yr"}
+                        {billing === "monthly" ? "/mo" : "/yr"}
                       </span>
                     </p>
                     <CardDescription className="text-foreground/70">

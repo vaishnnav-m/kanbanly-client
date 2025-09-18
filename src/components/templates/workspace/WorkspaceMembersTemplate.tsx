@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/atoms/button";
 import { Card } from "@/components/atoms/card";
+import SearchBar from "@/components/molecules/SearchBar";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import CustomTable from "@/components/organisms/CustomTable";
 import { InviteUserModal } from "@/components/organisms/user/InviteUserModal";
@@ -14,7 +15,7 @@ import { createMemberColumns } from "@/lib/columns/member.column";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
 import { UserPlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 // props type
@@ -55,6 +56,22 @@ function WorkspaceMembersTemplates({
   // } | null>();
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const role = useSelector((state: RootState) => state.workspace.memberRole);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredMembers, setFilteredMembers] = useState<
+    WorkspaceMember[] | []
+  >([]);
+
+  useEffect(() => {
+    if (searchValue) {
+      const normalizedSearch = searchValue.trim().toLowerCase();
+      const filtered = members.filter((member) =>
+        member.email.toLowerCase().includes(normalizedSearch)
+      );
+      setFilteredMembers(filtered);
+    } else {
+      setFilteredMembers(members);
+    }
+  }, [searchValue, members]);
 
   // table customization
   const handleRemove = (id: string) => {
@@ -100,9 +117,13 @@ function WorkspaceMembersTemplates({
                 <div className="flex-1">
                   <span>This workspace has {total} members</span>
                 </div>
-                {/* <div className="flex-1">
-                  <SearchBar placeholder="Search Members" />
-                </div> */}
+                <div className="flex-1">
+                  <SearchBar
+                    placeholder="Search Members"
+                    value={searchValue}
+                    onChange={(value: string) => setSearchValue(value)}
+                  />
+                </div>
                 <div className="flex-1 text-end">
                   {role === "owner" && (
                     <Button onClick={() => setIsModalOpen(true)}>
@@ -114,7 +135,7 @@ function WorkspaceMembersTemplates({
               </div>
               <div className="px-5">
                 <CustomTable<WorkspaceMember>
-                  data={members}
+                  data={filteredMembers}
                   columns={columns}
                   emptyMessage="No Members"
                   isLoading={isMembersLoading}

@@ -7,14 +7,11 @@ import {
   ArrowUpDown,
   Calendar,
   CheckCircle2,
-  User,
-  Trash,
   Ellipsis,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import {
-  ITask,
   TaskCreationPayload,
   TaskListing,
 } from "@/lib/api/task/task.types";
@@ -22,7 +19,6 @@ import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { CreateTaskModal } from "@/components/organisms/task/CreateTask";
-import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import { TaskDetails } from "@/components/organisms/task/TaskDetailModal";
 import { useGetOneTask } from "@/lib/hooks/useTask";
 import {
@@ -30,7 +26,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
@@ -49,7 +44,6 @@ interface TaskListingPageTemplateProps {
 function TaskListingPageTemplate({
   tasks,
   projectId,
-  isRemoving,
   removeTask,
   workspaceId,
   changeStatus,

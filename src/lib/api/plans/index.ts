@@ -15,3 +15,8 @@ export const editPlan = async ({ data, planId }: EditPlanArgs) => {
   const response = await api.put(`/plans/${planId}`, data);
   return response.data;
 };
+
+export const deletePlan = async ({ planId }: { planId: string }) => {
+  const response = await api.delete(`/plans/${planId}`);
+  return response.data;
+};

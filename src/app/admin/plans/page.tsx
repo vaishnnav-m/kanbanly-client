@@ -3,6 +3,7 @@ import { AdminPlansTemplate } from "@/components/templates/admin/AdminPlansTempl
 import { EditPlanArgs, PlanCreationPayload } from "@/lib/api/plans/plans.type";
 import {
   useCreatePlan,
+  useDeletePlan,
   useEditPlan,
   useGetAllPlans,
 } from "@/lib/hooks/usePlan";
@@ -11,6 +12,7 @@ export default function AdminPlansPage() {
   const { data: plansData } = useGetAllPlans();
   const { mutate: createPlan } = useCreatePlan();
   const { mutate: editPlan } = useEditPlan();
+  const { mutate: deletePlan } = useDeletePlan();
 
   const handlePlanCreation = (payload: PlanCreationPayload) => {
     createPlan(payload);
@@ -20,6 +22,10 @@ export default function AdminPlansPage() {
     editPlan(payload);
   };
 
+  const handlePlanDelete = (planId: string) => {
+    deletePlan({ planId });
+  };
+
   const plans = plansData ? plansData.data : [];
 
   return (
@@ -27,6 +33,7 @@ export default function AdminPlansPage() {
       plans={plans}
       createPlan={handlePlanCreation}
       editPlan={handlePlanEditing}
+      deletePlan={handlePlanDelete}
     />
   );
 }
