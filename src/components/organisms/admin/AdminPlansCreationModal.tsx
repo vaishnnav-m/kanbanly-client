@@ -15,9 +15,9 @@ import {
 import { Input } from "@/components/atoms/input";
 import { Infinity } from "lucide-react";
 import { TagInput } from "@/components/molecules/TagInput";
-import { PlanCreationPayload } from "@/lib/api/plans/plans.type";
+import { IPlan, PlanCreationPayload } from "@/lib/api/plans/plans.type";
 import { Textarea } from "@/components/atoms/textarea";
-// import { MultiSelect } from "@/components/molecules/MultiSelect";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Plan name is required"),
@@ -38,19 +38,29 @@ const formSchema = z.object({
   memberLimit: z.string().default("Unlimited"),
   projectLimit: z.string().default("Unlimited"),
   taskLimit: z.string().default("Unlimited"),
-  features: z
-    .array(z.string().min(1, "Feature cannot be empty"))
-    .min(1, "At least one feature is required"),
+  features: z.array(z.string().min(1, "Feature cannot be empty")).optional(),
 });
+
+// type PlanFormInput = Omit<
+//   z.infer<typeof formSchema>,
+//   "monthlyPrice" | "yearlyPrice"
+// > & {
+//   monthlyPrice: string | number;
+//   yearlyPrice: string | number;
+// };
 
 export function AddPlanDialog({
   onAdd,
   isOpen,
   onClose,
+  plan,
+  onEdit,
 }: {
   onAdd: (plan: PlanCreationPayload) => void;
   isOpen: boolean;
   onClose: () => void;
+  plan: IPlan | null;
+  onEdit: (plan: Partial<PlanCreationPayload>) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,8 +77,38 @@ export function AddPlanDialog({
     },
   });
 
+  const { dirtyFields } = form.formState;
+
+  useEffect(() => {
+    if (plan) {
+      form.reset({
+        name: plan.name,
+        description: plan.description,
+        yearlyPrice: plan.yearlyPrice,
+        monthlyPrice: plan.monthlyPrice,
+        workspaceLimit: plan.workspaceLimit,
+        memberLimit: plan.memberLimit,
+        projectLimit: plan.projectLimit,
+        taskLimit: plan.taskLimit,
+        features: plan.features,
+      });
+    }
+  }, [plan, form]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onAdd(values);
+    if (plan) {
+      const dirtyKeys = Object.keys(dirtyFields) as Array<keyof typeof values>;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const editValues = dirtyKeys.reduce((result: any, key) => {
+        result[key] = values[key];
+        return result;
+      }, {} as Partial<PlanCreationPayload>);
+
+      onEdit(editValues);
+    } else {
+      onAdd(values);
+    }
     onClose();
   }
 
@@ -123,7 +163,7 @@ export function AddPlanDialog({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create New Plan"
+      title={plan ? "Edit the plan" : "Create New Plan"}
       text=""
     >
       <Form {...form}>
@@ -325,7 +365,7 @@ export function AddPlanDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">Add</Button>
+            <Button type="submit">{plan ? "Edit" : "Add"}</Button>
           </div>
         </form>
       </Form>

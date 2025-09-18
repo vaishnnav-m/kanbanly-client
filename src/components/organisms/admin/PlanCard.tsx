@@ -16,7 +16,7 @@ export type BillingCycle = "monthly" | "yearly";
 interface PlanCardProps {
   plan: IPlan;
   billing: BillingCycle;
-  onEdit: (id: string) => void;
+  onEdit: (plan: IPlan) => void;
   onDelete: (id: string) => void;
 }
 
@@ -67,7 +67,7 @@ export function PlanCard({ plan, billing, onEdit, onDelete }: PlanCardProps) {
       <CardFooter className="flex items-center justify-end gap-2">
         <Button
           variant="outline"
-          onClick={() => onEdit(plan.planId)}
+          onClick={() => onEdit(plan)}
           aria-label={`Edit ${plan.name}`}
         >
           <Pencil className="mr-2 h-4 w-4" /> Edit

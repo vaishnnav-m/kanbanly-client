@@ -14,6 +14,8 @@ import { useGetAllPlans } from "@/lib/hooks/usePlan";
 import { useState } from "react";
 import { Switch } from "@/components/atoms/switch";
 import { checkoutCreationPayload } from "@/lib/api/subscription/subscription.types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 interface PricingSectionProps {
   buttonLabel: string;
@@ -30,6 +32,10 @@ const PricingSection = ({
   const [billing, setBilling] = useState("monthly");
   const [selectedPlanId, setSelectedPlanId] = useState("");
 
+  const currentPlan = useSelector(
+    (state: RootState) => state.subscription.planName
+  );
+
   const plans = plansData ? plansData.data : [];
   function handleBillingCycle() {
     setBilling((prev) => (prev === "monthly" ? "yearly" : "monthly"));
@@ -41,7 +47,7 @@ const PricingSection = ({
   };
 
   return (
-    <section id="pricing" className="py-16 md:py-24 bg-background">
+    <section id="pricing" className="pt-16 md:pt-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -90,10 +96,16 @@ const PricingSection = ({
                     </div>
                   )}
                   <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-semibold">
+                    <CardTitle className="text-2xl font-semibold flex gap-2 items-center justify-center">
                       {plan.name}
+                      {plan.name == currentPlan && (
+                        <span className="text-sm font-normal text-white/40 mt-2">
+                          (Current Plan)
+                        </span>
+                      )}
                     </CardTitle>
                     <p className="text-4xl font-bold my-2">
+                      &#8377;
                       {billing === "monthly"
                         ? plan.monthlyPrice
                         : plan.yearlyPrice}
@@ -156,6 +168,7 @@ const PricingSection = ({
                           ? "default"
                           : "outline"
                       }
+                      disabled={currentPlan == plan.name || isLoading}
                     >
                       {isLoading && selectedPlanId === plan.planId ? (
                         <LoaderCircle className="animate-spin" />
@@ -168,9 +181,6 @@ const PricingSection = ({
               </motion.div>
             ))}
         </div>
-        <p className="text-center text-foreground/60 mt-12">
-          Payment processing via Stripe/Razorpay will be available soon.
-        </p>
       </div>
     </section>
   );

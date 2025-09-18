@@ -1,5 +1,5 @@
 import api from "../axios";
-import { PlanCreationPayload } from "./plans.type";
+import { EditPlanArgs, PlanCreationPayload } from "./plans.type";
 
 export const createPlan = async (payload: PlanCreationPayload) => {
   const response = await api.post("/plans/", payload);
@@ -8,5 +8,10 @@ export const createPlan = async (payload: PlanCreationPayload) => {
 
 export const getAllPlans = async () => {
   const response = await api.get("/plans");
+  return response.data;
+};
+
+export const editPlan = async ({ data, planId }: EditPlanArgs) => {
+  const response = await api.put(`/plans/${planId}`, data);
   return response.data;
 };

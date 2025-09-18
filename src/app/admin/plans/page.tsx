@@ -1,19 +1,32 @@
 "use client";
 import { AdminPlansTemplate } from "@/components/templates/admin/AdminPlansTemplate";
-import { PlanCreationPayload } from "@/lib/api/plans/plans.type";
-import { useCreatePlan, useGetAllPlans } from "@/lib/hooks/usePlan";
-import React from "react";
+import { EditPlanArgs, PlanCreationPayload } from "@/lib/api/plans/plans.type";
+import {
+  useCreatePlan,
+  useEditPlan,
+  useGetAllPlans,
+} from "@/lib/hooks/usePlan";
 
-export default function AdminPlanCreationPage() {
-  const { mutate: createPlan } = useCreatePlan();
+export default function AdminPlansPage() {
   const { data: plansData } = useGetAllPlans();
+  const { mutate: createPlan } = useCreatePlan();
+  const { mutate: editPlan } = useEditPlan();
 
   const handlePlanCreation = (payload: PlanCreationPayload) => {
     createPlan(payload);
   };
 
-  const plans = plansData ? plansData.data : [];
-  console.log(plansData)
+  const handlePlanEditing = (payload: EditPlanArgs) => {
+    editPlan(payload);
+  };
 
-  return <AdminPlansTemplate plans={plans} createPlan={handlePlanCreation} />;
+  const plans = plansData ? plansData.data : [];
+
+  return (
+    <AdminPlansTemplate
+      plans={plans}
+      createPlan={handlePlanCreation}
+      editPlan={handlePlanEditing}
+    />
+  );
 }
