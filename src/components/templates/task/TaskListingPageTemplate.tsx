@@ -92,7 +92,7 @@ function TaskListingPageTemplate({
   }
 
   return (
-    <div className="min-h-screen bg-background max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card">
         <div className="flex items-center justify-between px-6 py-3">

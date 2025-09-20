@@ -28,7 +28,7 @@ function ProjectListingPageTemplate({
   const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   return (
-    <div className="relative overflow-hidden max-w-7xl mx-auto">
+    <div className="relative overflow-hidden">
       <div className="relative z-10">
         <div className="p-6 md:p-8 h-full">
           <div className="h-full space-y-8">
@@ -90,7 +90,7 @@ function ProjectListingPageTemplate({
             </div>
 
             {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {isLoading ? (
                 <ProjectListSkeleton />
               ) : projects.length ? (

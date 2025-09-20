@@ -56,7 +56,7 @@ function WorkspaceLayout({ children }: { children: ReactNode }) {
       <SidebarInset>
         <Header />
         <div
-          className={`pt-[75px] ${state === "collapsed" ? "pl-16 " : "pl-64"}`}
+          className={`pt-[75px] px-10 ${state === "collapsed" ? "pl-16 " : "pl-[18.5rem]"}`}
         >
           {children}
         </div>
