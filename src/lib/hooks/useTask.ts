@@ -79,10 +79,6 @@ export const useChangeStatus = () => {
     mutationFn: changeStatus,
     mutationKey: ["changeStatus"],
     onSuccess: (response, variables) => {
-      toast.showSuccess({
-        title: "Status Updated Successfully",
-        duration: 6000,
-      });
       queryClient.invalidateQueries({ queryKey: ["getTasks"] });
       queryClient.invalidateQueries({
         queryKey: [

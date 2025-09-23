@@ -19,6 +19,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { AddMemberModal } from "./AddMemberTaskModal";
 import { Input } from "@/components/atoms/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/atoms/tooltip";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -160,21 +165,37 @@ export const TaskDetails = ({
               )}
               <div className="flex items-center gap-2">
                 {task.assignedTo ? (
-                  <Avatar className="h-6 w-6">
-                    {/* <AvatarImage/> */}
-                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
-                      {getAssignedTo(task.assignedTo)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Avatar className="h-6 w-6">
+                        {/* <AvatarImage/> */}
+                        <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
+                          {getAssignedTo(task.assignedTo)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>
+                        {task.assignedTo ? task.assignedTo.email : "unassigned"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
                 ) : (
                   role !== "member" && (
-                    <Button
-                      onClick={() => setIsInvitingUser(true)}
-                      variant="ghost"
-                      className="p-0 hover:bg-transparent"
-                    >
-                      <CircleFadingPlus className="size-6 text-muted-foreground" />
-                    </Button>
+                    <Tooltip >
+                      <TooltipTrigger asChild>
+                        <Button
+                          onClick={() => setIsInvitingUser(true)}
+                          variant="ghost"
+                          className="p-0 hover:bg-transparent"
+                        >
+                          <CircleFadingPlus className="size-6 text-muted-foreground" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>Assign user</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )
                 )}
               </div>
