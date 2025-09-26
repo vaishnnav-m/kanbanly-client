@@ -7,9 +7,11 @@ import {
   useGetAllTasks,
   useRemoveTask,
 } from "@/lib/hooks/useTask";
+import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { TaskStatus } from "@/types/task.enum";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function TasksListingPage() {
@@ -18,6 +20,9 @@ export default function TasksListingPage() {
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: membersData } = useWorkspaceMembers(workspaceId, 1, searchTerm);
+  const members = membersData?.data ? membersData.data.data : [];
 
   // hook to fetch all tasks
   const { data } = useGetAllTasks(workspaceId, projectId);
@@ -58,6 +63,8 @@ export default function TasksListingPage() {
       workspaceId={workspaceId}
       handleEditTask={handleEditTask}
       isEditing={isEditing}
+      setSearchTerm={setSearchTerm}
+      members={members}
     />
   );
 }

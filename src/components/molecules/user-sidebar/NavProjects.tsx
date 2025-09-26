@@ -80,7 +80,7 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
                 )}
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
-                <SidebarMenuButton className="hover:bg-transparent hover:text-white/30" asChild>
+                <SidebarMenuButton asChild>
                   {projects?.length ? (
                     <Link
                       className="text-white/70"

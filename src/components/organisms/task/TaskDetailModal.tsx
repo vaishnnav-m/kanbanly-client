@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import {
   Calendar,
   User,
@@ -17,13 +17,14 @@ import { ITaskDetails, TaskCreationPayload } from "@/lib/api/task/task.types";
 import { ConfirmationModal } from "../admin/ConfirmationModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { AddMemberModal } from "./AddMemberTaskModal";
 import { Input } from "@/components/atoms/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/atoms/tooltip";
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
+import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -32,6 +33,9 @@ interface TaskDetailsProps {
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
+  setSearchTerm: Dispatch<SetStateAction<string>>;
+  members: WorkspaceMember[] | [];
+  onInvite: (taskId: string, data: { assignedTo: string }) => void;
 }
 
 export const TaskDetails = ({
@@ -41,12 +45,15 @@ export const TaskDetails = ({
   removeTask,
   handleEditTask,
   isEditing,
+  members,
+  onInvite,
 }: TaskDetailsProps) => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [isInvitingUser, setIsInvitingUser] = useState(false);
   const [description, setDescription] = useState<string | null>(null);
   const [dueDate, setDueDate] = useState<string | null>(null);
   const [taskName, setTaskName] = useState<string | null>(null);
+  const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
 
   function getAssignedTo(assignedTo: { name: string; email: string }) {
     return assignedTo.email[0].toUpperCase();
@@ -70,9 +77,20 @@ export const TaskDetails = ({
     setDueDate(null);
   }
 
+  // handle invitation of user
+  const handleInvite = (data: {
+    invitedEmail?: string;
+    email?: string;
+    role?: string;
+  }) => {
+    if (data.invitedEmail) {
+      onInvite(task.taskId, { assignedTo: data.invitedEmail });
+    }
+  };
+
   return (
     <div className="fixed top-4 right-4 w-96 h-[calc(100vh-2rem)] z-50">
-      <Card className="h-full flex flex-col shadow-xl border-border bg-card">
+      <Card className="relative h-full flex flex-col shadow-xl border-border bg-card">
         {/* Header */}
         <CardHeader className="flex-shrink-0 pb-4">
           <div className="flex items-center justify-between">
@@ -158,10 +176,13 @@ export const TaskDetails = ({
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Assignee</span>
               {task.assignedTo && role !== "member" && (
-                <PenBox
+                <Button
+                  ref={inviteButtonRef}
                   onClick={() => setIsInvitingUser(true)}
-                  className="size-3 text-muted-foreground cursor-pointer inline ml-2"
-                />
+                  className="size-fit p-0 hover:bg-transparent bg-transparent text-muted-foreground cursor-pointer inline "
+                >
+                  <PenBox className="!size-3" />
+                </Button>
               )}
               <div className="flex items-center gap-2">
                 {task.assignedTo ? (
@@ -182,9 +203,10 @@ export const TaskDetails = ({
                   </Tooltip>
                 ) : (
                   role !== "member" && (
-                    <Tooltip >
+                    <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
+                          ref={inviteButtonRef}
                           onClick={() => setIsInvitingUser(true)}
                           variant="ghost"
                           className="p-0 hover:bg-transparent"
@@ -377,12 +399,24 @@ export const TaskDetails = ({
           </Tabs> */}
         </CardContent>
 
-        <AddMemberModal
+        {/* <AddMemberModal
           isLoading={isEditing}
           isOpen={isInvitingUser}
           onClose={() => setIsInvitingUser(false)}
           onInvite={handleEditTask}
           taskId={task.taskId}
+        /> */}
+        <InviteUserDropdown
+          buttonRef={inviteButtonRef}
+          isLoading={isEditing}
+          isOpen={isInvitingUser}
+          onClose={() => setIsInvitingUser(false)}
+          onInvite={handleInvite}
+          suggestions={members?.map((m) => ({
+            id: m._id,
+            name: m.name,
+            email: m.email,
+          }))}
         />
         <ConfirmationModal
           isOpen={isConfirmationOpen}

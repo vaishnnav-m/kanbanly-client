@@ -1,12 +1,11 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   Plus,
   Search,
   Filter,
   ArrowUpDown,
   Calendar,
-  CheckCircle2,
   Ellipsis,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
@@ -27,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/atoms/select";
 import { BoardView } from "@/components/organisms/project/BoardView";
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -37,6 +37,8 @@ interface TaskListingPageTemplateProps {
   workspaceId: string;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
+  setSearchTerm: Dispatch<SetStateAction<string>>;
+  members: WorkspaceMember[] | [];
 }
 
 function TaskListingPageTemplate({
@@ -47,6 +49,8 @@ function TaskListingPageTemplate({
   changeStatus,
   handleEditTask,
   isEditing,
+  setSearchTerm,
+  members,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -61,6 +65,13 @@ function TaskListingPageTemplate({
       enabled: isTaskModalOpen && !!selectedTask,
     }
   );
+
+  const boardTasks = tasks.map((task) => ({
+    taskId: task.taskId,
+    task: task.task,
+    status: task.status,
+    assignedTo: task.assignedTo as string,
+  }));
 
   const [activeTab, setActiveTab] = useState("Board");
   const tabs = ["Overview", "List", "Board", "Timeline"];
@@ -93,9 +104,6 @@ function TaskListingPageTemplate({
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-primary flex items-center justify-center">
-                <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
-              </div>
               <h1 className="text-lg font-semibold text-foreground">
                 {projectName}
               </h1>
@@ -126,7 +134,7 @@ function TaskListingPageTemplate({
       {/* Content */}
       <div className="p-6">
         {activeTab === "Board" && tasks.length && (
-          <BoardView tasksData={tasks} handleStatusChange={handleChange} />
+          <BoardView tasksData={boardTasks} handleStatusChange={handleChange} />
         )}
 
         {activeTab === "List" && (
@@ -312,6 +320,9 @@ function TaskListingPageTemplate({
         isVisible={isTaskModalOpen}
         close={() => setIsTaskModalOpen(false)}
         task={taskData && taskData.data}
+        setSearchTerm={setSearchTerm}
+        members={members}
+        onInvite={(taskId, data) => handleEditTask(taskId, data)}
         isEditing={isEditing}
       />
     </div>

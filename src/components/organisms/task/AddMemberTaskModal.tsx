@@ -19,6 +19,10 @@ export const AddMemberModal = ({
 }: AddMemberModalProps) => {
   const [email, setEmail] = useState("");
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
   const handleInvite = () => {
     onInvite(taskId, { assignedTo: email });
     setEmail("");
@@ -54,7 +58,7 @@ export const AddMemberModal = ({
           type="email"
           placeholder="E-mail address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleChange}
           className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-inherit text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors duration-300"
         />
       </div>

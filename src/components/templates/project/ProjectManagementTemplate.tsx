@@ -1,14 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Edit3,
   Save,
   X,
   Trash,
   Users,
-  Table,
   Plus,
-  EllipsisIcon,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
@@ -24,9 +22,9 @@ import {
 import { getDate } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
 import DataTable from "@/components/organisms/DataTable";
-import { InviteUserProjectModal } from "@/components/organisms/project/InviteUserProjectModal";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { ButtonConfig } from "@/types/table.types";
+import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
 
 interface ProjectManagementTemplateProps {
   projectData: Omit<IProject, "workspaceId" | "slug" | "createdBy">;
@@ -53,12 +51,14 @@ export function ProjectManagementTemplate({
   members,
   isProjectMembersFetching,
   handleMemberRemoving,
-  isMemberRemoving,
+  // isMemberRemoving,
 }: ProjectManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProjectEditingPayload | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   // member removal
   const [modalType, setModalType] = useState<"project" | "member" | null>(null);
   const [selectedMember, setSelectedMember] = useState("");
@@ -83,6 +83,13 @@ export function ProjectManagementTemplate({
 
   const havePermission =
     role === workspaceRoles.owner || role === workspaceRoles.projectManager;
+
+  // Wrapper function to handle the dropdown invitation format
+  const handleDropdownInvite = (data: { invitedEmail?: string; email?: string; role?: string }) => {
+    if (data.email) {
+      handleMemberAdding({ email: data.email });
+    }
+  };
 
   // members table
   const headings = ["Name", "Email", "Role", "Action"];
@@ -261,12 +268,17 @@ export function ProjectManagementTemplate({
           {/* Members Card */}
           <Card className="bg-blue-200/5 border-workspace-border">
             <CardContent className="p-8">
-              {havePermission && <div className="w-full text-end pb-5">
-                <Button onClick={() => setIsInviteModalOpen(true)}>
-                  <Plus />
-                  Add User
-                </Button>
-              </div>}
+              {havePermission && (
+                <div className="w-full text-end pb-5">
+                  <Button
+                    ref={buttonRef}
+                    onClick={() => setIsDropdownOpen(true)}
+                  >
+                    <Plus />
+                    Add User
+                  </Button>
+                </div>
+              )}
               <div className="flex items-start gap-8">
                 <DataTable
                   headings={headings}
@@ -282,11 +294,12 @@ export function ProjectManagementTemplate({
           </Card>
         </div>
       </div>
-      <InviteUserProjectModal
-        isOpen={isInviteModalOpen}
+      <InviteUserDropdown
+        isOpen={isDropdownOpen}
         isLoading={isMemberAdding}
-        onClose={() => setIsInviteModalOpen(false)}
-        onInvite={handleMemberAdding}
+        onClose={() => setIsDropdownOpen(false)}
+        onInvite={handleDropdownInvite}
+        buttonRef={buttonRef}
       />
       <ConfirmationModal
         isOpen={modalType !== null}
