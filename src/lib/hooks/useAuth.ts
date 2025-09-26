@@ -154,7 +154,7 @@ export const useVerifyEmail = () => {
         })
       );
 
-      router.replace("/billing/pricing");
+      router.replace("/workspaces");
     },
     onError: (error: any) => {
       console.log("Email verification failed:", error);

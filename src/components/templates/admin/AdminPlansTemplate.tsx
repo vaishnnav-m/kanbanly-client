@@ -1,28 +1,47 @@
 "use client";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/atoms/button";
 import { AddPlanDialog } from "@/components/organisms/admin/AdminPlansCreationModal";
 import { BillingCycle, PlanCard } from "@/components/organisms/admin/PlanCard";
-import { IPlan, PlanCreationPayload } from "@/lib/api/plans/plans.type";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import {
+  EditPlanArgs,
+  IPlan,
+  PlanCreationPayload,
+} from "@/lib/api/plans/plans.type";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 
 interface AdminPlansTemplateProps {
   createPlan: (payload: PlanCreationPayload) => void;
+  editPlan: (payload: EditPlanArgs) => void;
+  deletePlan: (planId: string) => void;
   plans?: IPlan[];
 }
 
 export const AdminPlansTemplate = ({
   createPlan,
+  editPlan,
   plans = [],
+  deletePlan,
 }: AdminPlansTemplateProps) => {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<IPlan | null>(null);
+  const [deletingPlanId, setDeletingPlanId] = useState("");
 
-  const handleEdit = (id: string) => {
-    console.log(id);
+  const handleEdit = (plan: IPlan) => {
+    setEditingPlan(plan);
+    setIsModalOpen(true);
   };
+
+  const submitEditedTask = (newPlan: Partial<PlanCreationPayload>) => {
+    if (editingPlan) {
+      editPlan({ data: newPlan, planId: editingPlan.planId });
+    }
+  };
+
   const handleDelete = (id: string) => {
-    console.log(id);
+    setDeletingPlanId(id);
   };
 
   return (
@@ -47,10 +66,7 @@ export const AdminPlansTemplate = ({
                 Yearly
               </Button>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => setIsModalOpen(true)}
-            >
+            <Button variant="outline" onClick={() => setIsModalOpen(true)}>
               <Plus /> Add Plan
             </Button>
           </div>
@@ -69,10 +85,25 @@ export const AdminPlansTemplate = ({
           </section>
         </main>
       </div>
+      <ConfirmationModal
+        isOpen={!!deletingPlanId}
+        onClose={() => setDeletingPlanId("")}
+        onConfirm={() => {
+          deletePlan(deletingPlanId);
+          setDeletingPlanId("");
+        }}
+        title="Are you sure to remove the plan ?"
+        description="If you remove the plan you will not able to undo the change"
+        confirmText="Proceed"
+        cancelText="Cancel"
+        isDestructive={false}
+      />
       <AddPlanDialog
         isOpen={isModalOpen}
         onAdd={createPlan}
         onClose={() => setIsModalOpen(false)}
+        plan={editingPlan}
+        onEdit={submitEditedTask}
       />
     </div>
   );

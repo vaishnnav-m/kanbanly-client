@@ -191,10 +191,14 @@ export const useRemoveInvitation = () => {
 };
 
 // workspace members
-export const useWorkspaceMembers = (workspaceId: string, page: number) => {
+export const useWorkspaceMembers = (
+  workspaceId: string,
+  page: number,
+  search?: string
+) => {
   return useQuery<ApiResponse<PaginatedResponse<WorkspaceMember[]>>, Error>({
-    queryKey: ["getWorkspaceMembers", workspaceId],
-    queryFn: () => getWorkspaceMembers({ workspaceId }, page),
+    queryKey: ["getWorkspaceMembers", workspaceId, page, search],
+    queryFn: () => getWorkspaceMembers(workspaceId, page, search),
     enabled: !!workspaceId,
   });
 };

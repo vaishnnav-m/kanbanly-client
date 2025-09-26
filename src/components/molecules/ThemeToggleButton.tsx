@@ -141,7 +141,7 @@ export function ThemeToggleButton() {
                   scale: { duration: 0.2 },
                 }}
               >
-                <Monitor size={18} className="text-gray-500" strokeWidth={2} />
+                <Monitor size={18} className="text-white/70" strokeWidth={2} />
               </motion.div>
             </motion.div>
           )}

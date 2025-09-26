@@ -49,9 +49,16 @@ function UserSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="py-5">
         <SidebarMenuButton className="group-data-[state=collapsed]:!px-0 group-data-[state=collapsed]:!pl-1 hover:bg-transparent">
-          <Link href="/workspaces" className="flex gap-1 items-center font-bold text-2xl">
+          <Link
+            href="/workspaces"
+            className="flex gap-1 items-center font-bold text-2xl"
+          >
             <Logo />
-            <span className="font-light text-xs mt-3">({planName.split(" ")[0]})</span>
+            {planName && (
+              <span className="font-normal text-xs text-white/70 mt-3">
+                ({planName.split(" ")[0].toLocaleLowerCase()})
+              </span>
+            )}
           </Link>
         </SidebarMenuButton>
       </SidebarHeader>

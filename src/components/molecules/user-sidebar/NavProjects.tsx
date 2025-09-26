@@ -14,7 +14,7 @@ import { CreateProjectModal } from "@/components/organisms/project/CreateProject
 import { IProject } from "@/lib/api/project/project.types";
 import { setprojectData } from "@/store/slices/projectSlice";
 import { workspaceRoles } from "@/types/roles.enum";
-import { Folders, Plus } from "lucide-react";
+import { FolderClosed, FolderOpen, List, Plus } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -39,7 +39,7 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
       `/workspaces/${params.slug}/projects/${project.projectId}/tasks`
     );
   }
-  
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>
@@ -65,12 +65,15 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
                 ) : (
                   projects?.map((project) => (
                     <SidebarMenuSubButton
+                      className="cursor-pointer"
                       key={project.projectId}
                       onClick={() => handleProjectClick(project)}
                     >
-                      <div
-                        className={` h-3 w-3 rounded-full bg-blue-500 transition-transform duration-200 group-hover:scale-110`}
-                      />
+                      {params.projectId === project.projectId ? (
+                        <FolderOpen className="stroke-primary" />
+                      ) : (
+                        <FolderClosed />
+                      )}
                       {project.name}
                     </SidebarMenuSubButton>
                   ))
@@ -78,10 +81,17 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
               </SidebarMenuSubItem>
               <SidebarMenuSubItem>
                 <SidebarMenuButton asChild>
-                  <Link href={`/workspaces/${params.slug}/projects`}>
-                    <Folders />
-                    All Projects
-                  </Link>
+                  {projects?.length ? (
+                    <Link
+                      className="text-white/70"
+                      href={`/workspaces/${params.slug}/projects`}
+                    >
+                      <List />
+                      All Projects
+                    </Link>
+                  ) : (
+                    <span className="text-white/30">No Projects</span>
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>

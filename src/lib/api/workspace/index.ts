@@ -74,11 +74,12 @@ export const removeInvitation = async ({
 
 // workspace members
 export const getWorkspaceMembers = async (
-  payload: { workspaceId: string },
-  page: number
+  workspaceId: string,
+  page: number,
+  search?: string
 ) => {
   const response = await api.get(
-    `/workspace/${payload.workspaceId}/members?page=${page}`
+    `/workspace/${workspaceId}/members?page=${page}&search=${search}`
   );
   return response.data;
 };
