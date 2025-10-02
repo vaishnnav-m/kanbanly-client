@@ -3,6 +3,7 @@ import TaskListingPageTemplate from "@/components/templates/task/TaskListingPage
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import {
   useChangeStatus,
+  useCreateTask,
   useEditTask,
   useGetAllTasks,
   useRemoveTask,
@@ -27,6 +28,9 @@ export default function TasksListingPage() {
   // hook to fetch all tasks
   const { data } = useGetAllTasks(workspaceId, projectId);
 
+  // hook to create task
+  const { mutate: createTask, isPending: isCreating } = useCreateTask();
+
   // remove task hook
   const { mutate: removeTask, isPending: isLoading } = useRemoveTask();
   const tasks = data?.data ? data.data : [];
@@ -35,6 +39,15 @@ export default function TasksListingPage() {
   const { mutate: changeStatus } = useChangeStatus();
 
   const { mutate: editTask, isPending: isEditing } = useEditTask();
+
+  // function to handle task creation
+  function handleCreateTask(data: TaskCreationPayload) {
+    createTask({
+      workspaceId,
+      projectId,
+      data,
+    });
+  }
 
   function handleChangeStatus(newStatus: TaskStatus, taskId: string) {
     changeStatus({ workspaceId, taskId, projectId, data: { newStatus } });
@@ -56,6 +69,8 @@ export default function TasksListingPage() {
   return (
     <TaskListingPageTemplate
       tasks={tasks}
+      createTask={handleCreateTask}
+      isCreating={isCreating}
       projectId={params.projectId as string}
       changeStatus={handleChangeStatus}
       isRemoving={isLoading}

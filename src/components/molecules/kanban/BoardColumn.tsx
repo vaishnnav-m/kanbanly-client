@@ -1,30 +1,25 @@
 import { BoardTask } from "@/types/board.types";
-import {
-  Dispatch,
-  DragEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { DragEvent, useEffect, useState } from "react";
 import { TaskCard } from "./TaskCard";
 import { DropIndicator } from "./DropIndicator";
 import { AddTaskCard } from "./AddTaskCard";
 import { TaskStatus } from "@/types/task.enum";
+import { TaskCreationPayload } from "@/lib/api/task/task.types";
 
 export const BoardColumn = ({
   title,
   headingColor,
   status,
   tasks,
-  setTasks,
   handleStatusChange,
+  createTask,
 }: {
   title: string;
   headingColor: string;
   status: TaskStatus;
   tasks: BoardTask[];
-  setTasks: Dispatch<SetStateAction<BoardTask[]>>;
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
+  createTask: (task: TaskCreationPayload) => void;
 }) => {
   const [active, setActive] = useState(false);
   const [completedEffect, setCompletedEffect] = useState(false);
@@ -37,7 +32,11 @@ export const BoardColumn = ({
     }
   }, [completedEffect]);
 
-  const handleDragStart = (e: DragEvent<HTMLDivElement>, task: BoardTask) => {
+  const handleDragStart = (
+    e: DragEvent<HTMLDivElement>,
+    task: Omit<BoardTask, "workItemType">
+  ) => {
+    console.log("drag start", task);
     e.dataTransfer?.setData("taskId", task.taskId);
   };
 
@@ -84,7 +83,6 @@ export const BoardColumn = ({
       }
 
       handleStatusChange(status, cardToTransfer.taskId);
-      setTasks(copy);
     }
 
     if (status === TaskStatus.Completed) {
@@ -171,7 +169,7 @@ export const BoardColumn = ({
           />
         ))}
         <DropIndicator beforeId={"-1"} status={status} />
-        <AddTaskCard status={status} setTasks={setTasks} />
+        <AddTaskCard status={status} createTask={createTask} />
       </div>
     </div>
   );

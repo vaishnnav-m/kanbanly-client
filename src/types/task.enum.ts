@@ -10,10 +10,8 @@ export enum TaskStatus {
   Completed = "completed",
 }
 
-export enum TaskType {
+export enum WorkItemType {
   Bug = "bug",
   Feature = "feature",
-  Improvement = "improvement",
-  Chore = "chore",
-  Documentation = "documentation",
+  Task = "task",
 }

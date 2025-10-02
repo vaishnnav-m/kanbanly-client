@@ -1,6 +1,5 @@
 import api from "../axios";
 import {
-  ITask,
   StatusChangingArgs,
   TaskCreationArgs,
   TaskEditArgs,

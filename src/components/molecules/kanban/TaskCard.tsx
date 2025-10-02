@@ -15,7 +15,10 @@ export const TaskCard = ({
   assignedTo,
   handleDragStart,
 }: BoardTask & {
-  handleDragStart: (e: DragEvent<HTMLDivElement>, task: BoardTask) => void;
+  handleDragStart: (
+    e: DragEvent<HTMLDivElement>,
+    task: Omit<BoardTask, "workItemType">
+  ) => void;
 }) => {
   const [isInvitingUser, setIsInvitingUser] = useState(false);
 
@@ -23,7 +26,7 @@ export const TaskCard = ({
     return assignedTo.toUpperCase();
   }
   const role = useSelector((state: RootState) => state.workspace.memberRole);
-  
+
   return (
     <>
       <DropIndicator beforeId={taskId} status={status} />
@@ -59,6 +62,7 @@ export const TaskCard = ({
                   onClick={() => setIsInvitingUser(true)}
                   variant="ghost"
                   className="p-0 hover:bg-transparent"
+                  disabled={isInvitingUser}
                 >
                   <User className="size-6 text-muted-foreground" />
                 </Button>

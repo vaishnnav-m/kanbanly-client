@@ -1,42 +1,54 @@
 "use client";
 import { BoardColumn } from "@/components/molecules/kanban/BoardColumn";
+import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { BoardTask } from "@/types/board.types";
-import { TaskStatus } from "@/types/task.enum";
-import { useState } from "react";
+import { TaskPriority, TaskStatus } from "@/types/task.enum";
 
 export const BoardView = ({
   tasksData,
   handleStatusChange,
+  createTask,
 }: {
   tasksData: BoardTask[];
+  createTask: (task: TaskCreationPayload) => void;
+  isCreating: boolean;
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
 }) => {
-  const [tasks, setTasks] = useState<BoardTask[]>(tasksData);
+  const handleCreateTask = (task: TaskCreationPayload) => {
+    const newTask: TaskCreationPayload = {
+      task: task.task,
+      status: task.status,
+      workItemType: task.workItemType,
+      priority: TaskPriority.low,
+      assignedTo: task.assignedTo,
+    };
+    createTask(newTask);
+  };
 
   return (
     <div className="w-full h-full flex gap-3">
       <BoardColumn
-        tasks={tasks}
+        tasks={tasksData}
+        createTask={handleCreateTask}
         title="TO DO"
         status={TaskStatus.Todo}
         headingColor="text-yellow-200"
-        setTasks={setTasks}
         handleStatusChange={handleStatusChange}
       />
       <BoardColumn
-        tasks={tasks}
+        tasks={tasksData}
         title="IN PROGRESS"
+        createTask={handleCreateTask}
         status={TaskStatus.InProgress}
         headingColor="text-blue-200"
-        setTasks={setTasks}
         handleStatusChange={handleStatusChange}
       />
       <BoardColumn
-        tasks={tasks}
+        tasks={tasksData}
         title="COMPLETED"
+        createTask={handleCreateTask}
         status={TaskStatus.Completed}
         headingColor="text-emerald-200"
-        setTasks={setTasks}
         handleStatusChange={handleStatusChange}
       />
     </div>

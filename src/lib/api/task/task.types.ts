@@ -1,12 +1,14 @@
-import { TaskPriority, TaskStatus } from "@/types/task.enum";
+import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "../workspace/workspace.types";
 
 export interface TaskCreationPayload {
   task: string;
   description?: string;
+  workItemType: WorkItemType;
   priority: TaskPriority;
+  status?: TaskStatus;
   assignedTo?: string;
-  dueDate: Date | string;
+  dueDate?: Date | string;
 }
 
 export interface TaskCreationArgs {
@@ -28,6 +30,7 @@ export interface ITask {
   description: string;
   priority: TaskPriority;
   status: TaskStatus;
+  workItemType: WorkItemType;
   assignedTo?: string | WorkspaceMember;
   dueDate: Date;
 }
@@ -49,6 +52,7 @@ export interface ITaskDetails {
     name: string;
   } | null;
   priority: TaskPriority;
+  workItemType: WorkItemType;
   dueDate: Date;
 }
 
