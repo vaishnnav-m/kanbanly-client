@@ -8,11 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
+import { TaskStatus } from "@/types/task.enum";
 
 interface IssueCardProps {
   id: string;
   title: string;
-  status: "TODO" | "IN_PROGRESS" | "DONE";
+  status: TaskStatus;
+  type: string;
   assignee?: {
     name: string;
     avatar?: string;
@@ -22,20 +24,17 @@ interface IssueCardProps {
   onCheckedChange?: (checked: boolean) => void;
 }
 
-// const statusColors = {
-//   TODO: "status-todo",
-//   IN_PROGRESS: "status-progress",
-//   DONE: "status-done",
-// };
-
 export function IssueCard({
   id,
   title,
   status,
+  // type,
   assignee,
   checked = false,
   onCheckedChange,
 }: IssueCardProps) {
+  const statusValues = Object.values(TaskStatus);
+
   return (
     <div className="flex items-center gap-3 p-3 bg-backlog-section border border-border rounded-md hover:bg-issue-hover transition-colors group">
       <Checkbox
@@ -57,24 +56,15 @@ export function IssueCard({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="TODO" className="text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-status-todo rounded-full"></div>
-                TODO
-              </div>
-            </SelectItem>
-            <SelectItem value="IN_PROGRESS" className="text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-status-progress rounded-full"></div>
-                IN PROGRESS
-              </div>
-            </SelectItem>
-            <SelectItem value="DONE" className="text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-status-done rounded-full"></div>
-                DONE
-              </div>
-            </SelectItem>
+            {statusValues.map((value) => (
+              <SelectItem
+                key={value}
+                className="focus:bg-slate-500/40"
+                value={value.toLowerCase()}
+              >
+                {value}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
