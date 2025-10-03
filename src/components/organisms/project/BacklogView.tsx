@@ -41,59 +41,6 @@ export interface Section {
   sprintStatus?: string;
 }
 
-const mockSections: Section[] = [
-  {
-    id: "sprint-1",
-    title: "SCRUM Sprint 1",
-    subtitle: "Add dates",
-    type: "sprint",
-    issueCount: 2,
-    expanded: true,
-    issues: [
-      {
-        id: "SCRUM-4",
-        title: "Create user profile page",
-        status: "TODO",
-        assignee: { name: "John Doe", fallback: "JD" },
-      },
-      {
-        id: "SCRUM-5",
-        title: "Add notification system",
-        status: "IN_PROGRESS",
-        assignee: { name: "Sarah Miller", fallback: "SM" },
-      },
-    ],
-    sprintStatus: "planned",
-  },
-  {
-    id: "backlog",
-    title: "Backlog",
-    type: "backlog",
-    issueCount: 3,
-    expanded: true,
-    issues: [
-      {
-        id: "SCRUM-6",
-        title: "Implement search functionality",
-        status: "TODO",
-        assignee: { name: "Mike Johnson", fallback: "MJ" },
-      },
-      {
-        id: "SCRUM-7",
-        title: "Add dark mode support",
-        status: "TODO",
-        assignee: { name: "Alex Brown", fallback: "AB" },
-      },
-      {
-        id: "SCRUM-8",
-        title: "Create API documentation",
-        status: "TODO",
-        assignee: { name: "Emma Wilson", fallback: "EW" },
-      },
-    ],
-  },
-];
-
 interface BacklogViewProps {
   addEpic: (title: string) => void;
   epics: IEpic[] | [];

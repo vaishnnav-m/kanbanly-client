@@ -250,11 +250,6 @@ function TaskListingPageTemplate({
             addEpic={addEpic}
             epics={epics}
             tasks={formatedTasks}
-            // projectId={projectId}
-            // handlePriorityChange={handlePriorityChange}
-            // handleStatusChange={handleStatusChange}
-            // setIsTaskModalOpen={setIsTaskModalOpen}
-            // setSelectedTask={setSelectedTask}
           />
         )}
       </div>
