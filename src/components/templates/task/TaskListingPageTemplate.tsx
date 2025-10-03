@@ -9,7 +9,11 @@ import { useGetOneTask } from "@/lib/hooks/useTask";
 import { BoardView } from "@/components/organisms/project/BoardView";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { ListView } from "@/components/organisms/project/ListView";
-import { BacklogView } from "@/components/organisms/project/BacklogView";
+import {
+  BacklogView,
+  Section,
+} from "@/components/organisms/project/BacklogView";
+import { IEpic } from "@/lib/api/epic/epic.types";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -24,6 +28,8 @@ interface TaskListingPageTemplateProps {
   isEditing: boolean;
   setSearchTerm: Dispatch<SetStateAction<string>>;
   members: WorkspaceMember[] | [];
+  addEpic: (title: string) => void;
+  epics: IEpic[] | [];
 }
 
 function TaskListingPageTemplate({
@@ -38,6 +44,8 @@ function TaskListingPageTemplate({
   isEditing,
   setSearchTerm,
   members,
+  addEpic,
+  epics,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -52,6 +60,7 @@ function TaskListingPageTemplate({
     }
   );
 
+  // map tasks to board view format
   const boardTasks = tasks.map((task) => ({
     taskId: task.taskId,
     task: task.task,
@@ -59,6 +68,109 @@ function TaskListingPageTemplate({
     assignedTo: task.assignedTo as string,
     workItemType: task.workItemType,
   }));
+
+  // Helper to create initials
+  const createFallback = (name: string) => {
+    if (!name) return "?";
+    const parts = name.split(" ");
+    return parts.length > 1
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : name.substring(0, 2).toUpperCase();
+  };
+
+  // filter tasks for backlog view
+  interface Sprint {
+    _id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+  }
+
+  type Issue = {
+    id: string;
+    title: string;
+    status: TaskStatus;
+    assignee: { name: string; fallback: string };
+  };
+
+  const formatDataIntoSections = (
+    tasks: TaskListing[],
+    members: WorkspaceMember[],
+    sprints: Sprint[]
+  ): Section[] => {
+    // Step 1: Group tasks by sprintId. This is highly efficient for lookups later.
+    const tasksBySprint = tasks.reduce<Record<string, TaskListing[]>>((acc, task) => {
+      const key = task.sprintId || "backlog";
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(task);
+      return acc;
+    }, {});
+
+    // Reusable helper to format raw task objects into the 'issue' structure
+    const createIssuesArray = (rawTasks: TaskListing[]): Issue[] => {
+      return rawTasks.map((task) => {
+        const member = members.find((m) => m._id === task.assignedTo);
+        const assignee = member
+          ? { name: member.name, fallback: createFallback(member.name) }
+          : { name: "Unassigned", fallback: "U" };
+        return {
+          id: task.taskId,
+          title: task.task,
+          status: task.status,
+          assignee,
+        };
+      });
+    };
+
+    // Step 2: Create sections for each sprint from the backend
+    const sprintSections: Section[] = sprints.map((sprint) => {
+      const sprintTasks = tasksBySprint[sprint._id] || []; // Gracefully handle sprints with no tasks
+      const issues = createIssuesArray(sprintTasks);
+
+      // Format the date for the subtitle
+      const formatDate = (dateString: string): string =>
+        new Date(dateString).toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+        });
+
+      return {
+        id: sprint._id,
+        title: sprint.title,
+        subtitle: `${formatDate(sprint.startDate)} - ${formatDate(
+          sprint.endDate
+        )}`,
+        type: "sprint",
+        issueCount: issues.length,
+        sprintStatus: sprint.status,
+        expanded: true,
+        issues: issues,
+      };
+    });
+
+    // Step 3: Create the backlog section if there are any backlog tasks
+    const backlogTasks = tasksBySprint.backlog || [];
+    const allSections: Section[] = [...sprintSections];
+
+    if (backlogTasks.length > 0) {
+      const backlogIssues = createIssuesArray(backlogTasks);
+      allSections.push({
+        id: "backlog-section",
+        title: "Backlog",
+        subtitle: "",
+        type: "backlog",
+        issueCount: backlogIssues.length,
+        sprintStatus: "",
+        expanded: true,
+        issues: backlogIssues,
+      });
+    }
+
+    return allSections;
+  };
+
+  const formatedTasks: Section[] = formatDataIntoSections(tasks, members, []);
 
   const [activeTab, setActiveTab] = useState("Board");
   const tabs = ["Board", "List", "Backlog", "Timeline"];
@@ -135,12 +247,14 @@ function TaskListingPageTemplate({
 
         {activeTab === "Backlog" && (
           <BacklogView
-          // tasks={tasks}
-          // projectId={projectId}
-          // handlePriorityChange={handlePriorityChange}
-          // handleStatusChange={handleStatusChange}
-          // setIsTaskModalOpen={setIsTaskModalOpen}
-          // setSelectedTask={setSelectedTask}
+            addEpic={addEpic}
+            epics={epics}
+            tasks={formatedTasks}
+            // projectId={projectId}
+            // handlePriorityChange={handlePriorityChange}
+            // handleStatusChange={handleStatusChange}
+            // setIsTaskModalOpen={setIsTaskModalOpen}
+            // setSelectedTask={setSelectedTask}
           />
         )}
       </div>

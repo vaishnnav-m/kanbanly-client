@@ -32,6 +32,7 @@ export interface ITask {
   status: TaskStatus;
   workItemType: WorkItemType;
   assignedTo?: string | WorkspaceMember;
+  sprintId?: string;
   dueDate: Date;
 }
 

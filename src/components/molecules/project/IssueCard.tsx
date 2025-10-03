@@ -1,7 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import { Badge } from "@/components/atoms/badge";
 import { Checkbox } from "@/components/atoms/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/atoms/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/atoms/select";
 
 interface IssueCardProps {
   id: string;
@@ -39,14 +45,13 @@ export function IssueCard({
       />
 
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        <Badge variant="outline" className="text-xs font-mono flex-shrink-0">
-          {id}
-        </Badge>
-
         <span className="text-sm text-foreground flex-1 truncate">{title}</span>
       </div>
 
       <div className="flex items-center gap-3 flex-shrink-0">
+        <Badge variant="outline" className="text-xs font-mono flex-shrink-0">
+          {id}
+        </Badge>
         <Select defaultValue={status}>
           <SelectTrigger className="w-28 h-8 text-xs">
             <SelectValue />

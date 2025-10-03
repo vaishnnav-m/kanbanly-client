@@ -1,6 +1,7 @@
 "use client";
 import TaskListingPageTemplate from "@/components/templates/task/TaskListingPageTemplate";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
+import { useAddEpic, useGetAllEpics } from "@/lib/hooks/useEpic";
 import {
   useChangeStatus,
   useCreateTask,
@@ -27,18 +28,26 @@ export default function TasksListingPage() {
 
   // hook to fetch all tasks
   const { data } = useGetAllTasks(workspaceId, projectId);
+  const tasks = data?.data ? data.data : [];
 
   // hook to create task
   const { mutate: createTask, isPending: isCreating } = useCreateTask();
 
   // remove task hook
   const { mutate: removeTask, isPending: isLoading } = useRemoveTask();
-  const tasks = data?.data ? data.data : [];
 
   // hook to change status
   const { mutate: changeStatus } = useChangeStatus();
 
+  // hook to edit task
   const { mutate: editTask, isPending: isEditing } = useEditTask();
+
+  // hook to add epic
+  const { mutate: addEpic } = useAddEpic();
+
+  // hook to get all epics
+  const { data: epicsData } = useGetAllEpics(workspaceId, projectId);
+  const epics = epicsData?.data ? epicsData.data : [];
 
   // function to handle task creation
   function handleCreateTask(data: TaskCreationPayload) {
@@ -66,6 +75,11 @@ export default function TasksListingPage() {
     });
   }
 
+  // function to handle epic addition
+  function handleAddEpic(title: string) {
+    addEpic({ workspaceId, projectId, title });
+  }
+
   return (
     <TaskListingPageTemplate
       tasks={tasks}
@@ -80,6 +94,8 @@ export default function TasksListingPage() {
       isEditing={isEditing}
       setSearchTerm={setSearchTerm}
       members={members}
+      addEpic={handleAddEpic}
+      epics={epics}
     />
   );
 }

@@ -1,94 +1,47 @@
 import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Calendar,
-  MoreHorizontal,
-  Layers,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { EpicsSidebar } from "./EpicsSidebar";
+import { SprintSection } from "./SprintSection";
+import { BacklogSection } from "./BacklogSection";
 import { Badge } from "@/components/atoms/badge";
-import { IssueCard } from "@/components/molecules/project/IssueCard";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { IEpic } from "@/lib/api/epic/epic.types";
 
-interface Epic {
+// Types
+export interface Assignee {
+  name: string;
+  fallback: string;
+}
+
+export interface Issue {
+  id: string;
+  title: string;
+  status: string;
+  assignee?: Assignee;
+}
+
+export interface Epic {
   id: string;
   title: string;
   color: string;
   expanded: boolean;
-  issues: Array<{
-    id: string;
-    title: string;
-    status: "TODO" | "IN_PROGRESS" | "DONE";
-    assignee?: {
-      name: string;
-      avatar?: string;
-      fallback: string;
-    };
-  }>;
+  issues: Issue[];
 }
 
-interface BacklogSection {
+export interface Section {
   id: string;
   title: string;
   subtitle?: string;
-  type: "backlog" | "sprint";
+  type: "sprint" | "backlog";
   issueCount: number;
-  issues: Array<{
-    id: string;
-    title: string;
-    status: "TODO" | "IN_PROGRESS" | "DONE";
-    assignee?: {
-      name: string;
-      avatar?: string;
-      fallback: string;
-    };
-    epicId?: string;
-  }>;
   expanded: boolean;
-  sprintStatus?: "planned" | "active" | "completed";
+  issues: Issue[];
+  sprintStatus?: string;
 }
 
-const mockEpics: Epic[] = [
-  {
-    id: "epic-1",
-    title: "User Authentication",
-    color: "bg-blue-500",
-    expanded: true,
-    issues: [
-      {
-        id: "SCRUM-1",
-        title: "Create login page",
-        status: "TODO",
-        assignee: { name: "John Doe", fallback: "JD" },
-      },
-      {
-        id: "SCRUM-2",
-        title: "Implement OAuth",
-        status: "IN_PROGRESS",
-        assignee: { name: "Sarah Miller", fallback: "SM" },
-      },
-    ],
-  },
-  {
-    id: "epic-2",
-    title: "Dashboard Features",
-    color: "bg-green-500",
-    expanded: true,
-    issues: [
-      {
-        id: "SCRUM-3",
-        title: "Create dashboard layout",
-        status: "TODO",
-        assignee: { name: "Mike Johnson", fallback: "MJ" },
-      },
-    ],
-  },
-];
-
-const mockSections: BacklogSection[] = [
+const mockSections: Section[] = [
   {
     id: "sprint-1",
     title: "SCRUM Sprint 1",
@@ -141,15 +94,41 @@ const mockSections: BacklogSection[] = [
   },
 ];
 
-export function BacklogView() {
-  const [sections, setSections] = useState(mockSections);
-  const [epics, setEpics] = useState(mockEpics);
+interface BacklogViewProps {
+  addEpic: (title: string) => void;
+  epics: IEpic[] | [];
+  tasks: Section[] | [];
+}
+
+export function BacklogView({ addEpic, epics, tasks }: BacklogViewProps) {
+  const [sections, setSections] = useState<Section[]>(tasks);
   const [showEpics, setShowEpics] = useState(true);
   const [draggedIssue, setDraggedIssue] = useState<{
-    issue: any;
+    issue: Issue;
     sourceSection: string;
     sourceIndex: number;
   } | null>(null);
+
+  // Sprint creation state
+  const [creatingSprint, setCreatingSprint] = useState(false);
+  const [newSprintName, setNewSprintName] = useState("");
+
+  const planName = useSelector(
+    (state: RootState) => state.subscription.planName
+  )
+    .split(" ")[0]
+    .toLowerCase();
+  if (planName === "free") {
+    return (
+      <div
+        style={{ height: "calc(100vh - 256px)" }}
+        className="flex-1 flex items-center justify-center gap-6 text-muted-foreground text-lg"
+      >
+        <Lock className="size-9" />
+        <div className="text-center">Upgrade your plan to get this feature</div>
+      </div>
+    );
+  }
 
   const toggleSection = (sectionId: string) => {
     setSections(
@@ -157,14 +136,6 @@ export function BacklogView() {
         section.id === sectionId
           ? { ...section, expanded: !section.expanded }
           : section
-      )
-    );
-  };
-
-  const toggleEpic = (epicId: string) => {
-    setEpics(
-      epics.map((epic) =>
-        epic.id === epicId ? { ...epic, expanded: !epic.expanded } : epic
       )
     );
   };
@@ -183,7 +154,7 @@ export function BacklogView() {
 
   const handleDragStart = (
     e: React.DragEvent,
-    issue: any,
+    issue: Issue,
     sourceSection: string,
     sourceIndex: number
   ) => {
@@ -198,7 +169,7 @@ export function BacklogView() {
 
   const handleDrop = (e: React.DragEvent, targetSection: string) => {
     e.preventDefault();
-    
+
     if (!draggedIssue) return;
 
     const { issue, sourceSection, sourceIndex } = draggedIssue;
@@ -247,110 +218,51 @@ export function BacklogView() {
     setDraggedIssue(null);
   };
 
-  // Get sprint and backlog sections
-  const sprintSection = sections.find(section => section.type === "sprint");
-  const backlogSection = sections.find(section => section.type === "backlog");
+  // Filter sprint and backlog sections
+  const sprintSections = sections.filter(
+    (section) => section.type === "sprint"
+  );
+  const backlogSection = sections.find((section) => section.type === "backlog");
+
+  // Add new sprint
+  const handleAddSprint = () => {
+    if (!newSprintName.trim()) return;
+    const newSprint: Section = {
+      id: `sprint-${Date.now()}`,
+      title: newSprintName.trim(),
+      subtitle: "",
+      type: "sprint",
+      issueCount: 0,
+      expanded: true,
+      issues: [],
+      sprintStatus: "planned",
+    };
+    setSections([...sections, newSprint]);
+    setCreatingSprint(false);
+    setNewSprintName("");
+  };
 
   return (
     <div className="flex-1 h-full flex">
-      {/* Left Sidebar - Epics (only show when showEpics is true) */}
-      {showEpics && (
-        <div className="w-80 border-r border-border bg-card">
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Layers className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-medium text-foreground">Epics</h3>
-                <Badge variant="secondary" className="text-xs">
-                  {epics.length}
-                </Badge>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowEpics(false)}
-              >
-                <EyeOff className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="p-4 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
-            {epics.map((epic) => (
-              <div key={epic.id} className="border border-border rounded-md">
-                <div className="flex items-center justify-between p-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => toggleEpic(epic.id)}
-                      className="p-1 hover:bg-muted rounded-sm"
-                    >
-                      {epic.expanded ? (
-                        <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4" />
-                      )}
-                    </button>
-                    <div
-                      className={`w-3 h-3 rounded-full ${epic.color}`}
-                    ></div>
-                    <h4 className="font-medium text-foreground text-sm">
-                      {epic.title}
-                    </h4>
-                    <Badge variant="outline" className="text-xs">
-                      {epic.issues.length}
-                    </Badge>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                {epic.expanded && (
-                  <div className="px-3 pb-3 space-y-2">
-                    {epic.issues.map((issue, index) => (
-                      <div
-                        key={`${issue.id}-${index}`}
-                        className="flex items-center gap-3 p-2 bg-muted/50 border border-border rounded-md"
-                      >
-                        <Badge variant="outline" className="text-xs font-mono">
-                          {issue.id}
-                        </Badge>
-                        <span className="text-sm text-foreground flex-1 truncate">
-                          {issue.title}
-                        </span>
-                        {issue.assignee && (
-                          <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs">
-                            {issue.assignee.fallback}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-muted-foreground hover:text-foreground"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create epic
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Main Content - Sprint and Backlog (expands to full width when epics hidden) */}
+      <EpicsSidebar
+        epics={epics}
+        showEpics={showEpics}
+        setShowEpics={setShowEpics}
+        addEpic={addEpic}
+      />
       <div className="flex-1 flex flex-col">
-        {/* Main Content Header with Epic Toggle */}
         <div className="bg-card border-b border-border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-foreground">Backlog Management</h2>
+              <h2 className="text-lg font-semibold text-foreground">
+                Backlog Management
+              </h2>
               <Badge variant="outline" className="text-xs">
-                {sections.reduce((total, section) => total + section.issueCount, 0)} total issues
+                {sections.reduce(
+                  (total, section) => total + section.issueCount,
+                  0
+                )}{" "}
+                total issues
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -375,227 +287,34 @@ export function BacklogView() {
             </div>
           </div>
         </div>
-
-        {/* Sprint Section - Top */}
-        {sprintSection && (
-          <div
-            className="bg-card border-b border-border"
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, sprintSection.id)}
-          >
-            {/* Sprint Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => toggleSection(sprintSection.id)}
-                  className="p-1 hover:bg-muted rounded-sm"
-                >
-                  {sprintSection.expanded ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
-                </button>
-
-                <h3 className="font-medium text-foreground">{sprintSection.title}</h3>
-
-                {sprintSection.subtitle && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs text-muted-foreground h-6"
-                  >
-                    <Calendar className="w-3 h-3 mr-1" />
-                    {sprintSection.subtitle}
-                  </Button>
-                )}
-
-                <Badge variant="secondary" className="text-xs">
-                  {sprintSection.issueCount} issues
-                </Badge>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs font-normal">
-                  0
-                </Badge>
-
-                <Button
-                  size="sm"
-                  className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
-                >
-                  Start sprint
-                </Button>
-
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Sprint Content */}
-            {sprintSection.expanded && (
-              <div className="p-4">
-                {sprintSection.issues.length > 0 ? (
-                  <div className="space-y-2">
-                    {sprintSection.issues.map((issue, index) => (
-                      <div
-                        key={`${issue.id}-${index}`}
-                        draggable={true}
-                        onDragStart={(e) =>
-                          handleDragStart(e, issue, sprintSection.id, index)
-                        }
-                        onDragEnd={handleDragEnd}
-                        className="cursor-move hover:bg-issue-hover transition-colors"
-                      >
-                        <IssueCard
-                          id={issue.id}
-                          title={issue.title}
-                          status={issue.status}
-                          assignee={issue.assignee}
-                          onCheckedChange={(checked) =>
-                            handleIssueCheck(sprintSection.id, index, checked)
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                    <div className="max-w-md mx-auto">
-                      <h4 className="font-medium text-foreground mb-2">
-                        Plan your sprint
-                      </h4>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Drag issues from the Backlog section, or create new
-                        issues, to plan the work for this sprint. Select Start
-                        sprint when you're ready.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-3 text-muted-foreground hover:text-foreground"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create issue
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Backlog Section - Bottom */}
-        {backlogSection && (
-          <div
-            className="flex-1 bg-card"
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, backlogSection.id)}
-          >
-            {/* Backlog Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => toggleSection(backlogSection.id)}
-                  className="p-1 hover:bg-muted rounded-sm"
-                >
-                  {backlogSection.expanded ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
-                </button>
-
-                <h3 className="font-medium text-foreground">{backlogSection.title}</h3>
-
-                <Badge variant="secondary" className="text-xs">
-                  {backlogSection.issueCount} issues
-                </Badge>
-
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-status-done rounded-full"></div>
-                  <div className="w-2 h-2 bg-status-progress rounded-full"></div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs font-normal">
-                  0
-                </Badge>
-
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-status-done rounded-full"></div>
-                  <div className="w-2 h-2 bg-status-progress rounded-full"></div>
-                </div>
-
-                <Button
-                  size="sm"
-                  className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
-                >
-                  Create Sprint
-                </Button>
-
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Backlog Content */}
-            {backlogSection.expanded && (
-              <div className="p-4">
-                {backlogSection.issues.length > 0 ? (
-                  <div className="space-y-2">
-                    {backlogSection.issues.map((issue, index) => (
-                      <div
-                        key={`${issue.id}-${index}`}
-                        draggable={true}
-                        onDragStart={(e) =>
-                          handleDragStart(e, issue, backlogSection.id, index)
-                        }
-                        onDragEnd={handleDragEnd}
-                        className="cursor-move hover:bg-issue-hover transition-colors"
-                      >
-                        <IssueCard
-                          id={issue.id}
-                          title={issue.title}
-                          status={issue.status}
-                          assignee={issue.assignee}
-                          onCheckedChange={(checked) =>
-                            handleIssueCheck(backlogSection.id, index, checked)
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                    <div className="max-w-md mx-auto">
-                      <h4 className="font-medium text-foreground mb-2">
-                        No issues in backlog
-                      </h4>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Create new issues or move them from epics to start building your backlog.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-3 text-muted-foreground hover:text-foreground"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create issue
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Render all sprint sections */}
+        {sprintSections.map((sprintSection) => (
+          <SprintSection
+            key={sprintSection.id}
+            sprintSection={sprintSection}
+            handleDragOver={handleDragOver}
+            handleDrop={handleDrop}
+            handleDragStart={handleDragStart}
+            handleDragEnd={handleDragEnd}
+            handleIssueCheck={handleIssueCheck}
+            toggleSection={toggleSection}
+          />
+        ))}
+        <BacklogSection
+          backlogSection={backlogSection}
+          handleDragOver={handleDragOver}
+          handleDrop={handleDrop}
+          handleDragStart={handleDragStart}
+          handleDragEnd={handleDragEnd}
+          handleIssueCheck={handleIssueCheck}
+          toggleSection={toggleSection}
+          // Sprint creation controls
+          creatingSprint={creatingSprint}
+          setCreatingSprint={setCreatingSprint}
+          newSprintName={newSprintName}
+          setNewSprintName={setNewSprintName}
+          handleAddSprint={handleAddSprint}
+        />
       </div>
     </div>
   );
