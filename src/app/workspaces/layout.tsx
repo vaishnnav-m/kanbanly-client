@@ -5,7 +5,6 @@ import {
   useSidebar,
 } from "@/components/atoms/sidebar";
 import Header from "@/components/organisms/user/Header";
-// import Sidebar from "@/components/organisms/user/SideBar";
 import UserSidebar from "@/components/organisms/user/UserSidebar";
 import { useGetCurrentMember } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
