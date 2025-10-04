@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import { Label } from "../atoms/label";
 import { Input } from "../atoms/input";
 import { SingleField } from "@/types/form.types";

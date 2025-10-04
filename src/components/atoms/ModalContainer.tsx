@@ -12,7 +12,7 @@ export const ModalContainer = ({
 }: ModalContainerProps) => (
   <div
     className={cn(
-      "fixed z-[999] max-h-[90vh] flex flex-col gap-5 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-[#1C1C1C] rounded-xl shadow-xl max-w-lg w-full p-6",
+      "fixed z-[999] max-h-[90vh] flex flex-col gap-5 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-lg w-full p-6",
       className
     )}
     role="dialog"

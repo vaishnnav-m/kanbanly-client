@@ -1,3 +1,4 @@
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { TaskStatus, WorkItemType } from "./task.enum";
 
 export interface BoardTask {
@@ -5,5 +6,5 @@ export interface BoardTask {
   task: string;
   status: TaskStatus;
   workItemType?: WorkItemType;
-  assignedTo?: string;
+  assignedTo?: WorkspaceMember;
 }
