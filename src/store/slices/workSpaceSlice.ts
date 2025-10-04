@@ -1,13 +1,7 @@
+import { getStorageItem } from "@/lib/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-function getInitialWorkspaceId() {
-  if (typeof window !== undefined) {
-    return localStorage.getItem("workspaceId") || "";
-  }
-  return "";
-}
-
-const workspaceId = getInitialWorkspaceId();
+const workspaceId = getStorageItem("workspaceId") || "";
 interface WorkspaceState {
   workspaceId: string;
   memberRole: string;

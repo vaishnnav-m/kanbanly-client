@@ -1,4 +1,5 @@
 import { workspaceIcons } from "@/constants/icons";
+import { workspaceRoles } from "@/types/roles.enum";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -65,4 +66,64 @@ export const getPriorityColor = (priority: string) => {
     default:
       return "bg-gray-500/20 text-gray-400 border-gray-500/30";
   }
+};
+
+export const PERMISSIONS = {
+  VIEW_PENDING_INVITATIONS: "view_pending_invitations",
+  CREATE_PROJECT: "create_project",
+  EDIT_PROJECT: "edit_project",
+  DELETE_PROJECT: "delete_project",
+  CREATE_TASK: "create_task",
+  EDIT_TASK: "edit_task",
+  DELETE_TASK: "delete_task",
+  MANAGE_MEMBERS: "manage_members",
+  VIEW_REPORTS: "view_reports",
+};
+
+type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+
+const rolePermissions = new Map<workspaceRoles, Set<Permission>>([
+  [
+    workspaceRoles.owner,
+    new Set([
+      PERMISSIONS.CREATE_PROJECT,
+      PERMISSIONS.EDIT_PROJECT,
+      PERMISSIONS.DELETE_PROJECT,
+      PERMISSIONS.CREATE_TASK,
+      PERMISSIONS.EDIT_TASK,
+      PERMISSIONS.DELETE_TASK,
+      PERMISSIONS.MANAGE_MEMBERS,
+      PERMISSIONS.VIEW_REPORTS,
+      PERMISSIONS.VIEW_PENDING_INVITATIONS,
+    ]),
+  ],
+  [
+    workspaceRoles.projectManager,
+    new Set([
+      PERMISSIONS.CREATE_PROJECT,
+      PERMISSIONS.EDIT_PROJECT,
+      PERMISSIONS.CREATE_TASK,
+      PERMISSIONS.EDIT_TASK,
+      PERMISSIONS.DELETE_TASK,
+      PERMISSIONS.MANAGE_MEMBERS,
+      PERMISSIONS.VIEW_REPORTS,
+    ]),
+  ],
+  [
+    workspaceRoles.member,
+    new Set([
+      PERMISSIONS.CREATE_TASK,
+      PERMISSIONS.EDIT_TASK,
+      PERMISSIONS.VIEW_REPORTS,
+    ]),
+  ],
+]);
+
+export const hasPermission = (
+  role: workspaceRoles,
+  permission: Permission
+): boolean => {
+  const permissions = rolePermissions.get(role);
+  if (!permissions) return false;
+  return permissions.has(permission);
 };

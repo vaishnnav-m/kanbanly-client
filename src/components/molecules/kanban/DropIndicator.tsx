@@ -1,3 +1,4 @@
+"use client";
 import { TaskStatus } from "@/types/task.enum";
 
 export const DropIndicator = ({

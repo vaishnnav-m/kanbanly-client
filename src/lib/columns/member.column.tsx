@@ -3,6 +3,7 @@ import { TableColumn } from "@/types/table.types";
 import { WorkspaceMember } from "../api/workspace/workspace.types";
 import { ToggleLeft, ToggleRight, Trash } from "lucide-react";
 import { workspaceRoles } from "@/types/roles.enum";
+import { hasPermission, PERMISSIONS } from "../utils";
 
 export const createMemberColumns = (
   onRoleChange: (memberId: string, role: workspaceRoles) => void,
@@ -44,7 +45,20 @@ export const createMemberColumns = (
       ],
       disabled: (row) => userRole !== "owner" || row.role === "owner",
     },
-    {
+  ];
+
+  if (hasPermission(userRole, PERMISSIONS.MANAGE_MEMBERS)) {
+    columns.push({
+      key: "delete",
+      label: "Manage",
+      type: "button",
+      cellClassName: "hover:bg-transperant",
+      variant: "ghost",
+      icon: (row) => row.role !== "owner" && <Trash />,
+      onClick: (row) => onRemove(row._id),
+    });
+    
+    columns.push({
       key: "isActive",
       label: "Status",
       type: "custom",
@@ -60,18 +74,6 @@ export const createMemberColumns = (
             className="text-red-500 cursor-pointer"
           />
         ),
-    },
-  ];
-
-  if (userRole === "owner") {
-    columns.push({
-      key: "delete",
-      label: "Manage",
-      type: "button",
-      cellClassName: "hover:bg-transperant",
-      variant: "ghost",
-      icon: (row) => row.role !== "owner" && userRole === "owner" && <Trash />,
-      onClick: (row) => onRemove(row._id),
     });
   }
 

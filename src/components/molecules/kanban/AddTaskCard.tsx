@@ -1,3 +1,4 @@
+"use client";
 import { FormEvent, JSX, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Bug, CheckSquare, Star } from "lucide-react";

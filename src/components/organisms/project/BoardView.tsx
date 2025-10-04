@@ -1,6 +1,7 @@
 "use client";
 import { BoardColumn } from "@/components/molecules/kanban/BoardColumn";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { BoardTask } from "@/types/board.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 
@@ -8,11 +9,15 @@ export const BoardView = ({
   tasksData,
   handleStatusChange,
   createTask,
+  members,
+  onInvite,
 }: {
   tasksData: BoardTask[];
   createTask: (task: TaskCreationPayload) => void;
   isCreating: boolean;
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
+  members: WorkspaceMember[];
+  onInvite: (taskId: string, data: { assignedTo: string }) => void;
 }) => {
   const handleCreateTask = (task: TaskCreationPayload) => {
     const newTask: TaskCreationPayload = {
@@ -34,6 +39,8 @@ export const BoardView = ({
         status={TaskStatus.Todo}
         headingColor="text-yellow-200"
         handleStatusChange={handleStatusChange}
+        members={members}
+        onInvite={onInvite}
       />
       <BoardColumn
         tasks={tasksData}
@@ -42,6 +49,8 @@ export const BoardView = ({
         status={TaskStatus.InProgress}
         headingColor="text-blue-200"
         handleStatusChange={handleStatusChange}
+        members={members}
+        onInvite={onInvite}
       />
       <BoardColumn
         tasks={tasksData}
@@ -50,6 +59,8 @@ export const BoardView = ({
         status={TaskStatus.Completed}
         headingColor="text-emerald-200"
         handleStatusChange={handleStatusChange}
+        members={members}
+        onInvite={onInvite}
       />
     </div>
   );

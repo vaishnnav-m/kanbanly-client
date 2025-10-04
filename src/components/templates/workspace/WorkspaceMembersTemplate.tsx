@@ -12,6 +12,7 @@ import {
 } from "@/lib/api/workspace/workspace.types";
 import { createInvitationColumns } from "@/lib/columns/invitaions.column";
 import { createMemberColumns } from "@/lib/columns/member.column";
+import { hasPermission, PERMISSIONS } from "@/lib/utils";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
 import { UserPlus } from "lucide-react";
@@ -72,6 +73,10 @@ function WorkspaceMembersTemplates({
       setFilteredMembers(members);
     }
   }, [searchValue, members]);
+
+  const userRole = useSelector(
+    (state: RootState) => state.workspace.memberRole
+  );
 
   // table customization
   const handleRemove = (id: string) => {
@@ -144,22 +149,27 @@ function WorkspaceMembersTemplates({
               </div>
             </Card>
 
-            <Card className="p-6 animate-fade-in">
-              <div className="w-full flex justify-between items-center px-5 pb-5">
-                <div className="flex-1">
-                  <span>Pending invitations {invitations?.length}</span>
+            {hasPermission(
+              userRole as workspaceRoles,
+              PERMISSIONS.VIEW_PENDING_INVITATIONS
+            ) && (
+              <Card className="p-6 animate-fade-in">
+                <div className="w-full flex justify-between items-center px-5 pb-5">
+                  <div className="flex-1">
+                    <span>Pending invitations {invitations?.length}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="px-5">
-                <CustomTable<InvitationList>
-                  data={invitations}
-                  columns={invitationColumns}
-                  emptyMessage="No Invitations"
-                  isLoading={isInvitationsLoading}
-                  skeletonRows={4}
-                />
-              </div>
-            </Card>
+                <div className="px-5">
+                  <CustomTable<InvitationList>
+                    data={invitations}
+                    columns={invitationColumns}
+                    emptyMessage="No Invitations"
+                    isLoading={isInvitationsLoading}
+                    skeletonRows={4}
+                  />
+                </div>
+              </Card>
+            )}
             <InviteUserModal
               isLoading={isLoading}
               isOpen={isModalOpen}

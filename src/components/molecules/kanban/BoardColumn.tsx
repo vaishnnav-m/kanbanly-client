@@ -1,3 +1,4 @@
+"use client";
 import { BoardTask } from "@/types/board.types";
 import { DragEvent, useEffect, useState } from "react";
 import { TaskCard } from "./TaskCard";
@@ -5,6 +6,11 @@ import { DropIndicator } from "./DropIndicator";
 import { AddTaskCard } from "./AddTaskCard";
 import { TaskStatus } from "@/types/task.enum";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { hasPermission, PERMISSIONS } from "@/lib/utils";
+import { workspaceRoles } from "@/types/roles.enum";
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 
 export const BoardColumn = ({
   title,
@@ -13,16 +19,23 @@ export const BoardColumn = ({
   tasks,
   handleStatusChange,
   createTask,
+  onInvite,
+  members,
 }: {
   title: string;
   headingColor: string;
   status: TaskStatus;
   tasks: BoardTask[];
+  members: WorkspaceMember[];
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
   createTask: (task: TaskCreationPayload) => void;
+  onInvite: (taskId: string, data: { assignedTo: string }) => void;
 }) => {
   const [active, setActive] = useState(false);
   const [completedEffect, setCompletedEffect] = useState(false);
+  const userRole = useSelector(
+    (state: RootState) => state.workspace.memberRole
+  );
 
   useEffect(() => {
     if (completedEffect) {
@@ -161,15 +174,17 @@ export const BoardColumn = ({
       >
         {filteredCards.map((card) => (
           <TaskCard
-            handleDragStart={handleDragStart}
             key={card.taskId}
-            taskId={card.taskId}
-            task={card.task}
-            status={card.status}
+            taskData={card}
+            handleDragStart={handleDragStart}
+            onInvite={onInvite}
+            members={members}
           />
         ))}
         <DropIndicator beforeId={"-1"} status={status} />
-        <AddTaskCard status={status} createTask={createTask} />
+        {hasPermission(userRole as workspaceRoles, PERMISSIONS.CREATE_TASK) && (
+          <AddTaskCard status={status} createTask={createTask} />
+        )}
       </div>
     </div>
   );

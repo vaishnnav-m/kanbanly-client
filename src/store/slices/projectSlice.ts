@@ -1,13 +1,7 @@
+import { getStorageItem } from "@/lib/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-function getInitialprojectName() {
-  if (typeof window !== undefined) {
-    return localStorage.getItem("projectName") || "";
-  }
-  return "";
-}
-
-const projectName = getInitialprojectName();
+const projectName = getStorageItem("projectName") || "";
 interface ProjectState {
   projectName: string;
 }

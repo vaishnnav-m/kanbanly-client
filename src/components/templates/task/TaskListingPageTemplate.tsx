@@ -65,7 +65,7 @@ function TaskListingPageTemplate({
     taskId: task.taskId,
     task: task.task,
     status: task.status,
-    assignedTo: task.assignedTo as string,
+    assignedTo: task.assignedTo as WorkspaceMember,
     workItemType: task.workItemType,
   }));
 
@@ -100,12 +100,15 @@ function TaskListingPageTemplate({
     sprints: Sprint[]
   ): Section[] => {
     // Step 1: Group tasks by sprintId. This is highly efficient for lookups later.
-    const tasksBySprint = tasks.reduce<Record<string, TaskListing[]>>((acc, task) => {
-      const key = task.sprintId || "backlog";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(task);
-      return acc;
-    }, {});
+    const tasksBySprint = tasks.reduce<Record<string, TaskListing[]>>(
+      (acc, task) => {
+        const key = task.sprintId || "backlog";
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(task);
+        return acc;
+      },
+      {}
+    );
 
     // Reusable helper to format raw task objects into the 'issue' structure
     const createIssuesArray = (rawTasks: TaskListing[]): Issue[] => {
@@ -231,6 +234,8 @@ function TaskListingPageTemplate({
             createTask={createTask}
             isCreating={isCreating}
             handleStatusChange={handleStatusChange}
+            members={members}
+            onInvite={(taskId, data) => handleEditTask(taskId, data)}
           />
         )}
 
@@ -246,11 +251,7 @@ function TaskListingPageTemplate({
         )}
 
         {activeTab === "Backlog" && (
-          <BacklogView
-            addEpic={addEpic}
-            epics={epics}
-            tasks={formatedTasks}
-          />
+          <BacklogView addEpic={addEpic} epics={epics} tasks={formatedTasks} />
         )}
       </div>
 
