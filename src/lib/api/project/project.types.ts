@@ -23,6 +23,7 @@ export interface ProjectEditingArgs {
 export interface IProject {
   projectId: string;
   name: string;
+  key: string;
   description: string;
   members: string[];
   status?: projectStatus;

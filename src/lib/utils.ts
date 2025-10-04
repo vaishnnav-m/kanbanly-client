@@ -68,6 +68,8 @@ export const getPriorityColor = (priority: string) => {
   }
 };
 
+
+// handle permissions
 export const PERMISSIONS = {
   VIEW_PENDING_INVITATIONS: "view_pending_invitations",
   CREATE_PROJECT: "create_project",

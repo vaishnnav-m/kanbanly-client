@@ -1,13 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import {
-  Edit3,
-  Save,
-  X,
-  Trash,
-  Users,
-  Plus,
-} from "lucide-react";
+import { Edit3, Save, X, Trash, Users, Plus } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Input } from "@/components/atoms/input";
@@ -51,8 +44,8 @@ export function ProjectManagementTemplate({
   members,
   isProjectMembersFetching,
   handleMemberRemoving,
-  // isMemberRemoving,
-}: ProjectManagementTemplateProps) {
+}: // isMemberRemoving,
+ProjectManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProjectEditingPayload | null>(null);
   // const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,14 +78,22 @@ export function ProjectManagementTemplate({
     role === workspaceRoles.owner || role === workspaceRoles.projectManager;
 
   // Wrapper function to handle the dropdown invitation format
-  const handleDropdownInvite = (data: { invitedEmail?: string; email?: string; role?: string }) => {
+  const handleDropdownInvite = (data: {
+    invitedEmail?: string;
+    email?: string;
+    role?: string;
+  }) => {
     if (data.email) {
       handleMemberAdding({ email: data.email });
     }
   };
 
   // members table
-  const headings = ["Name", "Email", "Role", "Action"];
+  const headings = ["Name", "Email", "Role"];
+  if (role === workspaceRoles.owner || role === workspaceRoles.projectManager) {
+    headings.push("Action");
+  }
+
   const cols: (keyof WorkspaceMember)[] = ["name", "role", "email"];
   const buttonConfigs: ButtonConfig<WorkspaceMember>[] = [
     {

@@ -2,6 +2,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
+import { projectTemplate } from "@/types/project.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { TaskDetails } from "@/components/organisms/task/TaskDetailModal";
@@ -14,6 +15,7 @@ import {
   Section,
 } from "@/components/organisms/project/BacklogView";
 import { IEpic } from "@/lib/api/epic/epic.types";
+import { formatDataIntoSections } from "@/lib/task-utils";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -49,6 +51,9 @@ function TaskListingPageTemplate({
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const currentProjectTemplate = useSelector(
+    (state: RootState) => state.project.projectTemplate
+  );
 
   // task fetching according to id
   const { data: taskData } = useGetOneTask(
@@ -68,110 +73,6 @@ function TaskListingPageTemplate({
     assignedTo: task.assignedTo as WorkspaceMember,
     workItemType: task.workItemType,
   }));
-
-  // Helper to create initials
-  const createFallback = (name: string) => {
-    if (!name) return "?";
-    const parts = name.split(" ");
-    return parts.length > 1
-      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-      : name.substring(0, 2).toUpperCase();
-  };
-
-  // filter tasks for backlog view
-  interface Sprint {
-    _id: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    status: string;
-  }
-
-  type Issue = {
-    id: string;
-    title: string;
-    status: TaskStatus;
-    assignee: { name: string; fallback: string };
-  };
-
-  const formatDataIntoSections = (
-    tasks: TaskListing[],
-    members: WorkspaceMember[],
-    sprints: Sprint[]
-  ): Section[] => {
-    // Step 1: Group tasks by sprintId. This is highly efficient for lookups later.
-    const tasksBySprint = tasks.reduce<Record<string, TaskListing[]>>(
-      (acc, task) => {
-        const key = task.sprintId || "backlog";
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(task);
-        return acc;
-      },
-      {}
-    );
-
-    // Reusable helper to format raw task objects into the 'issue' structure
-    const createIssuesArray = (rawTasks: TaskListing[]): Issue[] => {
-      return rawTasks.map((task) => {
-        const member = members.find((m) => m._id === task.assignedTo);
-        const assignee = member
-          ? { name: member.name, fallback: createFallback(member.name) }
-          : { name: "Unassigned", fallback: "U" };
-        return {
-          id: task.taskId,
-          title: task.task,
-          status: task.status,
-          assignee,
-        };
-      });
-    };
-
-    // Step 2: Create sections for each sprint from the backend
-    const sprintSections: Section[] = sprints.map((sprint) => {
-      const sprintTasks = tasksBySprint[sprint._id] || []; // Gracefully handle sprints with no tasks
-      const issues = createIssuesArray(sprintTasks);
-
-      // Format the date for the subtitle
-      const formatDate = (dateString: string): string =>
-        new Date(dateString).toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-        });
-
-      return {
-        id: sprint._id,
-        title: sprint.title,
-        subtitle: `${formatDate(sprint.startDate)} - ${formatDate(
-          sprint.endDate
-        )}`,
-        type: "sprint",
-        issueCount: issues.length,
-        sprintStatus: sprint.status,
-        expanded: true,
-        issues: issues,
-      };
-    });
-
-    // Step 3: Create the backlog section if there are any backlog tasks
-    const backlogTasks = tasksBySprint.backlog || [];
-    const allSections: Section[] = [...sprintSections];
-
-    if (backlogTasks.length > 0) {
-      const backlogIssues = createIssuesArray(backlogTasks);
-      allSections.push({
-        id: "backlog-section",
-        title: "Backlog",
-        subtitle: "",
-        type: "backlog",
-        issueCount: backlogIssues.length,
-        sprintStatus: "",
-        expanded: true,
-        issues: backlogIssues,
-      });
-    }
-
-    return allSections;
-  };
 
   const formatedTasks: Section[] = formatDataIntoSections(tasks, members, []);
 
@@ -209,19 +110,27 @@ function TaskListingPageTemplate({
         {/* Navigation Tabs */}
         <div className="px-6">
           <div className="flex gap-6">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+            {tabs.map((tab) => {
+              if (
+                tab === "Backlog" &&
+                currentProjectTemplate !== projectTemplate.scrum
+              ) {
+                return null;
+              }
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === tab
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -236,6 +145,8 @@ function TaskListingPageTemplate({
             handleStatusChange={handleStatusChange}
             members={members}
             onInvite={(taskId, data) => handleEditTask(taskId, data)}
+            setIsTaskModalOpen={setIsTaskModalOpen}
+            setSelectedTask={setSelectedTask}
           />
         )}
 

@@ -1,5 +1,12 @@
 "use client";
-import { DragEvent, JSX, useRef, useState } from "react";
+import {
+  Dispatch,
+  DragEvent,
+  JSX,
+  SetStateAction,
+  useRef,
+  useState,
+} from "react";
 import { motion } from "framer-motion";
 import { BoardTask } from "@/types/board.types";
 import { DropIndicator } from "./DropIndicator";
@@ -24,6 +31,8 @@ interface TaskCardProps {
     task: Omit<BoardTask, "workItemType">
   ) => void;
   members: WorkspaceMember[];
+  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedTask: Dispatch<SetStateAction<string>>;
 }
 
 export const TaskCard = ({
@@ -31,6 +40,8 @@ export const TaskCard = ({
   members,
   handleDragStart,
   onInvite,
+  setIsTaskModalOpen,
+  setSelectedTask,
 }: TaskCardProps) => {
   const [isInvitingUser, setIsInvitingUser] = useState(false);
 
@@ -64,13 +75,6 @@ export const TaskCard = ({
     },
   };
 
-  // Priority badge color
-  // const priorityColor: Record<TaskPriority, string> = {
-  //   high: "bg-red-500",
-  //   medium: "bg-yellow-500",
-  //   low: "bg-green-500",
-  // };
-
   return (
     <>
       <DropIndicator beforeId={taskData.taskId} status={taskData.status} />
@@ -88,7 +92,13 @@ export const TaskCard = ({
         className="group max-w-full overflow-hidden rounded border border-gray-700/20 bg-gray-800/20 p-3 cursor-grab active:cursor-grabbing"
       >
         <div className="flex justify-end">
-          <Ellipsis className="size-5 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Ellipsis
+            className="size-5 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={() => {
+              setSelectedTask(taskData.taskId);
+              setIsTaskModalOpen(true);
+            }}
+          />
         </div>
         <p className="text-base text-gray-100 break-words">{taskData.task}</p>
         <div className="flex justify-between mt-3">
@@ -100,16 +110,6 @@ export const TaskCard = ({
                   {typeMap[taskData.workItemType]?.icon}
                 </span>
               )}
-              {/* Priority */}
-              {/* {taskData.priority && (
-                <span
-                  className={`px-2 py-0.5 rounded text-xs font-semibold text-white ${
-                    priorityColor[taskData.priority]
-                  }`}
-                >
-                  {taskData.priority}
-                </span>
-              )} */}
             </div>
             {/* Assignee */}
             {taskData.assignedTo ? (

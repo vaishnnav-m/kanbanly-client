@@ -34,7 +34,15 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
 
   function handleProjectClick(project: IProject) {
     localStorage.setItem("projectName", project.name);
-    dispatch(setprojectData({ projectName: project.name }));
+    localStorage.setItem("projectTemplate", project.template);
+    localStorage.setItem("projectKey", project.key);
+    dispatch(
+      setprojectData({
+        projectName: project.name,
+        projectTemplate: project.template,
+        projectKey: project.key,
+      })
+    );
     router.push(
       `/workspaces/${params.slug}/projects/${project.projectId}/tasks`
     );
