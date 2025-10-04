@@ -4,6 +4,7 @@ import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { BoardTask } from "@/types/board.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
+import { Dispatch, SetStateAction } from "react";
 
 export const BoardView = ({
   tasksData,
@@ -11,6 +12,8 @@ export const BoardView = ({
   createTask,
   members,
   onInvite,
+  setIsTaskModalOpen,
+  setSelectedTask,
 }: {
   tasksData: BoardTask[];
   createTask: (task: TaskCreationPayload) => void;
@@ -18,6 +21,8 @@ export const BoardView = ({
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
   members: WorkspaceMember[];
   onInvite: (taskId: string, data: { assignedTo: string }) => void;
+  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedTask: Dispatch<SetStateAction<string>>;
 }) => {
   const handleCreateTask = (task: TaskCreationPayload) => {
     const newTask: TaskCreationPayload = {
@@ -41,6 +46,8 @@ export const BoardView = ({
         handleStatusChange={handleStatusChange}
         members={members}
         onInvite={onInvite}
+        setIsTaskModalOpen={setIsTaskModalOpen}
+        setSelectedTask={setSelectedTask}
       />
       <BoardColumn
         tasks={tasksData}
@@ -51,6 +58,8 @@ export const BoardView = ({
         handleStatusChange={handleStatusChange}
         members={members}
         onInvite={onInvite}
+        setIsTaskModalOpen={setIsTaskModalOpen}
+        setSelectedTask={setSelectedTask}
       />
       <BoardColumn
         tasks={tasksData}
@@ -61,6 +70,8 @@ export const BoardView = ({
         handleStatusChange={handleStatusChange}
         members={members}
         onInvite={onInvite}
+        setIsTaskModalOpen={setIsTaskModalOpen}
+        setSelectedTask={setSelectedTask}
       />
     </div>
   );

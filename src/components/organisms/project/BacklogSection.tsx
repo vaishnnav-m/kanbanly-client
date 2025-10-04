@@ -113,14 +113,18 @@ export function BacklogSection({
               </Button>
             </div>
           ) : (
-            <Button
-              size="sm"
-              className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
-              onClick={() => setCreatingSprint?.(true)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Sprint
-            </Button>
+            <>
+              {backlogSection.issueCount > 0 && (
+                <Button
+                  size="sm"
+                  className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
+                  onClick={() => setCreatingSprint?.(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Sprint
+                </Button>
+              )}
+            </>
           )}
           <Button variant="ghost" size="sm">
             <MoreHorizontal className="w-4 h-4" />

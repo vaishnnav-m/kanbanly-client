@@ -1,6 +1,6 @@
 "use client";
 import { BoardTask } from "@/types/board.types";
-import { DragEvent, useEffect, useState } from "react";
+import { Dispatch, DragEvent, SetStateAction, useEffect, useState } from "react";
 import { TaskCard } from "./TaskCard";
 import { DropIndicator } from "./DropIndicator";
 import { AddTaskCard } from "./AddTaskCard";
@@ -21,6 +21,8 @@ export const BoardColumn = ({
   createTask,
   onInvite,
   members,
+  setIsTaskModalOpen,
+  setSelectedTask,
 }: {
   title: string;
   headingColor: string;
@@ -30,6 +32,8 @@ export const BoardColumn = ({
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
   createTask: (task: TaskCreationPayload) => void;
   onInvite: (taskId: string, data: { assignedTo: string }) => void;
+  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedTask: Dispatch<SetStateAction<string>>;
 }) => {
   const [active, setActive] = useState(false);
   const [completedEffect, setCompletedEffect] = useState(false);
@@ -45,6 +49,7 @@ export const BoardColumn = ({
     }
   }, [completedEffect]);
 
+  // drag functions
   const handleDragStart = (
     e: DragEvent<HTMLDivElement>,
     task: Omit<BoardTask, "workItemType">
@@ -52,18 +57,15 @@ export const BoardColumn = ({
     console.log("drag start", task);
     e.dataTransfer?.setData("taskId", task.taskId);
   };
-
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     highlightIndicator(e);
     setActive(true);
   };
-
   const handleDragLeave = () => {
     setActive(false);
     clearHighLights();
   };
-
   const handleDragEnd = (e: DragEvent) => {
     setActive(false);
     clearHighLights();
@@ -102,14 +104,12 @@ export const BoardColumn = ({
       setCompletedEffect(true);
     }
   };
-
   const highlightIndicator = (e: DragEvent) => {
     const indicators = getIndicators();
     clearHighLights(indicators);
     const el = getNearestIndicator(e, indicators);
     el.element.style.opacity = "1";
   };
-
   const clearHighLights = (els?: HTMLElement[]) => {
     const indicators = els || getIndicators();
 
@@ -147,6 +147,11 @@ export const BoardColumn = ({
   };
 
   const filteredCards = tasks.filter((c) => c.status === status);
+
+  const isAddTaskVisible = hasPermission(
+    userRole as workspaceRoles,
+    PERMISSIONS.CREATE_TASK
+  );
   return (
     <div className="w-1/4 shrink-0">
       <div className="mb-3 flex items-center justify-between rounded-md border border-gray-700/20 bg-gray-800/20 px-3 py-2">
@@ -179,10 +184,12 @@ export const BoardColumn = ({
             handleDragStart={handleDragStart}
             onInvite={onInvite}
             members={members}
+            setIsTaskModalOpen={setIsTaskModalOpen}
+            setSelectedTask={setSelectedTask}
           />
         ))}
         <DropIndicator beforeId={"-1"} status={status} />
-        {hasPermission(userRole as workspaceRoles, PERMISSIONS.CREATE_TASK) && (
+        {isAddTaskVisible && (
           <AddTaskCard status={status} createTask={createTask} />
         )}
       </div>
