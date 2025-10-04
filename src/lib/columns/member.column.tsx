@@ -49,16 +49,6 @@ export const createMemberColumns = (
 
   if (hasPermission(userRole, PERMISSIONS.MANAGE_MEMBERS)) {
     columns.push({
-      key: "delete",
-      label: "Manage",
-      type: "button",
-      cellClassName: "hover:bg-transperant",
-      variant: "ghost",
-      icon: (row) => row.role !== "owner" && <Trash />,
-      onClick: (row) => onRemove(row._id),
-    });
-    
-    columns.push({
       key: "isActive",
       label: "Status",
       type: "custom",
@@ -74,6 +64,15 @@ export const createMemberColumns = (
             className="text-red-500 cursor-pointer"
           />
         ),
+    });
+    columns.push({
+      key: "delete",
+      label: "Manage",
+      type: "button",
+      cellClassName: "hover:bg-transperant",
+      variant: "ghost",
+      icon: (row) => row.role !== "owner" && <Trash />,
+      onClick: (row) => onRemove(row._id),
     });
   }
 

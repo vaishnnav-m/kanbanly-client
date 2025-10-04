@@ -3,3 +3,8 @@ export enum projectStatus {
   pending = "pending",
   completed = "completed",
 }
+
+export enum projectTemplate {
+  kanban = "kanban",
+  scrum = "scrum",
+}
