@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { EpicsSidebar } from "./EpicsSidebar";
@@ -7,7 +7,10 @@ import { BacklogSection } from "./BacklogSection";
 import { Badge } from "@/components/atoms/badge";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { IEpic } from "@/lib/api/epic/epic.types";
+import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
+import { TaskCreationPayload } from "@/lib/api/task/task.types";
+import { TaskStatus, WorkItemType } from "@/types/task.enum";
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 
 // Types
 export interface Assignee {
@@ -19,7 +22,11 @@ export interface Issue {
   id: string;
   title: string;
   status: string;
-  assignee?: Assignee;
+  workItemType: WorkItemType;
+  epicId?: string;
+  epic?: TaskEpic;
+  sprintId?: string;
+  assignee?: WorkspaceMember;
 }
 
 export interface Epic {
@@ -42,19 +49,39 @@ export interface Section {
 }
 
 interface BacklogViewProps {
-  addEpic: (title: string) => void;
+  addEpic: (title: string, color: string) => void;
   epics: IEpic[] | [];
-  tasks: Section[] | [];
+  sectionsData: Section[] | [];
+  createTask: (data: TaskCreationPayload) => void;
+  handleStatusChange: (value: TaskStatus, taskId: string) => void;
+  handleParentAttach: (
+    parentType: "epic" | "task",
+    parentId: string,
+    taskId: string
+  ) => void;
+  isAttaching: boolean;
 }
 
-export function BacklogView({ addEpic, epics, tasks }: BacklogViewProps) {
-  const [sections, setSections] = useState<Section[]>(tasks);
+export function BacklogView({
+  addEpic,
+  epics,
+  sectionsData,
+  createTask,
+  handleStatusChange,
+  handleParentAttach,
+  isAttaching,
+}: BacklogViewProps) {
+  const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
   const [draggedIssue, setDraggedIssue] = useState<{
     issue: Issue;
     sourceSection: string;
     sourceIndex: number;
   } | null>(null);
+
+  useEffect(() => {
+    setSections(sectionsData);
+  }, [sectionsData]);
 
   // Sprint creation state
   const [creatingSprint, setCreatingSprint] = useState(false);
@@ -84,18 +111,6 @@ export function BacklogView({ addEpic, epics, tasks }: BacklogViewProps) {
           ? { ...section, expanded: !section.expanded }
           : section
       )
-    );
-  };
-
-  const handleIssueCheck = (
-    sectionId: string,
-    issueIndex: number,
-    checked: boolean
-  ) => {
-    console.log(
-      `Issue ${issueIndex} in ${sectionId} ${
-        checked ? "selected" : "deselected"
-      }`
     );
   };
 
@@ -243,8 +258,9 @@ export function BacklogView({ addEpic, epics, tasks }: BacklogViewProps) {
             handleDrop={handleDrop}
             handleDragStart={handleDragStart}
             handleDragEnd={handleDragEnd}
-            handleIssueCheck={handleIssueCheck}
             toggleSection={toggleSection}
+            // task creation
+            createTask={createTask}
           />
         ))}
         <BacklogSection
@@ -253,14 +269,18 @@ export function BacklogView({ addEpic, epics, tasks }: BacklogViewProps) {
           handleDrop={handleDrop}
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
-          handleIssueCheck={handleIssueCheck}
           toggleSection={toggleSection}
+          // task creation
+          createTask={createTask}
           // Sprint creation controls
           creatingSprint={creatingSprint}
           setCreatingSprint={setCreatingSprint}
           newSprintName={newSprintName}
           setNewSprintName={setNewSprintName}
           handleAddSprint={handleAddSprint}
+          handleStatusChange={handleStatusChange}
+          handleParentAttach={handleParentAttach}
+          isAttaching={isAttaching}
         />
       </div>
     </div>

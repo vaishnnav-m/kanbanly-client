@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Layers,
-  EyeOff,
-  MoreHorizontal,
-  Plus,
-} from "lucide-react";
+import { Layers, EyeOff, MoreHorizontal, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IEpic } from "@/lib/api/epic/epic.types";
@@ -13,7 +8,7 @@ interface EpicsSidebarProps {
   epics: IEpic[];
   showEpics: boolean;
   setShowEpics: (show: boolean) => void;
-  addEpic: (title: string) => void;
+  addEpic: (title: string, color: string) => void;
 }
 
 export function EpicsSidebar({
@@ -24,11 +19,12 @@ export function EpicsSidebar({
 }: EpicsSidebarProps) {
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
+  const [epicColor, setEpicColor] = useState("#ef4444");
 
   const handleAddEpic = () => {
-    if (!epicName.trim()) return;
+    if (!epicName.trim() || !epicColor.trim()) return;
 
-    addEpic(epicName.trim());
+    addEpic(epicName.trim(), epicColor.trim());
 
     setEpicName("");
     setAddingEpic(false);
@@ -55,18 +51,21 @@ export function EpicsSidebar({
             </Button>
           </div>
         </div>
-        <div className="p-4 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div className="p-4 space-y-3 max-h-[calc(100vh-200px)] max-w-full overflow-y-auto">
           {epics.map((epic) => (
             <div key={epic.epicId} className="border border-border rounded-md">
               <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full"></div>
+                  <div
+                    style={{ background: epic.color || "" }}
+                    className="w-3 h-3 rounded-full"
+                  ></div>
                   <h4 className="font-medium text-foreground text-sm">
                     {epic.title}
                   </h4>
-                  {/* <Badge variant="outline" className="text-xs">
-                    {epic.issues.length}
-                  </Badge> */}
+                  <Badge variant="outline" className="text-xs">
+                    3
+                  </Badge>
                 </div>
                 <Button variant="ghost" size="sm">
                   <MoreHorizontal className="w-4 h-4" />
@@ -75,7 +74,7 @@ export function EpicsSidebar({
             </div>
           ))}
           {addingEpic ? (
-            <div className="">
+            <div className="max-w-full">
               <input
                 type="text"
                 value={epicName}
@@ -88,6 +87,32 @@ export function EpicsSidebar({
                   if (e.key === "Escape") setAddingEpic(false);
                 }}
               />
+              {/* Color selection */}
+              <div className="flex items-center flex-wrap gap-2 mt-3">
+                {[
+                  "#ef4444", // red-500
+                  "#f59e0b", // amber-500
+                  "#3b82f6", // blue-500
+                  "#8b5cf6", // violet-500
+                  "#ec4899", // pink-500
+                  "#0ea5e9", // sky-500
+                  "#22c55e", // green-500
+                  "#64748b", // slate-500
+                ].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all duration-100 ${
+                      epicColor === color
+                        ? "border-foreground scale-110"
+                        : "border-transparent opacity-80"
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setEpicColor(color)}
+                    aria-label={`Select color ${color}`}
+                  />
+                ))}
+              </div>
               <div className="flex mt-3">
                 <Button
                   size="sm"

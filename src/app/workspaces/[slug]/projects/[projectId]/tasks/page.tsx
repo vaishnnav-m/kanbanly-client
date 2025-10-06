@@ -3,6 +3,7 @@ import TaskListingPageTemplate from "@/components/templates/task/TaskListingPage
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useAddEpic, useGetAllEpics } from "@/lib/hooks/useEpic";
 import {
+  useAttachParrent,
   useChangeStatus,
   useCreateTask,
   useEditTask,
@@ -49,6 +50,9 @@ export default function TasksListingPage() {
   const { data: epicsData } = useGetAllEpics(workspaceId, projectId);
   const epics = epicsData?.data ? epicsData.data : [];
 
+  // hook to attach parent
+  const { mutate: attachParent, isPending: isAttaching } = useAttachParrent();
+
   // function to handle task creation
   function handleCreateTask(data: TaskCreationPayload) {
     createTask({
@@ -76,8 +80,22 @@ export default function TasksListingPage() {
   }
 
   // function to handle epic addition
-  function handleAddEpic(title: string) {
-    addEpic({ workspaceId, projectId, title });
+  function handleAddEpic(title: string, color: string) {
+    addEpic({ workspaceId, projectId, title, color });
+  }
+
+  // function to handle attachment
+  function handleParentAttach(
+    parentType: "epic" | "task",
+    parentId: string,
+    taskId: string
+  ) {
+    attachParent({
+      data: { parentId, parentType },
+      projectId,
+      taskId,
+      workspaceId,
+    });
   }
 
   return (
@@ -96,6 +114,8 @@ export default function TasksListingPage() {
       members={members}
       addEpic={handleAddEpic}
       epics={epics}
+      handleParentAttach={handleParentAttach}
+      isAttaching={isAttaching}
     />
   );
 }

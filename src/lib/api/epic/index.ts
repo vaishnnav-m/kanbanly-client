@@ -7,6 +7,7 @@ export const addEpic = async (payload: CreateEpicPayload) => {
     {
       title: payload.title,
       ...(payload.description && { description: payload.description }),
+      color: payload.color,
     }
   );
 

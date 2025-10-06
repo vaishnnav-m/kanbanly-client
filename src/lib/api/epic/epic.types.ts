@@ -1,6 +1,7 @@
 export interface IEpic {
   epicId: string;
   title: string;
+  color: string;
   description?: string;
   workspaceId: string;
   projectId: string;
@@ -12,5 +13,8 @@ export interface CreateEpicPayload {
   workspaceId: string;
   projectId: string;
   title: string;
+  color: string;
   description?: string;
 }
+
+export type TaskEpic = Pick<IEpic, "epicId" | "title" | "color">;

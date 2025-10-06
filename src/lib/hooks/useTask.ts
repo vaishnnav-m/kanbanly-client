@@ -7,6 +7,7 @@ import {
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 import {
+  AttachParentArgs,
   ITask,
   ITaskDetails,
   StatusChangingArgs,
@@ -14,6 +15,7 @@ import {
   TaskEditArgs,
 } from "../api/task/task.types";
 import {
+  attachParent,
   changeStatus,
   createTask,
   editTask,
@@ -126,6 +128,35 @@ export const useEditTask = () => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Task Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useAttachParrent = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, AttachParentArgs>({
+    mutationKey: ["attachParent"],
+    mutationFn: attachParent,
+    onSuccess: (response, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "getOnetask",
+          variables.workspaceId,
+          variables.projectId,
+          variables.taskId,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Failed to attach work item",
         description: errorMessage,
         duration: 6000,
       });
