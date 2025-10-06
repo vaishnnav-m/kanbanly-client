@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/atoms/tooltip";
 import { Bug, CheckSquare, Star } from "lucide-react";
+import { getAssignedTo } from "@/lib/task-utils";
 // import { TaskPriority } from "@/types/task.enum";
 
 interface TaskCardProps {
@@ -44,10 +45,6 @@ export const TaskCard = ({
   setSelectedTask,
 }: TaskCardProps) => {
   const [isInvitingUser, setIsInvitingUser] = useState(false);
-
-  function getAssignedTo(assignedTo: WorkspaceMember) {
-    return assignedTo.email[0].toUpperCase();
-  }
 
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -112,35 +109,36 @@ export const TaskCard = ({
               )}
             </div>
             {/* Assignee */}
-            {taskData.assignedTo ? (
-              <Tooltip>
-                <TooltipTrigger>
+
+            <Tooltip>
+              <TooltipTrigger>
+                {taskData.assignedTo ? (
                   <Avatar className="h-6 w-6">
                     <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
                       {getAssignedTo(taskData.assignedTo)}
                     </AvatarFallback>
                   </Avatar>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>
-                    {taskData.assignedTo
-                      ? taskData.assignedTo.email
-                      : "unassigned"}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Button
-                ref={inviteButtonRef}
-                onClick={() => setIsInvitingUser(true)}
-                variant="ghost"
-                className="p-0 size-6 rounded-full hover:bg-white/20 bg-white/10 flex items-center justify-center"
-                disabled={isInvitingUser}
-                style={{ minWidth: "1.5rem", minHeight: "1.5rem" }}
-              >
-                <User className="size-4 text-muted-foreground" />
-              </Button>
-            )}
+                ) : (
+                  <Button
+                    ref={inviteButtonRef}
+                    onClick={() => setIsInvitingUser(true)}
+                    variant="ghost"
+                    className="p-0 size-6 rounded-full hover:bg-white/20 bg-white/10 flex items-center justify-center"
+                    disabled={isInvitingUser}
+                    style={{ minWidth: "1.5rem", minHeight: "1.5rem" }}
+                  >
+                    <User className="size-4 text-muted-foreground" />
+                  </Button>
+                )}
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>
+                  {taskData.assignedTo
+                    ? taskData.assignedTo.email
+                    : "unassigned"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </motion.div>

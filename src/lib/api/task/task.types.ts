@@ -1,5 +1,6 @@
 import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "../workspace/workspace.types";
+import { TaskEpic } from "../epic/epic.types";
 
 export interface TaskCreationPayload {
   task: string;
@@ -9,6 +10,11 @@ export interface TaskCreationPayload {
   status?: TaskStatus;
   assignedTo?: string;
   dueDate?: Date | string;
+}
+
+export interface AttachParentPayload {
+  parentType: "task" | "epic";
+  parentId: string;
 }
 
 export interface TaskCreationArgs {
@@ -33,6 +39,8 @@ export interface ITask {
   workItemType: WorkItemType;
   assignedTo?: string | WorkspaceMember;
   sprintId?: string;
+  epicId?: string;
+  epic?: TaskEpic;
   dueDate: Date;
 }
 
@@ -42,6 +50,10 @@ export interface TaskEditArgs {
   taskId: string;
   data: Partial<TaskCreationPayload>;
 }
+
+export type AttachParentArgs = Omit<TaskEditArgs, "data"> & {
+  data: AttachParentPayload;
+};
 
 export interface ITaskDetails {
   taskId: string;

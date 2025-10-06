@@ -1,16 +1,8 @@
-import { Section } from "@/components/organisms/project/BacklogView";
+import { Bug, CheckSquare, FileText, Star, HelpCircle } from "lucide-react";
+import { Issue, Section } from "@/components/organisms/project/BacklogView";
 import { TaskListing } from "./api/task/task.types";
 import { WorkspaceMember } from "./api/workspace/workspace.types";
-import { TaskStatus } from "@/types/task.enum";
-
-// Helper to create initials
-const createFallback = (name: string) => {
-  if (!name) return "?";
-  const parts = name.split(" ");
-  return parts.length > 1
-    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    : name.substring(0, 2).toUpperCase();
-};
+import { WorkItemType } from "@/types/task.enum";
 
 // filter tasks for backlog view
 interface Sprint {
@@ -21,18 +13,11 @@ interface Sprint {
   status: string;
 }
 
-type Issue = {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  assignee: { name: string; fallback: string };
-};
-
+// function to format data into sections
 export const formatDataIntoSections = (
   tasks: TaskListing[],
   members: WorkspaceMember[],
   sprints: Sprint[]
-  
 ): Section[] => {
   // Step 1: Group tasks by sprintId. This is highly efficient for lookups later.
   const tasksBySprint = tasks.reduce<Record<string, TaskListing[]>>(
@@ -49,14 +34,15 @@ export const formatDataIntoSections = (
   const createIssuesArray = (rawTasks: TaskListing[]): Issue[] => {
     return rawTasks.map((task) => {
       const member = members.find((m) => m._id === task.assignedTo);
-      const assignee = member
-        ? { name: member.name, fallback: createFallback(member.name) }
-        : { name: "Unassigned", fallback: "U" };
       return {
         id: task.taskId,
+        epicId: task.epicId,
+        epic: task.epic,
+        sprintId: task.sprintId,
         title: task.task,
+        workItemType: task.workItemType,
         status: task.status,
-        assignee,
+        assignee: member,
       };
     });
   };
@@ -87,7 +73,7 @@ export const formatDataIntoSections = (
     };
   });
 
-  //create the backlog section
+  // create the backlog section
   const backlogTasks = tasksBySprint.backlog || [];
   const backlogIssues = createIssuesArray(backlogTasks);
 
@@ -106,3 +92,43 @@ export const formatDataIntoSections = (
 
   return allSections;
 };
+
+// function to get WORK ITEM TYPE
+
+const issueTypeConfig = {
+  [WorkItemType.Task]: {
+    label: "Task",
+    icon: CheckSquare,
+    className: "text-blue-500",
+  },
+  [WorkItemType.Story]: {
+    label: "Story",
+    icon: FileText,
+    className: "text-green-500",
+  },
+  [WorkItemType.Feature]: {
+    label: "Feature",
+    icon: Star,
+    className: "text-purple-500",
+  },
+  [WorkItemType.Bug]: {
+    label: "Bug",
+    icon: Bug,
+    className: "text-red-500",
+  },
+};
+
+// Helper Function
+export function getWorkItemTypeIcon(type: WorkItemType) {
+  const config = issueTypeConfig[type] || {
+    icon: HelpCircle,
+    className: "text-gray-500",
+  };
+
+  return { icon: config.icon, className: config.className };
+}
+
+// function to get the avathar
+export function getAssignedTo(assignedTo: WorkspaceMember) {
+  return assignedTo.email[0].toUpperCase();
+}

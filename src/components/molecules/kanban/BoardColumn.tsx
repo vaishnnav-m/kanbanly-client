@@ -146,7 +146,7 @@ export const BoardColumn = ({
     return el;
   };
 
-  const filteredCards = tasks.filter((c) => c.status === status);
+  const filteredTasks = tasks.filter((c) => c.status === status);
 
   const isAddTaskVisible = hasPermission(
     userRole as workspaceRoles,
@@ -162,7 +162,7 @@ export const BoardColumn = ({
           </h3>
         </div>
         <span className="rounded-full bg-gray-900/50 px-2 py-0.5 text-xs font-medium text-gray-300">
-          {filteredCards.length}
+          {filteredTasks.length}
         </span>
       </div>
       <div
@@ -177,7 +177,7 @@ export const BoardColumn = ({
             : "bg-gray-800/0"
         }`}
       >
-        {filteredCards.map((card) => (
+        {filteredTasks.map((card) => (
           <TaskCard
             key={card.taskId}
             taskData={card}

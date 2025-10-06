@@ -9,6 +9,8 @@ import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IssueCard } from "@/components/molecules/project/IssueCard";
 import type { Section, Issue } from "./BacklogView";
+import { TaskCreationPayload } from "@/lib/api/task/task.types";
+import { TaskStatus } from "@/types/task.enum";
 
 interface SprintSectionProps {
   sprintSection?: Section;
@@ -21,12 +23,8 @@ interface SprintSectionProps {
     sourceIndex: number
   ) => void;
   handleDragEnd: () => void;
-  handleIssueCheck: (
-    sectionId: string,
-    issueIndex: number,
-    checked: boolean
-  ) => void;
   toggleSection: (sectionId: string) => void;
+  createTask: (data: TaskCreationPayload) => void;
 }
 
 export function SprintSection({
@@ -35,10 +33,22 @@ export function SprintSection({
   handleDrop,
   handleDragStart,
   handleDragEnd,
-  handleIssueCheck,
   toggleSection,
 }: SprintSectionProps) {
   if (!sprintSection) return null;
+  const sprintCounts = sprintSection.issues.reduce(
+    (acc, issue) => {
+      if (issue.status === TaskStatus.Todo) {
+        acc.todo++;
+      } else if (issue.status === TaskStatus.InProgress) {
+        acc.inProgress++;
+      } else if (issue.status === TaskStatus.Completed) {
+        acc.completed++;
+      }
+      return acc;
+    },
+    { todo: 0, inProgress: 0, completed: 0 }
+  );
   return (
     <div
       className="bg-card border-b border-border"
@@ -69,13 +79,30 @@ export function SprintSection({
             </Button>
           )}
           <Badge variant="secondary" className="text-xs">
-            {sprintSection.issueCount} issues
+            {sprintSection.issueCount} work items
           </Badge>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs font-normal">
-            0
-          </Badge>
+          <div className="flex gap-1">
+            <Badge
+              variant="outline"
+              className="bg-yellow-500 text-yellow-900 text-xs font-normal"
+            >
+              {sprintCounts.todo}
+            </Badge>
+            <Badge
+              variant="outline"
+              className="bg-blue-500 text-blue-900 text-xs font-normal"
+            >
+              {sprintCounts.inProgress}
+            </Badge>
+            <Badge
+              variant="outline"
+              className="bg-emerald-500 text-emerald-900 text-xs font-normal"
+            >
+              {sprintCounts.completed}
+            </Badge>
+          </div>
           <Button
             size="sm"
             className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
@@ -104,11 +131,9 @@ export function SprintSection({
                   <IssueCard
                     id={issue.id}
                     title={issue.title}
-                    status={issue.status}
+                    status={issue.status as TaskStatus}
                     assignee={issue.assignee}
-                    onCheckedChange={(checked) =>
-                      handleIssueCheck(sprintSection.id, index, checked)
-                    }
+                    workItemType={issue.workItemType}
                   />
                 </div>
               ))}
@@ -120,7 +145,7 @@ export function SprintSection({
                   Plan your sprint
                 </h4>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Drag issues from the Backlog section, or create new issues, to
+                  Drag work items from the Backlog section, or create new work items, to
                   plan the work for this sprint. Select Start sprint when
                   you&#39;re ready.
                 </p>

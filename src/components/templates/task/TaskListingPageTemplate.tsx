@@ -30,8 +30,14 @@ interface TaskListingPageTemplateProps {
   isEditing: boolean;
   setSearchTerm: Dispatch<SetStateAction<string>>;
   members: WorkspaceMember[] | [];
-  addEpic: (title: string) => void;
+  addEpic: (title: string,color:string) => void;
   epics: IEpic[] | [];
+  handleParentAttach: (
+    parentType: "epic" | "task",
+    parentId: string,
+    taskId: string
+  ) => void;
+  isAttaching: boolean;
 }
 
 function TaskListingPageTemplate({
@@ -48,6 +54,8 @@ function TaskListingPageTemplate({
   members,
   addEpic,
   epics,
+  handleParentAttach,
+  isAttaching,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -162,7 +170,15 @@ function TaskListingPageTemplate({
         )}
 
         {activeTab === "Backlog" && (
-          <BacklogView addEpic={addEpic} epics={epics} tasks={formatedTasks} />
+          <BacklogView
+            addEpic={addEpic}
+            epics={epics}
+            sectionsData={formatedTasks}
+            createTask={createTask}
+            handleStatusChange={handleStatusChange}
+            handleParentAttach={handleParentAttach}
+            isAttaching={isAttaching}
+          />
         )}
       </div>
 

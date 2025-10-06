@@ -14,4 +14,5 @@ export enum WorkItemType {
   Bug = "bug",
   Feature = "feature",
   Task = "task",
+  Story = "story"
 }
