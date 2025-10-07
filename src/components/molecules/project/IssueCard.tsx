@@ -68,8 +68,7 @@ export function IssueCard({
       <div className="flex items-center gap-3 flex-shrink-0">
         {epic ? (
           <span
-            style={{ background: epic.color || "" }}
-            className={`border py-1 px-2 rounded-full text-xs font-mono max-w-40 truncate`}
+            className={`border  py-1 px-2 rounded-full text-xs bg-${epic.color}-500/40 text-white/70 font-mono max-w-40 truncate`}
           >
             {epic.title}
           </span>

@@ -1,8 +1,11 @@
+"use client";
 import { useState } from "react";
 import { Layers, EyeOff, MoreHorizontal, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IEpic } from "@/lib/api/epic/epic.types";
+import { Progress } from "@/components/atoms/progress";
+import { epicColors } from "@/lib/constants/color.constants";
 
 interface EpicsSidebarProps {
   epics: IEpic[];
@@ -54,18 +57,22 @@ export function EpicsSidebar({
         <div className="p-4 space-y-3 max-h-[calc(100vh-200px)] max-w-full overflow-y-auto">
           {epics.map((epic) => (
             <div key={epic.epicId} className="border border-border rounded-md">
-              <div className="flex items-center justify-between p-3">
+              <div className="text-xs text-gray-600">
+                <Progress className="h-1" value={epic.percentageDone || 0} />
+                <div className="flex justify-between px-2">
+                  <span>Done</span>
+                  <span>{epic.percentageDone}%</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between py-2 px-3">
                 <div className="flex items-center gap-3">
                   <div
-                    style={{ background: epic.color || "" }}
-                    className="w-3 h-3 rounded-full"
+                    className={`w-3 h-3 rounded-full bg-${epic.color}-500/40`}
                   ></div>
                   <h4 className="font-medium text-foreground text-sm">
                     {epic.title}
                   </h4>
-                  <Badge variant="outline" className="text-xs">
-                    3
-                  </Badge>
                 </div>
                 <Button variant="ghost" size="sm">
                   <MoreHorizontal className="w-4 h-4" />
@@ -89,16 +96,7 @@ export function EpicsSidebar({
               />
               {/* Color selection */}
               <div className="flex items-center flex-wrap gap-2 mt-3">
-                {[
-                  "#ef4444", // red-500
-                  "#f59e0b", // amber-500
-                  "#3b82f6", // blue-500
-                  "#8b5cf6", // violet-500
-                  "#ec4899", // pink-500
-                  "#0ea5e9", // sky-500
-                  "#22c55e", // green-500
-                  "#64748b", // slate-500
-                ].map((color) => (
+                {epicColors.map((color) => (
                   <button
                     key={color}
                     type="button"

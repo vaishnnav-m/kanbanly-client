@@ -1,4 +1,4 @@
-import { workspaceIcons } from "@/constants/icons";
+import { workspaceIcons } from "@/lib/constants/icons";
 import { workspaceRoles } from "@/types/roles.enum";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";

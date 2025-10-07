@@ -4,7 +4,7 @@ import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
-import { workspaceIcons } from "@/constants/icons";
+import { workspaceIcons } from "@/lib/constants/icons";
 import { WorkspaceCreatePayload } from "@/lib/api/workspace/workspace.types";
 import { Label } from "@radix-ui/react-label";
 import { ArrowLeft } from "lucide-react";

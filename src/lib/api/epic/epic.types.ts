@@ -7,6 +7,7 @@ export interface IEpic {
   projectId: string;
   createdAt: string;
   updatedAt: string;
+  percentageDone?: number;
 }
 
 export interface CreateEpicPayload {
