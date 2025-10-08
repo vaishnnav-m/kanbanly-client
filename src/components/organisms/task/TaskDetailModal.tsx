@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Calendar,
   User,
@@ -7,6 +7,8 @@ import {
   Trash,
   CircleFadingPlus,
   PenBox,
+  Circle,
+  CheckCircle2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
@@ -25,6 +27,13 @@ import {
 } from "@/components/atoms/tooltip";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/atoms/tabs";
+import { Progress } from "@/components/atoms/progress";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -33,7 +42,6 @@ interface TaskDetailsProps {
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
   members: WorkspaceMember[] | [];
   onInvite: (taskId: string, data: { assignedTo: string }) => void;
 }
@@ -319,8 +327,8 @@ export const TaskDetails = ({
           </div> */}
 
           {/* Tabs */}
-          {/* <Tabs defaultValue="subtasks" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+          <Tabs defaultValue="subtasks" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-transparent">
               <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
               <TabsTrigger value="comments">
                 Comments{" "}
@@ -396,7 +404,7 @@ export const TaskDetails = ({
                 <p className="text-sm">No recent activities</p>
               </div>
             </TabsContent>
-          </Tabs> */}
+          </Tabs>
         </CardContent>
 
         {/* <AddMemberModal

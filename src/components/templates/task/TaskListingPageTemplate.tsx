@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { projectTemplate } from "@/types/project.enum";
@@ -28,9 +28,8 @@ interface TaskListingPageTemplateProps {
   workspaceId: string;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
   members: WorkspaceMember[] | [];
-  addEpic: (title: string,color:string) => void;
+  addEpic: (title: string, color: string) => void;
   epics: IEpic[] | [];
   handleParentAttach: (
     parentType: "epic" | "task",
@@ -50,7 +49,6 @@ function TaskListingPageTemplate({
   changeStatus,
   handleEditTask,
   isEditing,
-  setSearchTerm,
   members,
   addEpic,
   epics,
@@ -104,7 +102,7 @@ function TaskListingPageTemplate({
   return (
     <div className="bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-card">
+      <div className="border-b border-border">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -178,6 +176,8 @@ function TaskListingPageTemplate({
             handleStatusChange={handleStatusChange}
             handleParentAttach={handleParentAttach}
             isAttaching={isAttaching}
+            setIsTaskModalOpen={setIsTaskModalOpen}
+            setSelectedTask={setSelectedTask}
           />
         )}
       </div>
@@ -188,7 +188,6 @@ function TaskListingPageTemplate({
         isVisible={isTaskModalOpen}
         close={() => setIsTaskModalOpen(false)}
         task={taskData && taskData.data}
-        setSearchTerm={setSearchTerm}
         members={members}
         onInvite={(taskId, data) => handleEditTask(taskId, data)}
         isEditing={isEditing}

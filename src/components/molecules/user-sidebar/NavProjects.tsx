@@ -91,7 +91,7 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
                 <SidebarMenuButton asChild>
                   {projects?.length ? (
                     <Link
-                      className="text-white/70"
+                      className="dark:text-white/70"
                       href={`/workspaces/${params.slug}/projects`}
                     >
                       <List />

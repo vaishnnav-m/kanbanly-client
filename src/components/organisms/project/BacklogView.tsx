@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+"use client";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { EpicsSidebar } from "./EpicsSidebar";
@@ -60,6 +61,8 @@ interface BacklogViewProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
+  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedTask: Dispatch<SetStateAction<string>>;
 }
 
 export function BacklogView({
@@ -70,6 +73,8 @@ export function BacklogView({
   handleStatusChange,
   handleParentAttach,
   isAttaching,
+  setIsTaskModalOpen,
+  setSelectedTask,
 }: BacklogViewProps) {
   const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
@@ -205,15 +210,15 @@ export function BacklogView({
   };
 
   return (
-    <div className="flex-1 h-full flex">
+    <div className="flex-1 h-full flex gap-2">
       <EpicsSidebar
         epics={epics}
         showEpics={showEpics}
         setShowEpics={setShowEpics}
         addEpic={addEpic}
       />
-      <div className="flex-1 flex flex-col">
-        <div className="bg-card border-b border-border p-4">
+      <div className="bg-card dark:bg-gray-800/20 rounded-lg flex-1 flex flex-col">
+        <div className="border-b border-border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold text-foreground">
@@ -223,8 +228,8 @@ export function BacklogView({
                 {sections.reduce(
                   (total, section) => total + section.issueCount,
                   0
-                )}{" "}
-                total issues
+                )}
+                total work items
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -281,6 +286,9 @@ export function BacklogView({
           handleStatusChange={handleStatusChange}
           handleParentAttach={handleParentAttach}
           isAttaching={isAttaching}
+          epics={epics}
+          setIsTaskModalOpen={setIsTaskModalOpen}
+          setSelectedTask={setSelectedTask}
         />
       </div>
     </div>

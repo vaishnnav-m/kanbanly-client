@@ -4,22 +4,20 @@ import { UserPlus, X, Search } from "lucide-react";
 
 interface InviteUserDropdownProps {
   isOpen: boolean;
+  buttonLabel?: string;
   onClose: () => void;
-  onInvite: (data: { invitedEmail?: string; email?: string; role?: string }) => void;
+  onInvite: (data: {
+    invitedEmail?: string;
+    email?: string;
+    role?: string;
+  }) => void;
   isLoading: boolean;
   buttonRef: React.RefObject<HTMLButtonElement | null>;
   suggestions?: { id: string; name: string; email: string; avatar?: string }[];
 }
 
-// Mock suggestions - in a real app, these would come from an API
-const mockSuggestions = [
-  { id: "1", name: "John Doe", email: "john@example.com", avatar: "JD" },
-  { id: "2", name: "Jane Smith", email: "jane@example.com", avatar: "JS" },
-  { id: "3", name: "Mike Johnson", email: "mike@example.com", avatar: "MJ" },
-  { id: "4", name: "Sarah Wilson", email: "sarah@example.com", avatar: "SW" },
-];
-
 export const InviteUserDropdown = ({
+  buttonLabel,
   isOpen,
   onClose,
   onInvite,
@@ -34,7 +32,8 @@ export const InviteUserDropdown = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Source suggestions (prefer real suggestions if provided)
-  const sourceSuggestions = suggestions && suggestions.length > 0 ? suggestions : mockSuggestions;
+  const sourceSuggestions =
+    suggestions && suggestions.length > 0 ? suggestions : [];
 
   // Filter suggestions based on search query
   const filteredSuggestions = sourceSuggestions.filter(
@@ -58,27 +57,32 @@ export const InviteUserDropdown = ({
       const maxWidth = Math.max(0, window.innerWidth - viewportPadding * 2);
       const width = Math.min(desiredWidth, maxWidth);
 
-      // Prefer left alignment; if it overflows, align right to the button
+      // Prefer left alignment
       let left = buttonRect.left;
       if (left + width > window.innerWidth - viewportPadding) {
         left = Math.max(viewportPadding, buttonRect.right - width);
       }
-      left = Math.max(viewportPadding, Math.min(left, window.innerWidth - viewportPadding - width));
+      left = Math.max(
+        viewportPadding,
+        Math.min(left, window.innerWidth - viewportPadding - width)
+      );
 
-      // Default place below; may be adjusted after measuring
+      // Default place below
       const top = buttonRect.bottom + viewportPadding;
-      const availableBelow = Math.max(0, window.innerHeight - viewportPadding - top);
+      const availableBelow = Math.max(
+        0,
+        window.innerHeight - viewportPadding - top
+      );
       setMaxHeightPx(availableBelow);
 
       setPosition({ top, left, width });
 
-      // After first render, measure dropdown height to avoid bottom overflow
-      // and, if needed, place it above the button.
       requestAnimationFrame(() => {
         const dropdownEl = dropdownRef.current;
         if (!dropdownEl) return;
         const rect = dropdownEl.getBoundingClientRect();
-        const bottomOverflow = rect.bottom > window.innerHeight - viewportPadding;
+        const bottomOverflow =
+          rect.bottom > window.innerHeight - viewportPadding;
         if (bottomOverflow) {
           const newTop = Math.max(
             viewportPadding,
@@ -122,7 +126,8 @@ export const InviteUserDropdown = ({
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [isOpen, onClose, buttonRef]);
 
@@ -149,7 +154,12 @@ export const InviteUserDropdown = ({
     }
   };
 
-  const handleSelectSuggestion = (suggestion: { id: string; name: string; email: string; avatar?: string }) => {
+  const handleSelectSuggestion = (suggestion: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  }) => {
     setEmail(suggestion.email);
     setSearchQuery("");
     setSelectedSuggestion(-1);
@@ -158,10 +168,10 @@ export const InviteUserDropdown = ({
   const handleInvite = () => {
     if (email.trim()) {
       // Send the email in the format expected by the parent component
-      onInvite({ 
-        invitedEmail: email.trim(), 
+      onInvite({
+        invitedEmail: email.trim(),
         email: email.trim(),
-        role: "member" 
+        role: "member",
       });
       setEmail("");
       setSearchQuery("");
@@ -270,12 +280,12 @@ export const InviteUserDropdown = ({
             {isLoading ? (
               <>
                 <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-                Inviting...
+                {buttonLabel ? buttonLabel + "ing" : "Inviting"}...
               </>
             ) : (
               <>
                 <UserPlus className="w-3 h-3" />
-                Invite
+                {buttonLabel ? buttonLabel : "Invite"}
               </>
             )}
           </button>

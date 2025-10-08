@@ -40,17 +40,20 @@ function ProjectListingPageTemplate({
                 className="text-muted-foreground animate-fade-in"
                 style={{ animationDelay: "0.1s" }}
               >
-                Welcome back! Here's what's happening with your projects today.
+                Welcome back! Here&#39;s what&#39;s happening with your projects
+                today.
               </p>
               <div className="text-end">
-                {role === "owner" && <Button
-                  onClick={() => setIsModalOpen(true)}
-                  className="hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl group"
-                  size="lg"
-                >
-                  <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                  Create New Project
-                </Button>}
+                {role === "owner" && (
+                  <Button
+                    onClick={() => setIsModalOpen(true)}
+                    className="hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl group"
+                    size="lg"
+                  >
+                    <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                    Create New Project
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -59,7 +62,7 @@ function ProjectListingPageTemplate({
               className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 animate-slide-up"
               style={{ animationDelay: "0.6s" }}
             >
-              <div className="border bg-gradient-to-tr from-slate-900 rounded-lg p-4 text-center">
+              <div className="border dark:bg-gradient-to-tr from-slate-900 bg-gray-50 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold gradient-text">
                   {projects.length}
                 </div>
@@ -67,19 +70,19 @@ function ProjectListingPageTemplate({
                   Total Projects
                 </div>
               </div>
-              <div className="border bg-gradient-to-tr from-slate-900 rounded-lg p-4 text-center">
+              <div className="border dark:bg-gradient-to-tr from-slate-900 bg-gray-50 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold gradient-text">
                   {projects.filter((p) => p.status === "active").length}
                 </div>
                 <div className="text-sm text-muted-foreground">Active</div>
               </div>
-              <div className="border bg-gradient-to-tr from-slate-900 rounded-lg p-4 text-center">
+              <div className="border dark:bg-gradient-to-tr from-slate-900 bg-gray-50 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold gradient-text">
                   {projects.filter((p) => p.status === "completed").length}
                 </div>
                 <div className="text-sm text-muted-foreground">Completed</div>
               </div>
-              {/* <div className="border bg-gradient-to-tr from-slate-900 rounded-lg p-4 text-center">
+              {/* <div className="border bg-gradient-to-tr from-slate-900 bg-gray-50 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold gradient-text">
                   {projects.reduce((acc, p) => acc + p.members.length, 0)}
                 </div>

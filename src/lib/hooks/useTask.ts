@@ -90,6 +90,7 @@ export const useChangeStatus = () => {
           variables.taskId,
         ],
       });
+      queryClient.invalidateQueries({ queryKey: ["getAllEpics"] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
