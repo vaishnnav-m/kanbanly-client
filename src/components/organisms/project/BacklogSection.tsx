@@ -1,12 +1,10 @@
+"use client";
 import {
-  Bug,
-  CheckSquare,
   ChevronDown,
   ChevronRight,
-  FileText,
+  CornerDownLeft,
   MoreHorizontal,
   Plus,
-  Star,
 } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
@@ -20,7 +18,9 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/atoms/select";
-import { useState } from "react";
+import { SetStateAction, Dispatch, useState, useEffect } from "react";
+import { IEpic } from "@/lib/api/epic/epic.types";
+import { workItemTypeMap } from "@/lib/constants/workitem.constats";
 
 interface BacklogSectionProps {
   backlogSection?: Section;
@@ -48,30 +48,10 @@ interface BacklogSectionProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
+  epics: IEpic[];
+  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedTask: Dispatch<SetStateAction<string>>;
 }
-
-const issueTypeOptions = [
-  {
-    value: WorkItemType.Task,
-    label: "Task",
-    icon: <CheckSquare className="w-4 h-4 text-blue-500" />,
-  },
-  {
-    value: WorkItemType.Feature,
-    label: "Feature",
-    icon: <Star className="w-4 h-4 text-purple-500" />,
-  },
-  {
-    value: WorkItemType.Story,
-    label: "Story",
-    icon: <FileText className="w-4 h-4 text-green-500" />,
-  },
-  {
-    value: WorkItemType.Bug,
-    label: "Bug",
-    icon: <Bug className="w-4 h-4 text-red-500" />,
-  },
-];
 
 export function BacklogSection({
   backlogSection,
@@ -89,12 +69,24 @@ export function BacklogSection({
   handleStatusChange,
   handleParentAttach,
   isAttaching,
+  epics,
+  setIsTaskModalOpen,
+  setSelectedTask,
 }: BacklogSectionProps) {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
   const [newIssueTitle, setNewIssueTitle] = useState("");
   const [newIssueType, setNewIssueType] = useState<WorkItemType>(
     WorkItemType.Task
   );
+  const [selectedIssueType, setSelectedIssueType] = useState(
+    workItemTypeMap[newIssueType]
+  );
+
+  useEffect(() => {
+    setSelectedIssueType(workItemTypeMap[newIssueType]);
+  }, [newIssueType]);
+
+  console.log("newIssueType",newIssueType,"selected", selectedIssueType);
 
   if (!backlogSection) return null;
   function handleIssueCreation() {
@@ -120,9 +112,7 @@ export function BacklogSection({
     handleCancelCreation();
   }
 
-  const selectedIssueType = issueTypeOptions.find(
-    (type) => type.value === newIssueType
-  );
+  // const selectedIssueType = workItemTypeMap[newIssueType];
 
   const backlogCounts = backlogSection.issues.reduce(
     (acc, issue) => {
@@ -140,7 +130,7 @@ export function BacklogSection({
 
   return (
     <div
-      className="flex-1 bg-card"
+      className="flex-1"
       onDragOver={handleDragOver}
       onDrop={(e) => handleDrop(e, backlogSection.id)}
     >
@@ -220,10 +210,11 @@ export function BacklogSection({
               {backlogSection.issueCount > 0 && (
                 <Button
                   size="sm"
-                  className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
+                  variant="outline"
+                  className="text-gray-500 dark:text-white text-xs h-7"
                   onClick={() => setCreatingSprint?.(true)}
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4" />
                   Create Sprint
                 </Button>
               )}
@@ -246,7 +237,11 @@ export function BacklogSection({
                     handleDragStart(e, issue, backlogSection.id, index)
                   }
                   onDragEnd={handleDragEnd}
-                  className="cursor-move hover:bg-issue-hover transition-colors"
+                  className="cursor-pointer hover:bg-issue-hover transition-colors"
+                  onClick={() => {
+                    setIsTaskModalOpen(true);
+                    setSelectedTask(issue.id);
+                  }}
                 >
                   <IssueCard
                     id={issue.id}
@@ -258,6 +253,7 @@ export function BacklogSection({
                     handleStatusChange={handleStatusChange}
                     handleParentAttach={handleParentAttach}
                     isAttaching={isAttaching}
+                    epics={epics}
                   />
                 </div>
               ))}
@@ -277,12 +273,12 @@ export function BacklogSection({
           )}
           {isCreatingIssue ? (
             <div className="mt-3 flex items-center gap-2">
-              {/* --- NEW: Custom Select Dropdown --- */}
               <Select
                 value={newIssueType}
-                onValueChange={(value) =>
-                  setNewIssueType(value as WorkItemType)
-                }
+                onValueChange={(value) => {
+                  console.log("value is",value)
+                  setNewIssueType(value as WorkItemType);
+                }}
               >
                 <SelectTrigger className="w-auto h-9 border-border bg-background">
                   <div className="flex items-center gap-2">
@@ -291,8 +287,8 @@ export function BacklogSection({
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  {issueTypeOptions.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
+                  {Object.values(workItemTypeMap).map((type) => (
+                    <SelectItem key={type.label} value={type.label.toLowerCase()}>
                       <div className="flex items-center gap-2">
                         {type.icon}
                         <span>{type.label}</span>
@@ -306,7 +302,7 @@ export function BacklogSection({
                 value={newIssueTitle}
                 onChange={(e) => setNewIssueTitle(e.target.value)}
                 placeholder="What needs to be done?"
-                className="flex-grow h-9 px-2 py-1 rounded border border-border bg-background text-sm outline-none focus:border-border focus:ring-1 focus:ring-purple-500"
+                className="flex-grow h-9 px-2 py-1 rounded border border-border bg-background text-sm outline-none focus:border-border focus:ring-1 focus:ring-purple-500/30"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleConfirmCreation();
@@ -314,10 +310,13 @@ export function BacklogSection({
                 }}
               />
               <Button
+                className="border-purple-400"
+                variant="outline"
                 size="sm"
                 onClick={handleConfirmCreation}
                 disabled={!newIssueTitle.trim()}
               >
+                <CornerDownLeft className="size-4" />
                 Create
               </Button>
               <Button variant="ghost" size="sm" onClick={handleCancelCreation}>

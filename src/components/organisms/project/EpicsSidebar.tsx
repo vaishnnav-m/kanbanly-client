@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Layers, EyeOff, MoreHorizontal, Plus } from "lucide-react";
+import { Layers, MoreHorizontal, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IEpic } from "@/lib/api/epic/epic.types";
@@ -14,12 +14,7 @@ interface EpicsSidebarProps {
   addEpic: (title: string, color: string) => void;
 }
 
-export function EpicsSidebar({
-  epics,
-  showEpics,
-  setShowEpics,
-  addEpic,
-}: EpicsSidebarProps) {
+export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
   const [epicColor, setEpicColor] = useState("#ef4444");
@@ -35,9 +30,9 @@ export function EpicsSidebar({
 
   return (
     showEpics && (
-      <div className="w-80 border-r border-border bg-card">
+      <div className="w-80 bg-card dark:bg-gray-800/20 rounded-lg">
         <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between h-9">
             <div className="flex items-center gap-3">
               <Layers className="w-5 h-5 text-muted-foreground" />
               <h3 className="font-medium text-foreground">Epics</h3>
@@ -45,13 +40,6 @@ export function EpicsSidebar({
                 {epics.length}
               </Badge>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowEpics(false)}
-            >
-              <EyeOff className="w-4 h-4" />
-            </Button>
           </div>
         </div>
         <div className="p-4 space-y-3 max-h-[calc(100vh-200px)] max-w-full overflow-y-auto">
@@ -59,7 +47,7 @@ export function EpicsSidebar({
             <div key={epic.epicId} className="border border-border rounded-md">
               <div className="text-xs text-gray-600">
                 <Progress className="h-1" value={epic.percentageDone || 0} />
-                <div className="flex justify-between px-2">
+                <div className="flex justify-between pt-1 px-2">
                   <span>Done</span>
                   <span>{epic.percentageDone}%</span>
                 </div>
@@ -68,7 +56,9 @@ export function EpicsSidebar({
               <div className="flex items-center justify-between py-2 px-3">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-3 h-3 rounded-full bg-${epic.color}-500/40`}
+                    className={`w-3 h-3 rounded-full ${
+                      epicColors[epic.color as keyof typeof epicColors]
+                    }`}
                   ></div>
                   <h4 className="font-medium text-foreground text-sm">
                     {epic.title}
@@ -96,18 +86,19 @@ export function EpicsSidebar({
               />
               {/* Color selection */}
               <div className="flex items-center flex-wrap gap-2 mt-3">
-                {epicColors.map((color) => (
+                {Object.entries(epicColors).map((color) => (
                   <button
-                    key={color}
+                    key={color[0]}
                     type="button"
-                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all duration-100 ${
-                      epicColor === color
+                    className={`w-5 h-5 rounded-full border-2 ${
+                      color[1]
+                    } flex-shrink-0 transition-all duration-100 ${
+                      epicColor === color[0]
                         ? "border-foreground scale-110"
                         : "border-transparent opacity-80"
                     }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => setEpicColor(color)}
-                    aria-label={`Select color ${color}`}
+                    onClick={() => setEpicColor(color[0])}
+                    aria-label={`Select color ${color[0]}`}
                   />
                 ))}
               </div>
@@ -133,7 +124,7 @@ export function EpicsSidebar({
             <Button
               variant="ghost"
               size="sm"
-              className="w-full text-muted-foreground hover:text-foreground"
+              className="w-full text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-800/30 hover:text-muted-foreground"
               onClick={() => setAddingEpic(true)}
             >
               <Plus className="w-4 h-4 mr-2" />

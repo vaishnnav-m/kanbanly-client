@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Calendar,
   User,
@@ -42,7 +42,6 @@ interface TaskDetailsProps {
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
   members: WorkspaceMember[] | [];
   onInvite: (taskId: string, data: { assignedTo: string }) => void;
 }

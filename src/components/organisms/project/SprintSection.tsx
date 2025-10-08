@@ -1,3 +1,4 @@
+"use client"
 import {
   ChevronDown,
   ChevronRight,
@@ -105,7 +106,8 @@ export function SprintSection({
           </div>
           <Button
             size="sm"
-            className="bg-sprint-primary hover:bg-sprint-primary/90 text-white text-xs h-7"
+            variant="outline"
+            className="text-gray-500 dark:text-white text-xs h-7"
           >
             Start sprint
           </Button>

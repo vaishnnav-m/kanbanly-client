@@ -1,28 +1,13 @@
 "use client";
-import {
-  Dispatch,
-  DragEvent,
-  JSX,
-  SetStateAction,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, DragEvent, SetStateAction, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { BoardTask } from "@/types/board.types";
 import { DropIndicator } from "./DropIndicator";
-import { Button } from "@/components/atoms/button";
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
-import { Ellipsis, User } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import { InviteUserDropdown } from "../InviteUserDropdown";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/atoms/tooltip";
-import { Bug, CheckSquare, Star } from "lucide-react";
-import { getAssignedTo } from "@/lib/task-utils";
-// import { TaskPriority } from "@/types/task.enum";
+import { workItemTypeMap } from "@/lib/constants/workitem.constats";
+import { AssigneeCard } from "../task/AssigneeCard";
 
 interface TaskCardProps {
   taskData: BoardTask;
@@ -59,19 +44,6 @@ export const TaskCard = ({
     setIsInvitingUser(false);
   };
 
-  // Task type icon and label
-  const typeMap: Record<string, { icon: JSX.Element; label: string }> = {
-    task: {
-      icon: <CheckSquare className="size-4 text-blue-400" />,
-      label: "Task",
-    },
-    bug: { icon: <Bug className="size-4 text-red-400" />, label: "Bug" },
-    feature: {
-      icon: <Star className="size-4 text-yellow-400" />,
-      label: "Feature",
-    },
-  };
-
   return (
     <>
       <DropIndicator beforeId={taskData.taskId} status={taskData.status} />
@@ -86,7 +58,7 @@ export const TaskCard = ({
             status: taskData.status,
           });
         }}
-        className="group max-w-full overflow-hidden rounded border border-gray-700/20 bg-gray-800/20 p-3 cursor-grab active:cursor-grabbing"
+        className="group max-w-full overflow-hidden rounded border border-gray-700/20 dark:bg-gray-800/20 p-3 cursor-grab active:cursor-grabbing"
       >
         <div className="flex justify-end">
           <Ellipsis
@@ -97,48 +69,24 @@ export const TaskCard = ({
             }}
           />
         </div>
-        <p className="text-base text-gray-100 break-words">{taskData.task}</p>
+        <p className="text-base dark:text-gray-100 text-gray-500 break-words">{taskData.task}</p>
         <div className="flex justify-between mt-3">
           <div className="flex items-center gap-2">
             {/* Task Type */}
             <div className="flex items-center gap-2">
               {taskData.workItemType && (
                 <span className="text-xs font-medium">
-                  {typeMap[taskData.workItemType]?.icon}
+                  {workItemTypeMap[taskData.workItemType]?.icon}
                 </span>
               )}
             </div>
             {/* Assignee */}
-
-            <Tooltip>
-              <TooltipTrigger>
-                {taskData.assignedTo ? (
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
-                      {getAssignedTo(taskData.assignedTo)}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <Button
-                    ref={inviteButtonRef}
-                    onClick={() => setIsInvitingUser(true)}
-                    variant="ghost"
-                    className="p-0 size-6 rounded-full hover:bg-white/20 bg-white/10 flex items-center justify-center"
-                    disabled={isInvitingUser}
-                    style={{ minWidth: "1.5rem", minHeight: "1.5rem" }}
-                  >
-                    <User className="size-4 text-muted-foreground" />
-                  </Button>
-                )}
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>
-                  {taskData.assignedTo
-                    ? taskData.assignedTo.email
-                    : "unassigned"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
+            <AssigneeCard
+              members={members}
+              onInvite={onInvite}
+              taskId={taskData.taskId}
+              assignedTo={taskData.assignedTo}
+            />
           </div>
         </div>
       </motion.div>

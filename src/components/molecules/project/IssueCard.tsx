@@ -1,6 +1,18 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import { Button } from "@/components/atoms/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/atoms/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/atoms/popover";
 import {
   Select,
   SelectContent,
@@ -8,11 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
-import { TaskEpic } from "@/lib/api/epic/epic.types";
+import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
-import { getAssignedTo, getWorkItemTypeIcon } from "@/lib/task-utils";
+import { getWorkItemTypeIcon } from "@/lib/task-utils";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+import { AssigneeCard } from "../task/AssigneeCard";
 
 interface IssueCardProps {
   id: string;
@@ -28,6 +42,7 @@ interface IssueCardProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
+  epics: IEpic[];
 }
 
 export function IssueCard({
@@ -40,15 +55,17 @@ export function IssueCard({
   handleStatusChange,
   handleParentAttach,
   isAttaching,
+  epics,
 }: IssueCardProps) {
   const statusValues = Object.values(TaskStatus);
 
   const IconComponent = getWorkItemTypeIcon(workItemType).icon;
 
-  function handleEpicAdd() {
-    console.log("working");
-    handleParentAttach("epic", "asdf", id);
-  }
+  // function handleEpicAdd() {
+  //   console.log("working");
+  //   handleParentAttach("epic", "asdf", id);
+  // }
+  const [isEpicSelectorOpen, setIsEpicSelectorOpen] = useState(false);
 
   return (
     <div className="flex items-center gap-3 p-3 bg-backlog-section border border-border rounded-md hover:bg-issue-hover transition-colors group">
@@ -67,20 +84,56 @@ export function IssueCard({
 
       <div className="flex items-center gap-3 flex-shrink-0">
         {epic ? (
+          // --- Display Epic if it exists ---
           <span
-            className={`border  py-1 px-2 rounded-full text-xs bg-${epic.color}-500/40 text-white/70 font-mono max-w-40 truncate`}
+            className={`border border-transparent py-1 px-2 rounded-full text-xs bg-${epic.color}-500/40 text-white/70 font-mono max-w-40 truncate`}
           >
             {epic.title}
           </span>
         ) : (
-          <Button
-            onClick={handleEpicAdd}
-            variant="outline"
-            className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center"
+          // --- Epic Selector Popover ---
+          <Popover
+            open={isEpicSelectorOpen}
+            onOpenChange={setIsEpicSelectorOpen}
           >
-            <Plus className="pb-[2px]" />
-            {isAttaching ? "Attaching..." : "Add Epic"}
-          </Button>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center"
+                disabled={isAttaching}
+              >
+                <Plus className="size-3 mr-1" />
+                {isAttaching ? "Attaching..." : "Add Epic"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 w-64" align="end">
+              <Command>
+                <CommandInput placeholder="Search epics..." />
+                <CommandList>
+                  <CommandEmpty>No epics found.</CommandEmpty>
+                  <CommandGroup>
+                    {epics.map((epicOption) => (
+                      <CommandItem
+                        key={epicOption.epicId}
+                        value={epicOption.title}
+                        onSelect={() => {
+                          handleParentAttach("epic", epicOption.epicId, id);
+                          setIsEpicSelectorOpen(false);
+                        }}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <span
+                          className={`w-2 h-2 rounded-full bg-${epicOption.color}-500`}
+                          aria-hidden="true"
+                        />
+                        <span>{epicOption.title}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         )}
         <Select
           value={status}
@@ -135,12 +188,12 @@ export function IssueCard({
         </Select>
 
         {assignee && (
-          <Avatar className="w-7 h-7">
-            <AvatarImage />
-            <AvatarFallback className="text-xs">
-              {getAssignedTo(assignee)}
-            </AvatarFallback>
-          </Avatar>
+          <AssigneeCard
+            members={[]}
+            onInvite={() => {}}
+            taskId={id}
+            assignedTo={assignee}
+          />
         )}
       </div>
     </div>

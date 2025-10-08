@@ -153,15 +153,15 @@ export const BoardColumn = ({
     PERMISSIONS.CREATE_TASK
   );
   return (
-    <div className="w-1/4 shrink-0">
-      <div className="mb-3 flex items-center justify-between rounded-md border border-gray-700/20 bg-gray-800/20 px-3 py-2">
+    <div className="bg-card w-1/4 shrink-0">
+      <div className="mb-3 mx-2 flex items-center justify-between rounded-md border border-gray-700/20 dark:bg-gray-800/20 px-3 py-2">
         <div className={`flex items-center gap-2 ${headingColor}`}>
           <span className="h-2 w-2 rounded-full bg-current" />
-          <h3 className="text-sm font-semibold tracking-wide text-gray-100">
+          <h3 className="text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-100">
             {title}
           </h3>
         </div>
-        <span className="rounded-full bg-gray-900/50 px-2 py-0.5 text-xs font-medium text-gray-300">
+        <span className="rounded-full px-2 py-0.5 text-xs font-medium dark:text-gray-300 text-gray-500">
           {filteredTasks.length}
         </span>
       </div>
@@ -169,12 +169,12 @@ export const BoardColumn = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDragEnd}
-        className={`w-full h-full transition-colors ${
+        className={`w-full px-2 bg-card h-full transition-colors ${
           completedEffect
             ? "bg-emerald-800/30 shadow-lg shadow-emerald-800/30"
             : active
-            ? "bg-gray-800/30"
-            : "bg-gray-800/0"
+            ? "dark:bg-gray-800/30 bg-gray-100"
+            : "dark:bg-gray-800/0"
         }`}
       >
         {filteredTasks.map((card) => (
