@@ -88,6 +88,27 @@ export function BacklogView({
     setSections(sectionsData);
   }, [sectionsData]);
 
+  // to hide / show epic
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName.toLowerCase() === "input" ||
+        target.tagName.toLowerCase() === "textarea"
+      ) {
+        return;
+      }
+
+      if (event.key === "e") {
+        setShowEpics((prevShowEpics) => !prevShowEpics);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [setShowEpics]);
+
   // Sprint creation state
   const [creatingSprint, setCreatingSprint] = useState(false);
   const [newSprintName, setNewSprintName] = useState("");
@@ -217,8 +238,8 @@ export function BacklogView({
         setShowEpics={setShowEpics}
         addEpic={addEpic}
       />
-      <div className="bg-card dark:bg-gray-800/20 rounded-lg flex-1 flex flex-col">
-        <div className="border-b border-border p-4">
+      <div className="bg-card flex-1 flex flex-col gap-2">
+        <div className="bg-card dark:bg-gray-800/20  border-b border-border p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold text-foreground">
@@ -228,7 +249,7 @@ export function BacklogView({
                 {sections.reduce(
                   (total, section) => total + section.issueCount,
                   0
-                )}
+                )}{" "}
                 total work items
               </Badge>
             </div>
@@ -237,7 +258,7 @@ export function BacklogView({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowEpics(!showEpics)}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground bg-inherit"
               >
                 {showEpics ? (
                   <>

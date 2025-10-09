@@ -59,7 +59,7 @@ export interface ITaskDetails {
   taskId: string;
   task: string;
   description?: string;
-  status: string;
+  status: TaskStatus;
   assignedTo: {
     email: string;
     name: string;

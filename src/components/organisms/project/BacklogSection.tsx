@@ -81,12 +81,10 @@ export function BacklogSection({
   const [selectedIssueType, setSelectedIssueType] = useState(
     workItemTypeMap[newIssueType]
   );
-
+  
   useEffect(() => {
     setSelectedIssueType(workItemTypeMap[newIssueType]);
   }, [newIssueType]);
-
-  console.log("newIssueType",newIssueType,"selected", selectedIssueType);
 
   if (!backlogSection) return null;
   function handleIssueCreation() {
@@ -112,8 +110,6 @@ export function BacklogSection({
     handleCancelCreation();
   }
 
-  // const selectedIssueType = workItemTypeMap[newIssueType];
-
   const backlogCounts = backlogSection.issues.reduce(
     (acc, issue) => {
       if (issue.status === TaskStatus.Todo) {
@@ -130,7 +126,7 @@ export function BacklogSection({
 
   return (
     <div
-      className="flex-1"
+      className="flex-1 dark:bg-gray-800/20 rounded-lg"
       onDragOver={handleDragOver}
       onDrop={(e) => handleDrop(e, backlogSection.id)}
     >
@@ -328,7 +324,7 @@ export function BacklogSection({
               onClick={handleIssueCreation}
               variant="ghost"
               size="sm"
-              className="mt-3 text-muted-foreground hover:text-foreground"
+              className="mt-3 text-muted-foreground hover:text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-800/30"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create issue

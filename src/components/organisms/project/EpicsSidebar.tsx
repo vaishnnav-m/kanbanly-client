@@ -17,7 +17,7 @@ interface EpicsSidebarProps {
 export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
-  const [epicColor, setEpicColor] = useState("#ef4444");
+  const [epicColor, setEpicColor] = useState("blue");
 
   const handleAddEpic = () => {
     if (!epicName.trim() || !epicColor.trim()) return;
@@ -31,7 +31,7 @@ export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
   return (
     showEpics && (
       <div className="w-80 bg-card dark:bg-gray-800/20 rounded-lg">
-        <div className="p-4 border-b border-border">
+        <div className=" p-4 border-b border-border">
           <div className="flex items-center justify-between h-9">
             <div className="flex items-center gap-3">
               <Layers className="w-5 h-5 text-muted-foreground" />

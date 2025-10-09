@@ -152,6 +152,7 @@ export const BoardColumn = ({
     userRole as workspaceRoles,
     PERMISSIONS.CREATE_TASK
   );
+  
   return (
     <div className="bg-card w-1/4 shrink-0">
       <div className="mb-3 mx-2 flex items-center justify-between rounded-md border border-gray-700/20 dark:bg-gray-800/20 px-3 py-2">

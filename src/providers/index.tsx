@@ -4,7 +4,6 @@ import { ThemeProvider } from "./ThemeProvider";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "@/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ToastProvider } from "./ToastProvider";
 import { ToastContainer } from "@/components/atoms/toaster";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
@@ -42,7 +41,6 @@ export function Providers({ children }: IProps) {
               </ReduxProvider>
             </ToastSetupWrapper>
           </ToastProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
         </ThemeProvider>
       </GoogleOAuthProvider>
     </QueryClientProvider>
