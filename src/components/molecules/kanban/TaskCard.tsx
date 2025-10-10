@@ -69,7 +69,9 @@ export const TaskCard = ({
             }}
           />
         </div>
-        <p className="text-base dark:text-gray-100 text-gray-500 break-words">{taskData.task}</p>
+        <p className="text-base dark:text-gray-100 text-gray-500 break-words">
+          {taskData.task}
+        </p>
         <div className="flex justify-between mt-3">
           <div className="flex items-center gap-2">
             {/* Task Type */}
@@ -85,7 +87,7 @@ export const TaskCard = ({
               members={members}
               onInvite={onInvite}
               taskId={taskData.taskId}
-              assignedTo={taskData.assignedTo}
+              assignedTo={taskData.assignedTo || null}
             />
           </div>
         </div>

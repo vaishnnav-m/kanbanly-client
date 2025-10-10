@@ -78,15 +78,16 @@ export function BacklogSection({
   const [newIssueType, setNewIssueType] = useState<WorkItemType>(
     WorkItemType.Task
   );
+
   const [selectedIssueType, setSelectedIssueType] = useState(
-    workItemTypeMap[newIssueType]
+    workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
   );
 
   useEffect(() => {
-    setSelectedIssueType(workItemTypeMap[newIssueType]);
+    setSelectedIssueType(
+      workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
+    );
   }, [newIssueType]);
-
-  console.log("newIssueType",newIssueType,"selected", selectedIssueType);
 
   if (!backlogSection) return null;
   function handleIssueCreation() {
@@ -112,8 +113,6 @@ export function BacklogSection({
     handleCancelCreation();
   }
 
-  // const selectedIssueType = workItemTypeMap[newIssueType];
-
   const backlogCounts = backlogSection.issues.reduce(
     (acc, issue) => {
       if (issue.status === TaskStatus.Todo) {
@@ -130,7 +129,7 @@ export function BacklogSection({
 
   return (
     <div
-      className="flex-1"
+      className="flex-1 dark:bg-gray-800/20 rounded-lg"
       onDragOver={handleDragOver}
       onDrop={(e) => handleDrop(e, backlogSection.id)}
     >
@@ -276,7 +275,7 @@ export function BacklogSection({
               <Select
                 value={newIssueType}
                 onValueChange={(value) => {
-                  console.log("value is",value)
+                  console.log("value is", value);
                   setNewIssueType(value as WorkItemType);
                 }}
               >
@@ -288,7 +287,10 @@ export function BacklogSection({
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(workItemTypeMap).map((type) => (
-                    <SelectItem key={type.label} value={type.label.toLowerCase()}>
+                    <SelectItem
+                      key={type.label}
+                      value={type.label.toLowerCase()}
+                    >
                       <div className="flex items-center gap-2">
                         {type.icon}
                         <span>{type.label}</span>
@@ -328,7 +330,7 @@ export function BacklogSection({
               onClick={handleIssueCreation}
               variant="ghost"
               size="sm"
-              className="mt-3 text-muted-foreground hover:text-foreground"
+              className="mt-3 text-muted-foreground hover:text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-800/30"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create issue

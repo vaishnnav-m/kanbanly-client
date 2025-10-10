@@ -12,3 +12,4 @@ export const workspaceIcons = [
   { icon: Coffee, name: "coffee", color: "bg-amber-600" },
   { icon: Music, name: "music", color: "bg-pink-500" },
 ];
+

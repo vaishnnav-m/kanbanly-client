@@ -1,6 +1,9 @@
+import { TaskStatus } from "@/types/task.enum";
+
 export interface IEpic {
   epicId: string;
   title: string;
+  status: TaskStatus;
   color: string;
   description?: string;
   workspaceId: string;

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Layers, MoreHorizontal, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
@@ -10,14 +10,21 @@ import { epicColors } from "@/lib/constants/color.constants";
 interface EpicsSidebarProps {
   epics: IEpic[];
   showEpics: boolean;
-  setShowEpics: (show: boolean) => void;
   addEpic: (title: string, color: string) => void;
+  setIsEpicModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedEpic: Dispatch<SetStateAction<string>>;
 }
 
-export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
+export function EpicsSidebar({
+  epics,
+  showEpics,
+  addEpic,
+  setIsEpicModalOpen,
+  setSelectedEpic
+}: EpicsSidebarProps) {
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
-  const [epicColor, setEpicColor] = useState("#ef4444");
+  const [epicColor, setEpicColor] = useState("blue");
 
   const handleAddEpic = () => {
     if (!epicName.trim() || !epicColor.trim()) return;
@@ -31,7 +38,7 @@ export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
   return (
     showEpics && (
       <div className="w-80 bg-card dark:bg-gray-800/20 rounded-lg">
-        <div className="p-4 border-b border-border">
+        <div className=" p-4 border-b border-border">
           <div className="flex items-center justify-between h-9">
             <div className="flex items-center gap-3">
               <Layers className="w-5 h-5 text-muted-foreground" />
@@ -64,7 +71,10 @@ export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
                     {epic.title}
                   </h4>
                 </div>
-                <Button variant="ghost" size="sm">
+                <Button onClick={() => {
+                  setIsEpicModalOpen(true);
+                  setSelectedEpic(epic.epicId);
+                }} variant="ghost" size="sm">
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </div>

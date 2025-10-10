@@ -27,6 +27,7 @@ import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { AssigneeCard } from "../task/AssigneeCard";
+import { epicColors } from "@/lib/constants/color.constants";
 
 interface IssueCardProps {
   id: string;
@@ -86,7 +87,9 @@ export function IssueCard({
         {epic ? (
           // --- Display Epic if it exists ---
           <span
-            className={`border border-transparent py-1 px-2 rounded-full text-xs bg-${epic.color}-500/40 text-white/70 font-mono max-w-40 truncate`}
+            className={`border border-transparent py-1 px-2 rounded-full text-xs ${
+              epicColors[epic.color as keyof typeof epicColors]
+            } text-white/70 font-mono max-w-40 truncate`}
           >
             {epic.title}
           </span>
@@ -99,8 +102,9 @@ export function IssueCard({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center"
+                className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
                 disabled={isAttaching}
+                onClick={(e) => e.stopPropagation()}
               >
                 <Plus className="size-3 mr-1" />
                 {isAttaching ? "Attaching..." : "Add Epic"}

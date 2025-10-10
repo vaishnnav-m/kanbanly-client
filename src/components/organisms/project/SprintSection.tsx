@@ -52,7 +52,7 @@ export function SprintSection({
   );
   return (
     <div
-      className="bg-card border-b border-border"
+      className="dark:bg-gray-800/20 rounded-lg"
       onDragOver={handleDragOver}
       onDrop={(e) => handleDrop(e, sprintSection.id)}
     >

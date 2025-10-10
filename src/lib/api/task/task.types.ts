@@ -59,13 +59,19 @@ export interface ITaskDetails {
   taskId: string;
   task: string;
   description?: string;
-  status: string;
+  status: TaskStatus;
   assignedTo: {
     email: string;
     name: string;
   } | null;
   priority: TaskPriority;
   workItemType: WorkItemType;
+  parent?: {
+    parentId: string;
+    title: string;
+    type: WorkItemType;
+    color?: string;
+  };
   dueDate: Date;
 }
 

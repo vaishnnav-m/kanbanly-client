@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback } from "@/components/atoms/avatar";
 import { Button } from "@/components/atoms/button";
 import {
@@ -10,10 +11,14 @@ import { getAssignedTo } from "@/lib/task-utils";
 import React, { useRef, useState } from "react";
 import { InviteUserDropdown } from "../InviteUserDropdown";
 import { User } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { hasPermission, PERMISSIONS } from "@/lib/utils";
+import { workspaceRoles } from "@/types/roles.enum";
 
 interface AssigneeProps {
   taskId: string;
-  assignedTo?: WorkspaceMember;
+  assignedTo: { email: string; name: string } | null;
   onInvite: (
     taskId: string,
     data: {
@@ -43,28 +48,39 @@ export const AssigneeCard = ({
     setIsInvitingUser(false);
   };
 
+  const memberRole = useSelector(
+    (state: RootState) => state.workspace.memberRole
+  );
+
+  const isVisible = hasPermission(
+    memberRole as workspaceRoles,
+    PERMISSIONS.MEMBER_ASSIGN_TASK
+  );
+
   return (
     <>
       <Tooltip>
         <TooltipTrigger>
           {assignedTo ? (
-            <Avatar className="h-6 w-6">
-              <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold px-2 py-1 rounded-full">
+            <Avatar className="size-6">
+              <AvatarFallback className="m-auto bg-primary text-primary-foreground text-sm font-bold rounded-full">
                 {getAssignedTo(assignedTo)}
               </AvatarFallback>
             </Avatar>
           ) : (
-            <Button
-              asChild
-              ref={inviteButtonRef}
-              onClick={() => setIsInvitingUser(true)}
-              variant="ghost"
-              className="p-0 size-6 rounded-full hover:bg-white/20 bg-white/10 flex items-center justify-center"
-              disabled={isInvitingUser}
-              style={{ minWidth: "1.5rem", minHeight: "1.5rem" }}
-            >
-              <User className="size-4 text-muted-foreground" />
-            </Button>
+            isVisible && (
+              <Button
+                asChild
+                ref={inviteButtonRef}
+                onClick={() => setIsInvitingUser(true)}
+                variant="ghost"
+                className="p-1 size-6 rounded-full hover:bg-white/20 bg-white/10 flex items-center justify-center"
+                disabled={isInvitingUser}
+                style={{ minWidth: "1.5rem", minHeight: "1.5rem" }}
+              >
+                <User className="text-muted-foreground" />
+              </Button>
+            )
           )}
         </TooltipTrigger>
         <TooltipContent side="bottom">

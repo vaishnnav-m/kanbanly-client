@@ -129,6 +129,6 @@ export function getWorkItemTypeIcon(type: WorkItemType) {
 }
 
 // function to get the avathar
-export function getAssignedTo(assignedTo: WorkspaceMember) {
+export function getAssignedTo(assignedTo: { email: string; name: string }) {
   return assignedTo.email[0].toUpperCase();
 }
