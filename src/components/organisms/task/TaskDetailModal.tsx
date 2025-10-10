@@ -35,6 +35,7 @@ export const TaskDetails = ({
   members,
   onInvite,
 }: TaskDetailsProps) => {
+  const [width, setWidth] = useState(448);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [isInvitingUser, setIsInvitingUser] = useState(false);
   const [editingDescription, setEditingDescription] = useState<string | null>(
@@ -43,9 +44,6 @@ export const TaskDetails = ({
   const [editingDueDate, setEditingDueDate] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string | null>(null);
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
-
-  // width
-  const [width, setWidth] = useState(448);
 
   const role = useSelector(
     (state: RootState) => state.workspace.memberRole
@@ -111,6 +109,7 @@ export const TaskDetails = ({
               priority={task.priority}
               description={task.description}
               assignedTo={task.assignedTo}
+              parent={task.parent}
               memberRole={role}
               members={members}
               onInvite={onInvite}

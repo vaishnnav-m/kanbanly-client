@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Layers, MoreHorizontal, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
@@ -10,11 +10,18 @@ import { epicColors } from "@/lib/constants/color.constants";
 interface EpicsSidebarProps {
   epics: IEpic[];
   showEpics: boolean;
-  setShowEpics: (show: boolean) => void;
   addEpic: (title: string, color: string) => void;
+  setIsEpicModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedEpic: Dispatch<SetStateAction<string>>;
 }
 
-export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
+export function EpicsSidebar({
+  epics,
+  showEpics,
+  addEpic,
+  setIsEpicModalOpen,
+  setSelectedEpic
+}: EpicsSidebarProps) {
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
   const [epicColor, setEpicColor] = useState("blue");
@@ -64,7 +71,10 @@ export function EpicsSidebar({ epics, showEpics, addEpic }: EpicsSidebarProps) {
                     {epic.title}
                   </h4>
                 </div>
-                <Button variant="ghost" size="sm">
+                <Button onClick={() => {
+                  setIsEpicModalOpen(true);
+                  setSelectedEpic(epic.epicId);
+                }} variant="ghost" size="sm">
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </div>

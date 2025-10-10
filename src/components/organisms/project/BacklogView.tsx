@@ -1,24 +1,19 @@
 "use client";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Eye, EyeOff, Lock } from "lucide-react";
-import { Button } from "@/components/atoms/button";
+import { Lock } from "lucide-react";
 import { EpicsSidebar } from "./EpicsSidebar";
 import { SprintSection } from "./SprintSection";
 import { BacklogSection } from "./BacklogSection";
-import { Badge } from "@/components/atoms/badge";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
+import { BacklogHeader } from "@/components/molecules/backlog/BacklogHeader";
+import { EpicDetailsModal } from "../epic/EpicDetailsModal";
 
 // Types
-export interface Assignee {
-  name: string;
-  fallback: string;
-}
-
 export interface Issue {
   id: string;
   title: string;
@@ -28,14 +23,6 @@ export interface Issue {
   epic?: TaskEpic;
   sprintId?: string;
   assignee?: WorkspaceMember;
-}
-
-export interface Epic {
-  id: string;
-  title: string;
-  color: string;
-  expanded: boolean;
-  issues: Issue[];
 }
 
 export interface Section {
@@ -83,6 +70,8 @@ export function BacklogView({
     sourceSection: string;
     sourceIndex: number;
   } | null>(null);
+  const [isEpicModalOpen, setIsEpicModalOpen] = useState(false);
+  const [selectedEpic, setSelectedEpic] = useState("");
 
   useEffect(() => {
     setSections(sectionsData);
@@ -129,7 +118,6 @@ export function BacklogView({
       </div>
     );
   }
-
   const toggleSection = (sectionId: string) => {
     setSections(
       sections.map((section) =>
@@ -139,7 +127,6 @@ export function BacklogView({
       )
     );
   };
-
   const handleDragStart = (
     e: React.DragEvent,
     issue: Issue,
@@ -149,12 +136,10 @@ export function BacklogView({
     setDraggedIssue({ issue, sourceSection, sourceIndex });
     e.dataTransfer.effectAllowed = "move";
   };
-
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
   };
-
   const handleDrop = (e: React.DragEvent, targetSection: string) => {
     e.preventDefault();
 
@@ -201,7 +186,6 @@ export function BacklogView({
 
     setDraggedIssue(null);
   };
-
   const handleDragEnd = () => {
     setDraggedIssue(null);
   };
@@ -235,46 +219,17 @@ export function BacklogView({
       <EpicsSidebar
         epics={epics}
         showEpics={showEpics}
-        setShowEpics={setShowEpics}
         addEpic={addEpic}
+        setIsEpicModalOpen={setIsEpicModalOpen}
+        setSelectedEpic={setSelectedEpic}
       />
       <div className="bg-card flex-1 flex flex-col gap-2">
-        <div className="bg-card dark:bg-gray-800/20  border-b border-border p-4 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-foreground">
-                Backlog Management
-              </h2>
-              <Badge variant="outline" className="text-xs">
-                {sections.reduce(
-                  (total, section) => total + section.issueCount,
-                  0
-                )}{" "}
-                total work items
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowEpics(!showEpics)}
-                className="text-muted-foreground hover:text-foreground bg-inherit"
-              >
-                {showEpics ? (
-                  <>
-                    <EyeOff className="w-4 h-4 mr-2" />
-                    Hide Epics
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-4 h-4 mr-2" />
-                    Show Epics
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <BacklogHeader
+          onToggleEpics={() => setShowEpics(!showEpics)}
+          sections={sections}
+          showEpics={showEpics}
+        />
+
         {/* Render all sprint sections */}
         {sprintSections.map((sprintSection) => (
           <SprintSection
@@ -289,6 +244,7 @@ export function BacklogView({
             createTask={createTask}
           />
         ))}
+
         <BacklogSection
           backlogSection={backlogSection}
           handleDragOver={handleDragOver}
@@ -312,6 +268,11 @@ export function BacklogView({
           setSelectedTask={setSelectedTask}
         />
       </div>
+      <EpicDetailsModal
+        close={() => setIsEpicModalOpen(false)}
+        epic={epics[0]}
+        isVisible={isEpicModalOpen}
+      />
     </div>
   );
 }

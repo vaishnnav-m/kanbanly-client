@@ -80,6 +80,9 @@ export const PERMISSIONS = {
   MANAGE_MEMBERS: "manage_members",
   VIEW_REPORTS: "view_reports",
   MEMBER_ASSIGN_TASK: "member_assign_task",
+  DELETE_EPIC: "delete_epic",
+  EDIT_EPIC: "edit_epic",
+  CREATE_EPIC: "create_epic",
 };
 
 type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -98,6 +101,9 @@ const rolePermissions = new Map<workspaceRoles, Set<Permission>>([
       PERMISSIONS.VIEW_REPORTS,
       PERMISSIONS.VIEW_PENDING_INVITATIONS,
       PERMISSIONS.MEMBER_ASSIGN_TASK,
+      PERMISSIONS.CREATE_EPIC,
+      PERMISSIONS.EDIT_EPIC,
+      PERMISSIONS.DELETE_EPIC,
     ]),
   ],
   [
@@ -111,14 +117,14 @@ const rolePermissions = new Map<workspaceRoles, Set<Permission>>([
       PERMISSIONS.MANAGE_MEMBERS,
       PERMISSIONS.VIEW_REPORTS,
       PERMISSIONS.MEMBER_ASSIGN_TASK,
+      PERMISSIONS.CREATE_EPIC,
+      PERMISSIONS.EDIT_EPIC,
+      PERMISSIONS.DELETE_EPIC,
     ]),
   ],
   [
     workspaceRoles.member,
-    new Set([
-      PERMISSIONS.CREATE_TASK,
-      PERMISSIONS.VIEW_REPORTS,
-    ]),
+    new Set([PERMISSIONS.CREATE_TASK, PERMISSIONS.VIEW_REPORTS]),
   ],
 ]);
 
@@ -126,7 +132,7 @@ export const hasPermission = (
   role: workspaceRoles,
   permission: Permission
 ): boolean => {
-  console.log(role)
+  console.log(role);
   const permissions = rolePermissions.get(role);
   if (!permissions) return false;
   return permissions.has(permission);

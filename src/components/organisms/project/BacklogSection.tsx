@@ -78,12 +78,15 @@ export function BacklogSection({
   const [newIssueType, setNewIssueType] = useState<WorkItemType>(
     WorkItemType.Task
   );
+
   const [selectedIssueType, setSelectedIssueType] = useState(
-    workItemTypeMap[newIssueType]
+    workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
   );
-  
+
   useEffect(() => {
-    setSelectedIssueType(workItemTypeMap[newIssueType]);
+    setSelectedIssueType(
+      workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
+    );
   }, [newIssueType]);
 
   if (!backlogSection) return null;
@@ -272,7 +275,7 @@ export function BacklogSection({
               <Select
                 value={newIssueType}
                 onValueChange={(value) => {
-                  console.log("value is",value)
+                  console.log("value is", value);
                   setNewIssueType(value as WorkItemType);
                 }}
               >
@@ -284,7 +287,10 @@ export function BacklogSection({
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(workItemTypeMap).map((type) => (
-                    <SelectItem key={type.label} value={type.label.toLowerCase()}>
+                    <SelectItem
+                      key={type.label}
+                      value={type.label.toLowerCase()}
+                    >
                       <div className="flex items-center gap-2">
                         {type.icon}
                         <span>{type.label}</span>

@@ -66,6 +66,12 @@ export interface ITaskDetails {
   } | null;
   priority: TaskPriority;
   workItemType: WorkItemType;
+  parent?: {
+    parentId: string;
+    title: string;
+    type: WorkItemType;
+    color?: string;
+  };
   dueDate: Date;
 }
 
