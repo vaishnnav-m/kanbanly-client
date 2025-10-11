@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { projectTemplate } from "@/types/project.enum";
@@ -37,6 +37,14 @@ interface TaskListingPageTemplateProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
+  filters: { status?: string; priority?: string; search?: string };
+  setFilters: Dispatch<
+    SetStateAction<{
+      status?: string;
+      priority?: string;
+      search?: string;
+    }>
+  >;
 }
 
 function TaskListingPageTemplate({
@@ -54,6 +62,8 @@ function TaskListingPageTemplate({
   epics,
   handleParentAttach,
   isAttaching,
+  filters,
+  setFilters,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -164,6 +174,8 @@ function TaskListingPageTemplate({
             handleStatusChange={handleStatusChange}
             setIsTaskModalOpen={setIsTaskModalOpen}
             setSelectedTask={setSelectedTask}
+            filters={filters}
+            setFilters={setFilters}
           />
         )}
 

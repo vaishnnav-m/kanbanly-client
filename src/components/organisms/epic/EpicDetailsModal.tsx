@@ -12,7 +12,7 @@ import { EpicHeader } from "@/components/molecules/epic/EpicHeader";
 import { EpicInfo } from "@/components/molecules/epic/EpicInfo";
 
 interface EpicDetailsModalProps {
-  epic: IEpic;
+  epic?: IEpic;
   isVisible: boolean;
   close: () => void;
 }
@@ -26,7 +26,6 @@ export const EpicDetailsModal = ({
   // modal states
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   // editing states
-  const [isEditing, setIsEditing] = useState(false);
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editingDescription, setEditingDescription] = useState<string | null>(
     null
@@ -39,6 +38,7 @@ export const EpicDetailsModal = ({
   ) as workspaceRoles;
   if (!isVisible || !epic) return null;
 
+  if (!epic) return null;
   return (
     <div className="fixed top-4 right-4 h-[calc(100vh-2rem)] z-50">
       <Resizable
@@ -76,13 +76,19 @@ export const EpicDetailsModal = ({
               editingDescription={editingDescription}
               setEditingDescription={setEditingDescription}
             />
-            {isEditing && (
+            {(editingDescription !== null ||
+              editingDueDate !== null ||
+              editingName !== null) && (
               <div className="w-full flex">
                 <Button onClick={() => {}} className="w-full">
                   Save Changes
                 </Button>
                 <Button
-                  onClick={() => {}}
+                  onClick={() => {
+                    setEditingDescription(null);
+                    setEditingDueDate(null);
+                    setEditingName(null);
+                  }}
                   variant="outline"
                   className="w-full hover:bg-transparent"
                 >

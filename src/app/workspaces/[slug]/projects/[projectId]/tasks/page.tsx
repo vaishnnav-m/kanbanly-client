@@ -1,4 +1,7 @@
 "use client";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "next/navigation";
 import TaskListingPageTemplate from "@/components/templates/task/TaskListingPageTemplate";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useAddEpic, useGetAllEpics } from "@/lib/hooks/useEpic";
@@ -13,10 +16,17 @@ import {
 import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { TaskStatus } from "@/types/task.enum";
-import { useParams } from "next/navigation";
-import { useSelector } from "react-redux";
 
 export default function TasksListingPage() {
+  const [filters, setFilters] = useState<{
+    status?: string;
+    priority?: string;
+    search?: string;
+  }>({
+    status: "",
+    priority: "",
+    search: "",
+  });
   const params = useParams();
   const projectId = params.projectId as string;
   const workspaceId = useSelector(
@@ -26,7 +36,7 @@ export default function TasksListingPage() {
   const members = membersData?.data ? membersData.data.data : [];
 
   // hook to fetch all tasks
-  const { data } = useGetAllTasks(workspaceId, projectId);
+  const { data } = useGetAllTasks(workspaceId, projectId, filters);
   const tasks = data?.data ? data.data : [];
 
   // hook to create task
@@ -113,6 +123,8 @@ export default function TasksListingPage() {
       epics={epics}
       handleParentAttach={handleParentAttach}
       isAttaching={isAttaching}
+      filters={filters}
+      setFilters={setFilters}
     />
   );
 }

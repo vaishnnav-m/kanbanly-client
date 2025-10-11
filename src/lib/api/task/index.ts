@@ -17,9 +17,11 @@ export const createTask = async (payload: TaskCreationArgs) => {
 export const getAllTasks = async (data: {
   workspaceId: string;
   projectId: string;
+  filters: { status?: string; priority?: string; search?: string };
 }) => {
   const response = await api.get(
-    `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks`
+    `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks`,
+    { params: data.filters }
   );
   return response.data;
 };

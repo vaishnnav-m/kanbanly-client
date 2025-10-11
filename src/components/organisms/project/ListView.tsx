@@ -11,14 +11,7 @@ import {
 import { RootState } from "@/store";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { Select } from "@radix-ui/react-select";
-import {
-  ArrowUpDown,
-  Calendar,
-  Ellipsis,
-  Filter,
-  Plus,
-  Search,
-} from "lucide-react";
+import { Calendar, Ellipsis, Plus, Search } from "lucide-react";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
 import { CreateTaskModal } from "../task/CreateTask";
@@ -31,6 +24,14 @@ interface ListViewProps {
   setSelectedTask: Dispatch<SetStateAction<string>>;
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
   handlePriorityChange: (priority: TaskPriority, taskId: string) => void;
+  filters: { status?: string; priority?: string; search?: string };
+  setFilters: Dispatch<
+    SetStateAction<{
+      status?: string;
+      priority?: string;
+      search?: string;
+    }>
+  >;
 }
 
 export const ListView = ({
@@ -40,6 +41,8 @@ export const ListView = ({
   handlePriorityChange,
   setIsTaskModalOpen,
   setSelectedTask,
+  filters,
+  setFilters,
 }: ListViewProps) => {
   // priorities and status
   const statusValues = Object.values(TaskStatus);
@@ -47,6 +50,7 @@ export const ListView = ({
 
   const [isTaskCreationModalOpen, setIsTaskCreationModalOpen] = useState(false);
   const role = useSelector((state: RootState) => state.workspace.memberRole);
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   return (
     <>
@@ -61,18 +65,64 @@ export const ListView = ({
               Add task
             </Button>
           )}
+
+          {/* filters */}
           <div className="flex items-center gap-2">
-            <Button className="hover:bg-primary/10" variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-            <Button className="hover:bg-primary/10" variant="outline" size="sm">
+            <Select
+              value={filters.status}
+              onValueChange={(value) =>
+                setFilters({ ...filters, status: value })
+              }
+            >
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {statusValues.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.priority}
+              onValueChange={(value) =>
+                setFilters({ ...filters, priority: value })
+              }
+            >
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Filter by priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {priorites.map((priority) => (
+                    <SelectItem key={priority} value={priority}>
+                      {priority}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {/* <Button className="hover:bg-primary/10" variant="outline" size="sm">
               <ArrowUpDown className="w-4 h-4 mr-2" />
               Sort
+            </Button> */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                setFilters({ status: "", priority: "", search: "" })
+              }
+            >
+              Clear Filters ({activeFilterCount})
             </Button>
           </div>
         </div>
-
+        {/* search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search tasks..." className="pl-10 w-64" />

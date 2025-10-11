@@ -12,6 +12,8 @@ import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { BacklogHeader } from "@/components/molecules/backlog/BacklogHeader";
 import { EpicDetailsModal } from "../epic/EpicDetailsModal";
+import { useGetEpicById } from "@/lib/hooks/useEpic";
+import { useParams } from "next/navigation";
 
 // Types
 export interface Issue {
@@ -72,6 +74,19 @@ export function BacklogView({
   } | null>(null);
   const [isEpicModalOpen, setIsEpicModalOpen] = useState(false);
   const [selectedEpic, setSelectedEpic] = useState("");
+
+  const params = useParams();
+  const projectId = params.projectId as string;
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const { data: epicData } = useGetEpicById(
+    workspaceId,
+    projectId,
+    selectedEpic,
+    { enabled: !!selectedEpic && isEpicModalOpen }
+  );
 
   useEffect(() => {
     setSections(sectionsData);
@@ -270,7 +285,7 @@ export function BacklogView({
       </div>
       <EpicDetailsModal
         close={() => setIsEpicModalOpen(false)}
-        epic={epics[0]}
+        epic={epicData?.data}
         isVisible={isEpicModalOpen}
       />
     </div>

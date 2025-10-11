@@ -1,5 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addEpic, getAllEpics } from "../api/epic";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import { addEpic, getAllEpics, getEpicById } from "../api/epic";
 import { ApiResponse } from "../api/common.types";
 import { CreateEpicPayload, IEpic } from "../api/epic/epic.types";
 import { useToastMessage } from "./useToastMessage";
@@ -40,5 +45,21 @@ export const useGetAllEpics = (workspaceId: string, projectId: string) => {
     queryKey: ["getAllEpics", workspaceId],
     queryFn: () => getAllEpics(workspaceId, projectId),
     enabled: !!workspaceId || !!projectId,
+  });
+};
+
+export const useGetEpicById = (
+  workspaceId: string,
+  projectId: string,
+  epicId: string,
+  options?: Omit<
+    UseQueryOptions<ApiResponse<IEpic>, Error>,
+    "queryKey" | "queryFn"
+  >
+) => {
+  return useQuery<ApiResponse<IEpic>, Error>({
+    queryKey: ["getEpicById", workspaceId, projectId, epicId],
+    queryFn: () => getEpicById(workspaceId, projectId, epicId),
+    ...options,
   });
 };
