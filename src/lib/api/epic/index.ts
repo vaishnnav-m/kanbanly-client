@@ -21,3 +21,31 @@ export const getAllEpics = async (workspaceId: string, projectId: string) => {
 
   return response.data;
 };
+
+export const getEpicById = async (
+  workspaceId: string,
+  projectId: string,
+  epicId: string
+) => {
+  const response = await api.get(
+    `/workspace/${workspaceId}/projects/${projectId}/epics/${epicId}`
+  );
+
+  return response.data;
+};
+
+export const deleteEpic = async ({
+  epicId,
+  projectId,
+  workspaceId,
+}: {
+  workspaceId: string;
+  projectId: string;
+  epicId: string;
+}) => {
+  const response = await api.delete(
+    `/workspace/${workspaceId}/projects/${projectId}/epics/${epicId}`
+  );
+
+  return response.data;
+};

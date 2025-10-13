@@ -10,23 +10,35 @@ import { workspaceRoles } from "@/types/roles.enum";
 import { useSelector } from "react-redux";
 import { EpicHeader } from "@/components/molecules/epic/EpicHeader";
 import { EpicInfo } from "@/components/molecules/epic/EpicInfo";
+import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
+import { EpicChild } from "@/components/molecules/epic/EpicChild";
 
 interface EpicDetailsModalProps {
-  epic: IEpic;
+  epic?: IEpic;
   isVisible: boolean;
   close: () => void;
+  members: WorkspaceMember[];
+  onInviteMember: (
+    taskId: string,
+    data: {
+      assignedTo: string;
+    }
+  ) => void;
+  onDeleteEpic: (epicId: string) => void;
 }
 
 export const EpicDetailsModal = ({
   epic,
   isVisible,
   close,
+  members,
+  onInviteMember,
+  onDeleteEpic,
 }: EpicDetailsModalProps) => {
   const [width, setWidth] = useState(448);
   // modal states
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   // editing states
-  const [isEditing, setIsEditing] = useState(false);
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editingDescription, setEditingDescription] = useState<string | null>(
     null
@@ -38,6 +50,8 @@ export const EpicDetailsModal = ({
     (state: RootState) => state.workspace.memberRole
   ) as workspaceRoles;
   if (!isVisible || !epic) return null;
+
+  if (!epic) return null;
 
   return (
     <div className="fixed top-4 right-4 h-[calc(100vh-2rem)] z-50">
@@ -68,21 +82,28 @@ export const EpicDetailsModal = ({
             {/* Task Info */}
             <EpicInfo
               epicId={epic.epicId}
-              dueDate={undefined}
+              dueDate={epic.dueDate}
               description={epic.description}
+              percentageDone={epic.percentageDone}
               memberRole={role}
               editingDueDate={editingDueDate}
               setEditingDueDate={setEditingDueDate}
               editingDescription={editingDescription}
               setEditingDescription={setEditingDescription}
             />
-            {isEditing && (
+            {(editingDescription !== null ||
+              editingDueDate !== null ||
+              editingName !== null) && (
               <div className="w-full flex">
                 <Button onClick={() => {}} className="w-full">
                   Save Changes
                 </Button>
                 <Button
-                  onClick={() => {}}
+                  onClick={() => {
+                    setEditingDescription(null);
+                    setEditingDueDate(null);
+                    setEditingName(null);
+                  }}
                   variant="outline"
                   className="w-full hover:bg-transparent"
                 >
@@ -90,13 +111,23 @@ export const EpicDetailsModal = ({
                 </Button>
               </div>
             )}
+
+            <EpicChild
+              epic={epic}
+              members={members}
+              onInviteMember={onInviteMember}
+            />
           </CardContent>
 
           <ConfirmationModal
             isOpen={isConfirmationOpen}
             onClose={() => setIsConfirmationOpen(false)}
-            onConfirm={() => {}}
-            title="Are you sure you want to remove this epic?"
+            onConfirm={() => {
+              onDeleteEpic(epic.epicId);
+              setIsConfirmationOpen(false);
+              close();
+            }}
+            title="Are you sure you want to remove this epic ?"
             description="This action cannot be undone. The epic will be permanently deleted from the project."
             cancelText="Cancel"
             confirmText="Delete Epic"

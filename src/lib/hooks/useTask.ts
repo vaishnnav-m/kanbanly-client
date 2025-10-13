@@ -49,10 +49,18 @@ export const useCreateTask = () => {
   });
 };
 
-export const useGetAllTasks = (workspaceId: string, projectId: string) => {
+export const useGetAllTasks = (
+  workspaceId: string,
+  projectId: string,
+  filters: {
+    status?: string;
+    priority?: string;
+    search?: string;
+  }
+) => {
   return useQuery<ApiResponse<ITask[]>, Error>({
-    queryKey: ["getTasks", workspaceId],
-    queryFn: () => getAllTasks({ workspaceId, projectId }),
+    queryKey: ["getTasks", workspaceId, projectId, filters],
+    queryFn: () => getAllTasks({ workspaceId, projectId, filters }),
     enabled: !!workspaceId || !!projectId,
   });
 };

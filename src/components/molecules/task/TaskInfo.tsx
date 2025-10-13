@@ -5,14 +5,10 @@ import { AssigneeCard } from "./AssigneeCard";
 import { getDate, hasPermission, PERMISSIONS } from "@/lib/utils";
 import { Textarea } from "@/components/atoms/textarea";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
-import { TaskPriority, WorkItemType } from "@/types/task.enum";
+import { TaskPriority } from "@/types/task.enum";
 import { workspaceRoles } from "@/types/roles.enum";
-import {
-  PriorityBadge,
-  WorkItemTypeIcon,
-} from "@/lib/constants/workitem.constats";
+import { PriorityBadge } from "@/lib/constants/workitem.constats";
 import { Button } from "@/components/atoms/button";
-import { epicColors } from "@/lib/constants/color.constants";
 
 interface TaskInfoProps {
   taskId: string;
@@ -21,12 +17,6 @@ interface TaskInfoProps {
   description?: string;
   members: WorkspaceMember[];
   assignedTo: { email: string; name: string } | null;
-  parent?: {
-    parentId: string;
-    title: string;
-    type: WorkItemType;
-    color?: string;
-  };
   memberRole: workspaceRoles;
   onInvite: (
     taskId: string,
@@ -47,7 +37,6 @@ export const TaskInfo = ({
   description,
   members,
   assignedTo,
-  parent,
   memberRole,
   onInvite,
   editingDueDate,
@@ -155,39 +144,6 @@ export const TaskInfo = ({
           <p className="text-sm text-foreground leading-relaxed">
             {description}
           </p>
-        ) : (
-          <p className="text-sm text-foreground italic">
-            No description provided.
-          </p>
-        )}
-      </div>
-
-      {/* Parent */}
-      <div className="space-y-2">
-        <label className="text-sm text-muted-foreground flex items-center gap-2">
-          Parent
-          {canEdit && (
-            <PenBox
-              onClick={() => setEditingDescription(description || "")}
-              className="size-4 cursor-pointer text-muted-foreground hover:text-foreground"
-            />
-          )}
-        </label>
-        {parent ? (
-          <div className="flex items-center gap-1">
-            <WorkItemTypeIcon
-              type={parent.type}
-              className="size-4 text-muted-foreground"
-            />
-            <p
-              className={`py-1 px-2 rounded-full text-xs ${
-                parent.color &&
-                epicColors[parent.color as keyof typeof epicColors]
-              } text-white/70 font-mono w-fit max-w-40 truncate`}
-            >
-              {parent.title}
-            </p>
-          </div>
         ) : (
           <p className="text-sm text-foreground italic">
             No description provided.

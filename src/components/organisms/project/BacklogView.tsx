@@ -12,6 +12,8 @@ import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { BacklogHeader } from "@/components/molecules/backlog/BacklogHeader";
 import { EpicDetailsModal } from "../epic/EpicDetailsModal";
+import { useDeleteEpic, useGetEpicById } from "@/lib/hooks/useEpic";
+import { useParams } from "next/navigation";
 
 // Types
 export interface Issue {
@@ -50,6 +52,13 @@ interface BacklogViewProps {
   isAttaching: boolean;
   setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
   setSelectedTask: Dispatch<SetStateAction<string>>;
+  members: WorkspaceMember[];
+  onInvite: (
+    taskId: string,
+    data: {
+      assignedTo: string;
+    }
+  ) => void;
 }
 
 export function BacklogView({
@@ -62,6 +71,8 @@ export function BacklogView({
   isAttaching,
   setIsTaskModalOpen,
   setSelectedTask,
+  members,
+  onInvite,
 }: BacklogViewProps) {
   const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
@@ -72,6 +83,21 @@ export function BacklogView({
   } | null>(null);
   const [isEpicModalOpen, setIsEpicModalOpen] = useState(false);
   const [selectedEpic, setSelectedEpic] = useState("");
+
+  const params = useParams();
+  const projectId = params.projectId as string;
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const { data: epicData } = useGetEpicById(
+    workspaceId,
+    projectId,
+    selectedEpic,
+    { enabled: !!selectedEpic && isEpicModalOpen }
+  );
+
+  const { mutate: deleteEpic } = useDeleteEpic();
 
   useEffect(() => {
     setSections(sectionsData);
@@ -270,8 +296,13 @@ export function BacklogView({
       </div>
       <EpicDetailsModal
         close={() => setIsEpicModalOpen(false)}
-        epic={epics[0]}
+        epic={epicData?.data}
         isVisible={isEpicModalOpen}
+        members={members}
+        onInviteMember={onInvite}
+        onDeleteEpic={(epicId: string) => {
+          deleteEpic({ epicId, projectId, workspaceId  });
+        }}
       />
     </div>
   );

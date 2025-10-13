@@ -1,0 +1,128 @@
+"use client";
+import { PenBox, Plus } from "lucide-react";
+import { Button } from "@/components/atoms/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/atoms/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/atoms/popover";
+import { WorkItemTypeIcon } from "@/lib/constants/workitem.constats";
+import { WorkItemType } from "@/types/task.enum";
+import { hasPermission, PERMISSIONS } from "@/lib/utils";
+import React, { useState } from "react";
+import { workspaceRoles } from "@/types/roles.enum";
+import { epicColors } from "@/lib/constants/color.constants";
+import { IEpic } from "@/lib/api/epic/epic.types";
+
+interface IWorkItemParentProps {
+  workItemType: WorkItemType;
+  memberRole: workspaceRoles;
+  isAttaching: boolean;
+  taskId: string;
+  // objects and arrays
+  epics: IEpic[];
+  parent?: {
+    parentId: string;
+    title: string;
+    type: WorkItemType;
+    color?: string;
+  };
+  // functions
+  handleParentAttach: (
+    parentType: "epic" | "task",
+    parentId: string,
+    taskId: string
+  ) => void;
+}
+
+export const WorkItemParent = ({
+  taskId,
+  workItemType,
+  parent,
+  memberRole,
+  epics,
+  isAttaching,
+  handleParentAttach,
+}: IWorkItemParentProps) => {
+  const canEdit = hasPermission(memberRole, PERMISSIONS.EDIT_TASK);
+  const [isEpicSelectorOpen, setIsEpicSelectorOpen] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm text-muted-foreground flex items-center gap-2">
+        Parent
+        {canEdit && parent && (
+          <PenBox
+            // onClick={() => {}}
+            className="size-4 cursor-pointer text-muted-foreground hover:text-foreground"
+          />
+        )}
+      </label>
+      {parent ? (
+        <div className="flex items-center gap-1">
+          <WorkItemTypeIcon
+            type={parent.type}
+            className="size-4 text-muted-foreground"
+          />
+          <p
+            className={`py-1 px-2 rounded-full text-xs ${
+              parent.color &&
+              epicColors[parent.color as keyof typeof epicColors]
+            } text-white/70 font-mono w-fit max-w-40 truncate`}
+          >
+            {parent.title}
+          </p>
+        </div>
+      ) : (
+        <Popover open={isEpicSelectorOpen} onOpenChange={setIsEpicSelectorOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
+              disabled={isAttaching}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Plus className="size-3 mr-1" />
+              {isAttaching ? "Attaching..." : "Add Parent"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 w-64" align="end">
+            <Command>
+              <CommandInput placeholder="Search epics..." />
+              <CommandList>
+                <CommandEmpty>No epics found.</CommandEmpty>
+                <CommandGroup>
+                  {epics.map((epicOption) => (
+                    <CommandItem
+                      key={epicOption.epicId}
+                      value={epicOption.title}
+                      onSelect={() => {
+                        handleParentAttach("epic", epicOption.epicId, taskId);
+                        setIsEpicSelectorOpen(false);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full bg-${epicOption.color}-500`}
+                        aria-hidden="true"
+                      />
+                      <span>{epicOption.title}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
+  );
+};
