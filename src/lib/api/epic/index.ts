@@ -33,3 +33,19 @@ export const getEpicById = async (
 
   return response.data;
 };
+
+export const deleteEpic = async ({
+  epicId,
+  projectId,
+  workspaceId,
+}: {
+  workspaceId: string;
+  projectId: string;
+  epicId: string;
+}) => {
+  const response = await api.delete(
+    `/workspace/${workspaceId}/projects/${projectId}/epics/${epicId}`
+  );
+
+  return response.data;
+};

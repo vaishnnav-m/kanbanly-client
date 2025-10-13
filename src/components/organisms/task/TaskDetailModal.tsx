@@ -13,6 +13,7 @@ import { TaskHeader } from "@/components/molecules/task/TaskHeader";
 import { workspaceRoles } from "@/types/roles.enum";
 import { TaskInfo } from "@/components/molecules/task/TaskInfo";
 import { TaskTabs } from "@/components/molecules/task/TaskTabs";
+import { WorkItemParent } from "@/components/molecules/task/WorkItemParent";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -109,7 +110,6 @@ export const TaskDetails = ({
               priority={task.priority}
               description={task.description}
               assignedTo={task.assignedTo}
-              parent={task.parent}
               memberRole={role}
               members={members}
               onInvite={onInvite}
@@ -138,6 +138,14 @@ export const TaskDetails = ({
                 </Button>
               </div>
             )}
+
+            <WorkItemParent
+              taskId={task.taskId}
+              memberRole={role}
+              workItemType={task.workItemType}
+              parent={task.parent}
+              epics={[]}
+            />
 
             {/* Tabs */}
             <TaskTabs />

@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "../atoms/table";
 import { Skeleton } from "../atoms/skeleton";
+
 function CustomTable<T extends BaseRowData>({
   data,
   columns,
@@ -133,7 +134,10 @@ function CustomTable<T extends BaseRowData>({
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell className="text-center" colSpan={columns.length}>
+            <TableCell
+              className="text-center dark:text-gray-500"
+              colSpan={columns.length}
+            >
               {emptyMessage}
             </TableCell>
           </TableRow>

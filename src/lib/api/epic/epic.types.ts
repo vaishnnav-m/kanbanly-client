@@ -1,4 +1,5 @@
 import { TaskStatus } from "@/types/task.enum";
+import { ITask } from "../task/task.types";
 
 export interface IEpic {
   epicId: string;
@@ -6,8 +7,10 @@ export interface IEpic {
   status: TaskStatus;
   color: string;
   description?: string;
+  children?: ITask[];
   workspaceId: string;
   projectId: string;
+  dueDate?: Date;
   createdAt: string;
   updatedAt: string;
   percentageDone?: number;

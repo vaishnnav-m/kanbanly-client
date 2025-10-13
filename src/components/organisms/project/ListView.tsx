@@ -111,15 +111,17 @@ export const ListView = ({
               <ArrowUpDown className="w-4 h-4 mr-2" />
               Sort
             </Button> */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                setFilters({ status: "", priority: "", search: "" })
-              }
-            >
-              Clear Filters ({activeFilterCount})
-            </Button>
+            {(filters.priority || filters.status) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setFilters({ status: "", priority: "", search: "" })
+                }
+              >
+                Clear Filters ({activeFilterCount})
+              </Button>
+            )}
           </div>
         </div>
         {/* search */}

@@ -190,6 +190,8 @@ function TaskListingPageTemplate({
             isAttaching={isAttaching}
             setIsTaskModalOpen={setIsTaskModalOpen}
             setSelectedTask={setSelectedTask}
+            members={members}
+            onInvite={(taskId, data) => handleEditTask(taskId, data)}
           />
         )}
       </div>

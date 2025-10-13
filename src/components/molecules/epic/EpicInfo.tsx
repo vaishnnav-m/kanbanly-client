@@ -11,6 +11,7 @@ interface EpicInfoProps {
   epicId: string;
   dueDate?: Date;
   description?: string;
+  percentageDone?: number;
   memberRole: workspaceRoles;
   editingDueDate: string | null;
   setEditingDueDate: Dispatch<SetStateAction<string | null>>;
@@ -40,7 +41,7 @@ export const EpicInfo = ({
         {/* Due Date */}
         <div className="space-y-2">
           <div className="flex gap-2 items-center group">
-            <label className="text-muted-foreground">Due date</label>
+            <label className="font-bold text-muted-foreground">Due date</label>
             {canEdit && (
               <PenBox
                 onClick={handleOpenDatePicker}
@@ -85,10 +86,21 @@ export const EpicInfo = ({
             )}
           </div>
         </div>
+        {/* <div className="space-y-2">
+          <label className="text-muted-foreground">Assignee</label>
+          <div className="flex items-center font-medium text-foreground">
+            <AssigneeCard
+              members={members}
+              onInvite={onInvite}
+              taskId={taskId}
+              assignedTo={assignedTo}
+            />
+          </div>
+        </div> */}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm text-muted-foreground flex items-center gap-2">
+        <label className="font-bold text-sm text-muted-foreground flex items-center gap-2">
           Description
           {canEdit && (
             <PenBox
