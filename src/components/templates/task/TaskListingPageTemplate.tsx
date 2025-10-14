@@ -16,6 +16,7 @@ import {
 } from "@/components/organisms/project/BacklogView";
 import { IEpic } from "@/lib/api/epic/epic.types";
 import { formatDataIntoSections } from "@/lib/task-utils";
+import { ISprintResponse } from "@/lib/api/sprint/sprint.types";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -45,6 +46,7 @@ interface TaskListingPageTemplateProps {
       search?: string;
     }>
   >;
+  sprints: ISprintResponse[];
 }
 
 function TaskListingPageTemplate({
@@ -64,6 +66,7 @@ function TaskListingPageTemplate({
   isAttaching,
   filters,
   setFilters,
+  sprints,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -90,7 +93,11 @@ function TaskListingPageTemplate({
     workItemType: task.workItemType,
   }));
 
-  const formatedTasks: Section[] = formatDataIntoSections(tasks, members, []);
+  const formatedTasks: Section[] = formatDataIntoSections(
+    tasks,
+    members,
+    sprints
+  );
 
   const [activeTab, setActiveTab] = useState("Board");
   const tabs = ["Board", "List", "Backlog", "Timeline"];

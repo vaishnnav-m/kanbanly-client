@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   ChevronDown,
   ChevronRight,
@@ -131,13 +131,13 @@ export function SprintSection({
                   onDragEnd={handleDragEnd}
                   className="cursor-move hover:bg-issue-hover transition-colors"
                 >
-                  <IssueCard
+                  {/* <IssueCard
                     id={issue.id}
                     title={issue.title}
                     status={issue.status as TaskStatus}
                     assignee={issue.assignee}
                     workItemType={issue.workItemType}
-                  />
+                  /> */}
                 </div>
               ))}
             </div>
@@ -148,9 +148,9 @@ export function SprintSection({
                   Plan your sprint
                 </h4>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Drag work items from the Backlog section, or create new work items, to
-                  plan the work for this sprint. Select Start sprint when
-                  you&#39;re ready.
+                  Drag work items from the Backlog section, or create new work
+                  items, to plan the work for this sprint. Select Start sprint
+                  when you&#39;re ready.
                 </p>
               </div>
             </div>

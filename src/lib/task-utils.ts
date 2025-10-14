@@ -3,21 +3,13 @@ import { Issue, Section } from "@/components/organisms/project/BacklogView";
 import { TaskListing } from "./api/task/task.types";
 import { WorkspaceMember } from "./api/workspace/workspace.types";
 import { WorkItemType } from "@/types/task.enum";
-
-// filter tasks for backlog view
-interface Sprint {
-  _id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-}
+import { ISprintResponse } from "./api/sprint/sprint.types";
 
 // function to format data into sections
 export const formatDataIntoSections = (
   tasks: TaskListing[],
   members: WorkspaceMember[],
-  sprints: Sprint[]
+  sprints: ISprintResponse[]
 ): Section[] => {
   // Step 1: Group tasks by sprintId. This is highly efficient for lookups later.
   const tasksBySprint = tasks.reduce<Record<string, TaskListing[]>>(
@@ -48,23 +40,28 @@ export const formatDataIntoSections = (
   };
 
   // Create sections for each sprint from the backend
+  const formatDate = (dateString: string): string =>
+    new Date(dateString).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+    });
+
   const sprintSections: Section[] = sprints.map((sprint) => {
-    const sprintTasks = tasksBySprint[sprint._id] || []; // Gracefully handle sprints with no tasks
+    const sprintTasks = tasksBySprint[sprint.sprintId] || [];
     const issues = createIssuesArray(sprintTasks);
 
-    // Format the date for the subtitle
-    const formatDate = (dateString: string): string =>
-      new Date(dateString).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-      });
+    const formattedStartDate = sprint.startDate
+      ? formatDate(sprint.startDate.toISOString())
+      : "TBD";
+
+    const formattedEndDate = sprint.endDate
+      ? formatDate(sprint.endDate.toISOString())
+      : "TBD";
 
     return {
-      id: sprint._id,
-      title: sprint.title,
-      subtitle: `${formatDate(sprint.startDate)} - ${formatDate(
-        sprint.endDate
-      )}`,
+      id: sprint.sprintId,
+      title: sprint.name,
+      subtitle: `${formattedStartDate} - ${formattedEndDate}`,
       type: "sprint",
       issueCount: issues.length,
       sprintStatus: sprint.status,
@@ -120,7 +117,7 @@ const issueTypeConfig = {
 
 // Helper Function
 export function getWorkItemTypeIcon(type: WorkItemType) {
-  const config = issueTypeConfig[type] || {
+  const config = issueTypeConfig[type as keyof typeof issueTypeConfig] || {
     icon: HelpCircle,
     className: "text-gray-500",
   };

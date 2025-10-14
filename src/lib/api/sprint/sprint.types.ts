@@ -1,3 +1,9 @@
+export enum SprintStatus {
+  Future = "future",
+  Active = "active",
+  Completed = "completed",
+}
+
 export interface ISprint {
   sprintId: string;
   name: string;
@@ -20,4 +26,12 @@ export interface CreateSprintArgs {
   workspaceId: string;
   projectId: string;
   sprintData: CreateSprintPayload;
+}
+
+export interface ISprintResponse {
+  sprintId: string;
+  name: string;
+  status: SprintStatus;
+  startDate: Date;
+  endDate: Date;
 }

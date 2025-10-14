@@ -37,8 +37,8 @@ export function EpicsSidebar({
 
   return (
     showEpics && (
-      <div className="w-80 bg-card dark:bg-gray-800/20 rounded-lg">
-        <div className=" p-4 border-b border-border">
+      <div className="w-80 bg-card rounded-lg">
+        <div className="dark:bg-gray-800/20 p-4 rounded-lg border-b border-border mb-2">
           <div className="flex items-center justify-between h-9">
             <div className="flex items-center gap-3">
               <Layers className="w-5 h-5 text-muted-foreground" />
@@ -49,7 +49,7 @@ export function EpicsSidebar({
             </div>
           </div>
         </div>
-        <div className="p-4 space-y-3 max-h-[calc(100vh-200px)] max-w-full overflow-y-auto">
+        <div className="dark:bg-gray-800/20 rounded-lg p-4 space-y-3 max-h-[calc(100vh-200px)] max-w-full overflow-y-auto">
           {epics.map((epic) => (
             <div key={epic.epicId} className="border border-border rounded-md">
               <div className="text-xs text-gray-600">

@@ -16,6 +16,7 @@ import {
 import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { TaskStatus } from "@/types/task.enum";
+import { useGetAllSprints } from "@/lib/hooks/useSprint";
 
 export default function TasksListingPage() {
   const [filters, setFilters] = useState<{
@@ -57,6 +58,9 @@ export default function TasksListingPage() {
   // hook to get all epics
   const { data: epicsData } = useGetAllEpics(workspaceId, projectId);
   const epics = epicsData?.data ? epicsData.data : [];
+
+  const { data: sprintData } = useGetAllSprints({ projectId, workspaceId });
+  const sprints = sprintData?.data ? sprintData.data : [];
 
   // hook to attach parent
   const { mutate: attachParent, isPending: isAttaching } = useAttachParrent();
@@ -125,6 +129,7 @@ export default function TasksListingPage() {
       isAttaching={isAttaching}
       filters={filters}
       setFilters={setFilters}
+      sprints={sprints}
     />
   );
 }
