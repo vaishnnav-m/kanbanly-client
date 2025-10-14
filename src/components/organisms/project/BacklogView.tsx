@@ -6,14 +6,23 @@ import { SprintSection } from "./SprintSection";
 import { BacklogSection } from "./BacklogSection";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
+import {
+  EpicUpdationPayload,
+  IEpic,
+  TaskEpic,
+} from "@/lib/api/epic/epic.types";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { BacklogHeader } from "@/components/molecules/backlog/BacklogHeader";
 import { EpicDetailsModal } from "../epic/EpicDetailsModal";
-import { useDeleteEpic, useGetEpicById } from "@/lib/hooks/useEpic";
+import {
+  useDeleteEpic,
+  useGetEpicById,
+  useUpdateEpic,
+} from "@/lib/hooks/useEpic";
 import { useParams } from "next/navigation";
+import { useCreateSprint } from "@/lib/hooks/useSprint";
 
 // Types
 export interface Issue {
@@ -90,14 +99,24 @@ export function BacklogView({
     (state: RootState) => state.workspace.workspaceId
   );
 
+  //  get one epic data
   const { data: epicData } = useGetEpicById(
     workspaceId,
     projectId,
     selectedEpic,
     { enabled: !!selectedEpic && isEpicModalOpen }
   );
-
+  // epic deletion hook
   const { mutate: deleteEpic } = useDeleteEpic();
+  // epic updation hook
+  const { mutate: updateEpic } = useUpdateEpic();
+
+  const handleEpicUpdate = (data: EpicUpdationPayload, epicId: string) => {
+    updateEpic({ data, epicId, projectId, workspaceId });
+  };
+
+  // sprint creation
+  const { mutate: createSprint } = useCreateSprint();
 
   useEffect(() => {
     setSections(sectionsData);
@@ -133,6 +152,7 @@ export function BacklogView({
   )
     .split(" ")[0]
     .toLowerCase();
+
   if (planName === "free") {
     return (
       <div
@@ -144,6 +164,7 @@ export function BacklogView({
       </div>
     );
   }
+
   const toggleSection = (sectionId: string) => {
     setSections(
       sections.map((section) =>
@@ -225,17 +246,11 @@ export function BacklogView({
   // Add new sprint
   const handleAddSprint = () => {
     if (!newSprintName.trim()) return;
-    const newSprint: Section = {
-      id: `sprint-${Date.now()}`,
-      title: newSprintName.trim(),
-      subtitle: "",
-      type: "sprint",
-      issueCount: 0,
-      expanded: true,
-      issues: [],
-      sprintStatus: "planned",
-    };
-    setSections([...sections, newSprint]);
+    createSprint({
+      projectId,
+      sprintData: { name: newSprintName },
+      workspaceId,
+    });
     setCreatingSprint(false);
     setNewSprintName("");
   };
@@ -301,8 +316,10 @@ export function BacklogView({
         members={members}
         onInviteMember={onInvite}
         onDeleteEpic={(epicId: string) => {
-          deleteEpic({ epicId, projectId, workspaceId  });
+          deleteEpic({ epicId, projectId, workspaceId });
         }}
+        handleEpicUpdate={handleEpicUpdate}
+        handleStatusChange={handleStatusChange}
       />
     </div>
   );

@@ -1,5 +1,8 @@
 import api from "../axios";
-import { CreateEpicPayload } from "./epic.types";
+import {
+  CreateEpicPayload,
+  EpicUpdationArgs,
+} from "./epic.types";
 
 export const addEpic = async (payload: CreateEpicPayload) => {
   const response = await api.post(
@@ -45,6 +48,15 @@ export const deleteEpic = async ({
 }) => {
   const response = await api.delete(
     `/workspace/${workspaceId}/projects/${projectId}/epics/${epicId}`
+  );
+
+  return response.data;
+};
+
+export const updateEpic = async (payload: EpicUpdationArgs) => {
+  const response = await api.put(
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/epics/${payload.epicId}`,
+    payload.data
   );
 
   return response.data;

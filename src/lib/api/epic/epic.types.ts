@@ -24,4 +24,14 @@ export interface CreateEpicPayload {
   description?: string;
 }
 
+export type EpicUpdationPayload = Partial<
+  Omit<CreateEpicPayload, "workspaceId" | "projectId">
+>;
+export interface EpicUpdationArgs {
+  data: EpicUpdationPayload;
+  workspaceId: string;
+  projectId: string;
+  epicId: string;
+}
+
 export type TaskEpic = Pick<IEpic, "epicId" | "title" | "color">;

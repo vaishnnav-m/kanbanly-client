@@ -20,7 +20,7 @@ export function EpicsSidebar({
   showEpics,
   addEpic,
   setIsEpicModalOpen,
-  setSelectedEpic
+  setSelectedEpic,
 }: EpicsSidebarProps) {
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
@@ -71,10 +71,14 @@ export function EpicsSidebar({
                     {epic.title}
                   </h4>
                 </div>
-                <Button onClick={() => {
-                  setIsEpicModalOpen(true);
-                  setSelectedEpic(epic.epicId);
-                }} variant="ghost" size="sm">
+                <Button
+                  onClick={() => {
+                    setIsEpicModalOpen(true);
+                    setSelectedEpic(epic.epicId);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                >
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </div>

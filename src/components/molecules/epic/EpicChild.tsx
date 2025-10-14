@@ -3,6 +3,7 @@ import CustomTable from "@/components/organisms/CustomTable";
 import { createTaskColumns } from "@/lib/columns/task.column";
 import { IEpic } from "@/lib/api/epic/epic.types";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
+import { TaskStatus } from "@/types/task.enum";
 
 interface IEpicChildProps {
   epic: IEpic;
@@ -13,14 +14,20 @@ interface IEpicChildProps {
       assignedTo: string;
     }
   ) => void;
+  handleStatusChange: (value: TaskStatus, taskId: string) => void;
 }
 
 export const EpicChild = ({
   epic,
   members,
   onInviteMember,
+  handleStatusChange,
 }: IEpicChildProps) => {
-  const columns = createTaskColumns({ members, onInviteMember });
+  const columns = createTaskColumns({
+    members,
+    onInviteMember,
+    handleStatusChange,
+  });
 
   return (
     <div>

@@ -4,9 +4,19 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { addEpic, deleteEpic, getAllEpics, getEpicById } from "../api/epic";
+import {
+  addEpic,
+  deleteEpic,
+  getAllEpics,
+  getEpicById,
+  updateEpic,
+} from "../api/epic";
 import { ApiResponse } from "../api/common.types";
-import { CreateEpicPayload, IEpic } from "../api/epic/epic.types";
+import {
+  CreateEpicPayload,
+  EpicUpdationArgs,
+  IEpic,
+} from "../api/epic/epic.types";
 import { useToastMessage } from "./useToastMessage";
 import { AxiosError } from "axios";
 
@@ -91,6 +101,42 @@ export const useDeleteEpic = () => {
       }
       toast.showError({
         title: "Epic deletion failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useUpdateEpic = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, EpicUpdationArgs>({
+    mutationFn: updateEpic,
+    mutationKey: ["updateEpic"],
+    onSuccess: (response, variables) => {
+      toast.showSuccess({
+        title: "Epic Updated Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getAllEpics"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "getEpicById",
+          variables.workspaceId,
+          variables.projectId,
+          variables.epicId,
+        ],
+      });
+    },
+    onError: (error: unknown) => {
+      let errorMessage = "Unexpected Error";
+      if (error instanceof AxiosError) {
+        errorMessage = error?.response?.data?.message;
+      }
+      toast.showError({
+        title: "Epic updation failed",
         description: errorMessage,
         duration: 6000,
       });

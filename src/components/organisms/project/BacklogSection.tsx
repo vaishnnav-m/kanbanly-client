@@ -333,7 +333,7 @@ export function BacklogSection({
               className="mt-3 text-muted-foreground hover:text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-800/30"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create issue
+              Create Workitem
             </Button>
           )}
         </div>

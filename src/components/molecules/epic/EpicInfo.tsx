@@ -100,12 +100,12 @@ export const EpicInfo = ({
       </div>
 
       <div className="space-y-2">
-        <label className="font-bold text-sm text-muted-foreground flex items-center gap-2">
+        <label className="font-bold text-sm text-muted-foreground flex items-center gap-2 group">
           Description
           {canEdit && (
             <PenBox
               onClick={() => setEditingDescription(description || "")}
-              className="size-4 cursor-pointer text-muted-foreground hover:text-foreground"
+              className="size-4 opacity-0 group-hover:opacity-100 cursor-pointer text-muted-foreground hover:text-foreground"
             />
           )}
         </label>

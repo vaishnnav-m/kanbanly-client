@@ -13,18 +13,20 @@ interface TaskColumnProps {
       assignedTo: string;
     }
   ) => void;
+  handleStatusChange: (value: TaskStatus, taskId: string) => void;
 }
 
 export const createTaskColumns = ({
   members,
   onInviteMember,
+  handleStatusChange,
 }: TaskColumnProps): TableColumn<ITask>[] => {
   const columns: TableColumn<ITask>[] = [
     {
       key: "task",
       label: "Task",
       type: "text",
-      cellClassName:"max-w-[10px] truncate",
+      cellClassName: "max-w-[10px] truncate",
     },
     {
       key: "status",
@@ -34,6 +36,8 @@ export const createTaskColumns = ({
         label: status,
         value: status,
       })),
+      onChange: (row, value) =>
+        handleStatusChange(value as TaskStatus, row.taskId),
     },
     {
       key: "priority",

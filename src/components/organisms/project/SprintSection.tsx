@@ -50,6 +50,7 @@ export function SprintSection({
     },
     { todo: 0, inProgress: 0, completed: 0 }
   );
+
   return (
     <div
       className="dark:bg-gray-800/20 rounded-lg"
@@ -160,7 +161,7 @@ export function SprintSection({
             className="mt-3 text-muted-foreground hover:text-foreground"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create issue
+            Create Workitem
           </Button>
         </div>
       )}
