@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
-import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
+import { TaskEpic } from "@/lib/api/epic/epic.types";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { getWorkItemTypeIcon } from "@/lib/task-utils";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
@@ -28,6 +28,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { AssigneeCard } from "../task/AssigneeCard";
 import { epicColors } from "@/lib/constants/color.constants";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IssueCardProps {
   id: string;
@@ -43,7 +44,6 @@ interface IssueCardProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
-  epics: IEpic[];
 }
 
 export function IssueCard({
@@ -56,8 +56,8 @@ export function IssueCard({
   handleStatusChange,
   handleParentAttach,
   isAttaching,
-  epics,
 }: IssueCardProps) {
+  const taskContext = useTaskPageContext();
   const statusValues = Object.values(TaskStatus);
 
   const IconComponent = getWorkItemTypeIcon(workItemType).icon;
@@ -116,7 +116,7 @@ export function IssueCard({
                 <CommandList>
                   <CommandEmpty>No epics found.</CommandEmpty>
                   <CommandGroup>
-                    {epics.map((epicOption) => (
+                    {taskContext.epics.map((epicOption) => (
                       <CommandItem
                         key={epicOption.epicId}
                         value={epicOption.title}
@@ -192,12 +192,7 @@ export function IssueCard({
         </Select>
 
         {assignee && (
-          <AssigneeCard
-            members={[]}
-            onInvite={() => {}}
-            taskId={id}
-            assignedTo={assignee}
-          />
+          <AssigneeCard onInvite={() => {}} taskId={id} assignedTo={assignee} />
         )}
       </div>
     </div>

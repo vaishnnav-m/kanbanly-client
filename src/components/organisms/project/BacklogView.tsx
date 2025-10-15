@@ -1,16 +1,12 @@
 "use client";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
 import { EpicsSidebar } from "./EpicsSidebar";
 import { SprintSection } from "./SprintSection";
 import { BacklogSection } from "./BacklogSection";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import {
-  EpicUpdationPayload,
-  IEpic,
-  TaskEpic,
-} from "@/lib/api/epic/epic.types";
+import { EpicUpdationPayload, TaskEpic } from "@/lib/api/epic/epic.types";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
@@ -49,7 +45,6 @@ export interface Section {
 
 interface BacklogViewProps {
   addEpic: (title: string, color: string) => void;
-  epics: IEpic[] | [];
   sectionsData: Section[] | [];
   createTask: (data: TaskCreationPayload) => void;
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
@@ -59,29 +54,15 @@ interface BacklogViewProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
-  members: WorkspaceMember[];
-  onInvite: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
 }
 
 export function BacklogView({
   addEpic,
-  epics,
   sectionsData,
   createTask,
   handleStatusChange,
   handleParentAttach,
   isAttaching,
-  setIsTaskModalOpen,
-  setSelectedTask,
-  members,
-  onInvite,
 }: BacklogViewProps) {
   const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
@@ -258,7 +239,6 @@ export function BacklogView({
   return (
     <div className="flex-1 h-full flex gap-2">
       <EpicsSidebar
-        epics={epics}
         showEpics={showEpics}
         addEpic={addEpic}
         setIsEpicModalOpen={setIsEpicModalOpen}
@@ -304,17 +284,12 @@ export function BacklogView({
           handleStatusChange={handleStatusChange}
           handleParentAttach={handleParentAttach}
           isAttaching={isAttaching}
-          epics={epics}
-          setIsTaskModalOpen={setIsTaskModalOpen}
-          setSelectedTask={setSelectedTask}
         />
       </div>
       <EpicDetailsModal
         close={() => setIsEpicModalOpen(false)}
         epic={epicData?.data}
         isVisible={isEpicModalOpen}
-        members={members}
-        onInviteMember={onInvite}
         onDeleteEpic={(epicId: string) => {
           deleteEpic({ epicId, projectId, workspaceId });
         }}

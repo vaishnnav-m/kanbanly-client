@@ -7,13 +7,13 @@ import { ITaskDetails, TaskCreationPayload } from "@/lib/api/task/task.types";
 import { ConfirmationModal } from "../admin/ConfirmationModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
 import { TaskHeader } from "@/components/molecules/task/TaskHeader";
 import { workspaceRoles } from "@/types/roles.enum";
 import { TaskInfo } from "@/components/molecules/task/TaskInfo";
 import { TaskTabs } from "@/components/molecules/task/TaskTabs";
 import { WorkItemParent } from "@/components/molecules/task/WorkItemParent";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -22,8 +22,6 @@ interface TaskDetailsProps {
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
-  members: WorkspaceMember[] | [];
-  onInvite: (taskId: string, data: { assignedTo: string }) => void;
 }
 
 export const TaskDetails = ({
@@ -33,8 +31,6 @@ export const TaskDetails = ({
   removeTask,
   handleEditTask,
   isEditing,
-  members,
-  onInvite,
 }: TaskDetailsProps) => {
   const [width, setWidth] = useState(448);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -45,6 +41,8 @@ export const TaskDetails = ({
   const [editingDueDate, setEditingDueDate] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string | null>(null);
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const taskContext = useTaskPageContext();
 
   const role = useSelector(
     (state: RootState) => state.workspace.memberRole
@@ -73,7 +71,7 @@ export const TaskDetails = ({
     role?: string;
   }) => {
     if (data.invitedEmail) {
-      onInvite(task.taskId, { assignedTo: data.invitedEmail });
+      taskContext.onInvite(task.taskId, { assignedTo: data.invitedEmail });
     }
   };
 
@@ -111,8 +109,6 @@ export const TaskDetails = ({
               description={task.description}
               assignedTo={task.assignedTo}
               memberRole={role}
-              members={members}
-              onInvite={onInvite}
               editingDueDate={editingDueDate}
               setEditingDueDate={setEditingDueDate}
               editingDescription={editingDescription}
@@ -145,6 +141,8 @@ export const TaskDetails = ({
               workItemType={task.workItemType}
               parent={task.parent}
               epics={[]}
+              handleParentAttach={() => {}}
+              isAttaching={false}
             />
 
             {/* Tabs */}
@@ -157,7 +155,7 @@ export const TaskDetails = ({
             isOpen={isInvitingUser}
             onClose={() => setIsInvitingUser(false)}
             onInvite={handleInvite}
-            suggestions={members?.map((m) => ({
+            suggestions={taskContext.members?.map((m) => ({
               id: m._id,
               name: m.name,
               email: m.email,

@@ -1,31 +1,22 @@
+"use client";
 import { Progress } from "@/components/atoms/progress";
 import CustomTable from "@/components/organisms/CustomTable";
 import { createTaskColumns } from "@/lib/columns/task.column";
 import { IEpic } from "@/lib/api/epic/epic.types";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { TaskStatus } from "@/types/task.enum";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IEpicChildProps {
   epic: IEpic;
-  members: WorkspaceMember[];
-  onInviteMember: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
 }
 
-export const EpicChild = ({
-  epic,
-  members,
-  onInviteMember,
-  handleStatusChange,
-}: IEpicChildProps) => {
+export const EpicChild = ({ epic, handleStatusChange }: IEpicChildProps) => {
+  const { members,onInvite } = useTaskPageContext();
+
   const columns = createTaskColumns({
     members,
-    onInviteMember,
+    onInviteMember:onInvite,
     handleStatusChange,
   });
 

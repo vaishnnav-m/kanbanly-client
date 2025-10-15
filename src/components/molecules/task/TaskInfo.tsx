@@ -4,7 +4,6 @@ import React, { Dispatch, SetStateAction } from "react";
 import { AssigneeCard } from "./AssigneeCard";
 import { getDate, hasPermission, PERMISSIONS } from "@/lib/utils";
 import { Textarea } from "@/components/atoms/textarea";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { TaskPriority } from "@/types/task.enum";
 import { workspaceRoles } from "@/types/roles.enum";
 import { PriorityBadge } from "@/lib/constants/workitem.constats";
@@ -15,15 +14,8 @@ interface TaskInfoProps {
   dueDate: Date;
   priority: TaskPriority;
   description?: string;
-  members: WorkspaceMember[];
   assignedTo: { email: string; name: string } | null;
   memberRole: workspaceRoles;
-  onInvite: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
   editingDueDate: string | null;
   setEditingDueDate: Dispatch<SetStateAction<string | null>>;
   editingDescription: string | null;
@@ -35,10 +27,8 @@ export const TaskInfo = ({
   dueDate,
   priority,
   description,
-  members,
   assignedTo,
   memberRole,
-  onInvite,
   editingDueDate,
   setEditingDueDate,
   editingDescription,
@@ -108,8 +98,6 @@ export const TaskInfo = ({
           <label className="text-muted-foreground">Assignee</label>
           <div className="flex items-center font-medium text-foreground">
             <AssigneeCard
-              members={members}
-              onInvite={onInvite}
               taskId={taskId}
               assignedTo={assignedTo}
             />

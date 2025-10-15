@@ -10,7 +10,6 @@ import { workspaceRoles } from "@/types/roles.enum";
 import { useSelector } from "react-redux";
 import { EpicHeader } from "@/components/molecules/epic/EpicHeader";
 import { EpicInfo } from "@/components/molecules/epic/EpicInfo";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { EpicChild } from "@/components/molecules/epic/EpicChild";
 import { TaskStatus } from "@/types/task.enum";
 
@@ -18,13 +17,6 @@ interface EpicDetailsModalProps {
   epic?: IEpic;
   isVisible: boolean;
   close: () => void;
-  members: WorkspaceMember[];
-  onInviteMember: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
   onDeleteEpic: (epicId: string) => void;
   handleEpicUpdate: (data: EpicUpdationPayload, epicId: string) => void;
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
@@ -34,8 +26,6 @@ export const EpicDetailsModal = ({
   epic,
   isVisible,
   close,
-  members,
-  onInviteMember,
   onDeleteEpic,
   handleEpicUpdate,
   handleStatusChange,
@@ -135,8 +125,6 @@ export const EpicDetailsModal = ({
 
             <EpicChild
               epic={epic}
-              members={members}
-              onInviteMember={onInviteMember}
               handleStatusChange={handleStatusChange}
             />
           </CardContent>

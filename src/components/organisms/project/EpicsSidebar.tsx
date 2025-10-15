@@ -3,12 +3,11 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Layers, MoreHorizontal, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
-import { IEpic } from "@/lib/api/epic/epic.types";
 import { Progress } from "@/components/atoms/progress";
 import { epicColors } from "@/lib/constants/color.constants";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface EpicsSidebarProps {
-  epics: IEpic[];
   showEpics: boolean;
   addEpic: (title: string, color: string) => void;
   setIsEpicModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -16,7 +15,6 @@ interface EpicsSidebarProps {
 }
 
 export function EpicsSidebar({
-  epics,
   showEpics,
   addEpic,
   setIsEpicModalOpen,
@@ -25,6 +23,8 @@ export function EpicsSidebar({
   const [addingEpic, setAddingEpic] = useState(false);
   const [epicName, setEpicName] = useState("");
   const [epicColor, setEpicColor] = useState("blue");
+
+  const { epics } = useTaskPageContext();
 
   const handleAddEpic = () => {
     if (!epicName.trim() || !epicColor.trim()) return;

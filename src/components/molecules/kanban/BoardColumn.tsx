@@ -1,6 +1,6 @@
 "use client";
 import { BoardTask } from "@/types/board.types";
-import { Dispatch, DragEvent, SetStateAction, useEffect, useState } from "react";
+import { DragEvent, useEffect, useState } from "react";
 import { TaskCard } from "./TaskCard";
 import { DropIndicator } from "./DropIndicator";
 import { AddTaskCard } from "./AddTaskCard";
@@ -10,7 +10,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { hasPermission, PERMISSIONS } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 
 export const BoardColumn = ({
   title,
@@ -19,21 +18,13 @@ export const BoardColumn = ({
   tasks,
   handleStatusChange,
   createTask,
-  onInvite,
-  members,
-  setIsTaskModalOpen,
-  setSelectedTask,
 }: {
   title: string;
   headingColor: string;
   status: TaskStatus;
   tasks: BoardTask[];
-  members: WorkspaceMember[];
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
   createTask: (task: TaskCreationPayload) => void;
-  onInvite: (taskId: string, data: { assignedTo: string }) => void;
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
 }) => {
   const [active, setActive] = useState(false);
   const [completedEffect, setCompletedEffect] = useState(false);
@@ -152,7 +143,7 @@ export const BoardColumn = ({
     userRole as workspaceRoles,
     PERMISSIONS.CREATE_TASK
   );
-  
+
   return (
     <div className="bg-card w-1/4 shrink-0">
       <div className="mb-3 mx-2 flex items-center justify-between rounded-md border border-gray-700/20 dark:bg-gray-800/20 px-3 py-2">
@@ -183,10 +174,6 @@ export const BoardColumn = ({
             key={card.taskId}
             taskData={card}
             handleDragStart={handleDragStart}
-            onInvite={onInvite}
-            members={members}
-            setIsTaskModalOpen={setIsTaskModalOpen}
-            setSelectedTask={setSelectedTask}
           />
         ))}
         <DropIndicator beforeId={"-1"} status={status} />

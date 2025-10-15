@@ -6,36 +6,25 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/atoms/tooltip";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { getAssignedTo } from "@/lib/task-utils";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { InviteUserDropdown } from "../InviteUserDropdown";
 import { User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { hasPermission, PERMISSIONS } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface AssigneeProps {
   taskId: string;
   assignedTo: { email: string; name: string } | null;
-  onInvite: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
-  members: WorkspaceMember[];
 }
 
-export const AssigneeCard = ({
-  taskId,
-  assignedTo,
-  onInvite,
-  members,
-}: AssigneeProps) => {
+export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
   const [isInvitingUser, setIsInvitingUser] = useState(false);
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
+  const { members, onInvite } = useTaskPageContext();
 
   const handleInvite = (data: {
     invitedEmail?: string;

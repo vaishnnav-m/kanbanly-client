@@ -18,9 +18,9 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/atoms/select";
-import { SetStateAction, Dispatch, useState, useEffect } from "react";
-import { IEpic } from "@/lib/api/epic/epic.types";
+import { useState, useEffect } from "react";
 import { workItemTypeMap } from "@/lib/constants/workitem.constats";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface BacklogSectionProps {
   backlogSection?: Section;
@@ -48,9 +48,6 @@ interface BacklogSectionProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
-  epics: IEpic[];
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
 }
 
 export function BacklogSection({
@@ -69,9 +66,6 @@ export function BacklogSection({
   handleStatusChange,
   handleParentAttach,
   isAttaching,
-  epics,
-  setIsTaskModalOpen,
-  setSelectedTask,
 }: BacklogSectionProps) {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
   const [newIssueTitle, setNewIssueTitle] = useState("");
@@ -82,6 +76,8 @@ export function BacklogSection({
   const [selectedIssueType, setSelectedIssueType] = useState(
     workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
   );
+
+  const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
 
   useEffect(() => {
     setSelectedIssueType(
@@ -252,7 +248,6 @@ export function BacklogSection({
                     handleStatusChange={handleStatusChange}
                     handleParentAttach={handleParentAttach}
                     isAttaching={isAttaching}
-                    epics={epics}
                   />
                 </div>
               ))}
