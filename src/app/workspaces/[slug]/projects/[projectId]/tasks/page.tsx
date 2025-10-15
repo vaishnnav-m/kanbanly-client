@@ -7,6 +7,7 @@ import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useAddEpic, useGetAllEpics } from "@/lib/hooks/useEpic";
 import {
   useAttachParrent,
+  useAttachSprint,
   useChangeStatus,
   useCreateTask,
   useEditTask,
@@ -64,6 +65,7 @@ export default function TasksListingPage() {
 
   // hook to attach parent
   const { mutate: attachParent, isPending: isAttaching } = useAttachParrent();
+  const { mutate: attachSprint } = useAttachSprint();
 
   // function to handle task creation
   function handleCreateTask(data: TaskCreationPayload) {
@@ -110,6 +112,15 @@ export default function TasksListingPage() {
     });
   }
 
+  function handleSprintAttach(taskId: string, sprintId: string) {
+    attachSprint({
+      projectId,
+      taskId,
+      workspaceId,
+      sprintId,
+    });
+  }
+
   return (
     <TaskListingPageTemplate
       tasks={tasks}
@@ -130,6 +141,7 @@ export default function TasksListingPage() {
       filters={filters}
       setFilters={setFilters}
       sprints={sprints}
+      handleSprintAttach={handleSprintAttach}
     />
   );
 }

@@ -55,6 +55,13 @@ export type AttachParentArgs = Omit<TaskEditArgs, "data"> & {
   data: AttachParentPayload;
 };
 
+export interface AttachSprintPayload {
+  workspaceId: string;
+  projectId: string;
+  taskId: string;
+  sprintId: string;
+}
+
 export interface ITaskDetails {
   taskId: string;
   task: string;

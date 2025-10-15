@@ -8,6 +8,7 @@ import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 import {
   AttachParentArgs,
+  AttachSprintPayload,
   ITask,
   ITaskDetails,
   StatusChangingArgs,
@@ -16,6 +17,7 @@ import {
 } from "../api/task/task.types";
 import {
   attachParent,
+  attachSprint,
   changeStatus,
   createTask,
   editTask,
@@ -166,6 +168,36 @@ export const useAttachParrent = () => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Failed to attach work item",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useAttachSprint = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, AttachSprintPayload>({
+    mutationKey: ["attachSprint"],
+    mutationFn: attachSprint,
+    onSuccess: (response, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["getAllSprints"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "getOnetask",
+          variables.workspaceId,
+          variables.projectId,
+          variables.taskId,
+        ],
+      });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Failed to attach Sprint",
         description: errorMessage,
         duration: 6000,
       });

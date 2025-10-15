@@ -1,6 +1,7 @@
 import api from "../axios";
 import {
   AttachParentArgs,
+  AttachSprintPayload,
   StatusChangingArgs,
   TaskCreationArgs,
   TaskEditArgs,
@@ -57,6 +58,14 @@ export const attachParent = async (payload: AttachParentArgs) => {
   const response = await api.patch(
     `/workspace/${payload.workspaceId}/projects/${payload.projectId}/tasks/${payload.taskId}/attach-parent`,
     payload.data
+  );
+  return response.data;
+};
+
+export const attachSprint = async (payload: AttachSprintPayload) => {
+  const response = await api.patch(
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/tasks/${payload.taskId}/attach-sprint`,
+    { sprintId: payload.sprintId }
   );
   return response.data;
 };

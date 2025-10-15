@@ -131,13 +131,14 @@ export function SprintSection({
                   onDragEnd={handleDragEnd}
                   className="cursor-move hover:bg-issue-hover transition-colors"
                 >
-                  {/* <IssueCard
+                  <IssueCard
                     id={issue.id}
                     title={issue.title}
                     status={issue.status as TaskStatus}
                     assignee={issue.assignee}
                     workItemType={issue.workItemType}
-                  /> */}
+                    
+                  />
                 </div>
               ))}
             </div>

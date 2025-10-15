@@ -44,6 +44,7 @@ interface TaskListingPageTemplateProps {
     parentId: string,
     taskId: string
   ) => void;
+  handleSprintAttach: (taskId: string, sprintId: string) => void;
   isAttaching: boolean;
   filters: { status?: string; priority?: string; search?: string };
   setFilters: Dispatch<
@@ -74,6 +75,7 @@ function TaskListingPageTemplate({
   filters,
   setFilters,
   sprints,
+  handleSprintAttach,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -213,6 +215,7 @@ function TaskListingPageTemplate({
               handleStatusChange={handleStatusChange}
               handleParentAttach={handleParentAttach}
               isAttaching={isAttaching}
+              handleSprintAttach={handleSprintAttach}
             />
           )}
         </div>

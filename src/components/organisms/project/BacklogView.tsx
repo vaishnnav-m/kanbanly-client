@@ -54,6 +54,7 @@ interface BacklogViewProps {
     taskId: string
   ) => void;
   isAttaching: boolean;
+  handleSprintAttach: (taskId: string, sprintId: string) => void;
 }
 
 export function BacklogView({
@@ -63,6 +64,7 @@ export function BacklogView({
   handleStatusChange,
   handleParentAttach,
   isAttaching,
+  handleSprintAttach,
 }: BacklogViewProps) {
   const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
@@ -173,7 +175,7 @@ export function BacklogView({
 
     if (!draggedIssue) return;
 
-    const { issue, sourceSection, sourceIndex } = draggedIssue;
+    const { issue, sourceSection } = draggedIssue;
 
     // Don't allow dropping on the same section
     if (sourceSection === targetSection) {
@@ -181,36 +183,11 @@ export function BacklogView({
       return;
     }
 
-    // Remove issue from source section
-    setSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id === sourceSection) {
-          const newIssues = [...section.issues];
-          newIssues.splice(sourceIndex, 1);
-          return {
-            ...section,
-            issues: newIssues,
-            issueCount: newIssues.length,
-          };
-        }
-        return section;
-      })
-    );
-
-    // Add issue to target section
-    setSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id === targetSection) {
-          const newIssues = [...section.issues, issue];
-          return {
-            ...section,
-            issues: newIssues,
-            issueCount: newIssues.length,
-          };
-        }
-        return section;
-      })
-    );
+    if (targetSection === "backlog-section") {
+      handleSprintAttach(issue.id, "");
+    } else {
+      handleSprintAttach(issue.id, targetSection);
+    }
 
     setDraggedIssue(null);
   };
