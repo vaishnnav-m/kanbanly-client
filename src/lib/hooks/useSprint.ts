@@ -12,6 +12,7 @@ import {
   UpdateSprintArgs,
 } from "../api/sprint/sprint.types";
 import {
+  completeSprint,
   createSprint,
   getActiveSprint,
   getAllSprints,
@@ -124,5 +125,36 @@ export const useGetActiveSprint = (workspaceId: string, projectId: string) => {
     queryKey: ["getActiveSprint", workspaceId, projectId],
     queryFn: () => getActiveSprint(workspaceId, projectId),
     enabled: !!workspaceId || !!projectId,
+  });
+};
+
+export const useCompleteSprint = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ApiResponse,
+    Error,
+    { workspaceId: string; projectId: string; sprintId: string }
+  >({
+    mutationKey: ["completeSprint"],
+    mutationFn: completeSprint,
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Sprint Completed Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({ queryKey: ["getActiveSprint"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Sprint Completion Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
   });
 };

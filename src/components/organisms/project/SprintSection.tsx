@@ -42,6 +42,7 @@ interface SprintSectionProps {
     sprintData: UpdateSprintPayload;
     mode: "start" | "update";
   }) => void;
+  handleCompleteSprint: (sprintId: string) => void;
 }
 
 const initialSprintFormData: UpdateSprintPayload = {
@@ -60,6 +61,7 @@ export function SprintSection({
   handleDragEnd,
   toggleSection,
   handleUpdateSprint,
+  handleCompleteSprint,
 }: SprintSectionProps) {
   const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
   const [isSprintStarting, setIsSprintStarting] = useState(false);
@@ -126,8 +128,6 @@ export function SprintSection({
     setIsSprintStarting(false);
   };
 
-  console.log("sprint", sprintSection);
-
   return (
     <div
       className="dark:bg-gray-800/20 rounded-lg"
@@ -193,8 +193,7 @@ export function SprintSection({
           {sprintSection.sprintStatus === "active" ? (
             <Button
               onClick={() => {
-                setMode("start");
-                setIsSprintStarting(true);
+                handleCompleteSprint(sprintSection.id);
               }}
               size="sm"
               variant="outline"

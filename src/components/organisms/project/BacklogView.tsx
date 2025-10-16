@@ -19,6 +19,7 @@ import {
 } from "@/lib/hooks/useEpic";
 import { useParams } from "next/navigation";
 import {
+  useCompleteSprint,
   useCreateSprint,
   useStartSprint,
   useUpdateSprint,
@@ -120,6 +121,7 @@ export function BacklogView({
       setActiveTab("Board");
     },
   });
+  const { mutate: completeSprint } = useCompleteSprint();
 
   useEffect(() => {
     setSections(sectionsData);
@@ -242,6 +244,10 @@ export function BacklogView({
     }
   };
 
+  const handleCompleteSprint = (sprintId: string) => {
+    completeSprint({ workspaceId, projectId, sprintId });
+  };
+
   return (
     <div className="flex-1 h-full flex gap-2">
       <EpicsSidebar
@@ -270,6 +276,7 @@ export function BacklogView({
             // task creation
             createTask={createTask}
             handleUpdateSprint={handleUpdateSprint}
+            handleCompleteSprint={handleCompleteSprint}
           />
         ))}
 

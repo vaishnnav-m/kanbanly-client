@@ -12,7 +12,7 @@ import {
 } from "@/lib/api/workspace/workspace.types";
 import { createInvitationColumns } from "@/lib/columns/invitaions.column";
 import { createMemberColumns } from "@/lib/columns/member.column";
-import { hasPermission, PERMISSIONS } from "@/lib/utils";
+import { hasPermission, PERMISSIONS, useDebounce } from "@/lib/utils";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
 import { UserPlus } from "lucide-react";
@@ -62,9 +62,11 @@ function WorkspaceMembersTemplates({
     WorkspaceMember[] | []
   >([]);
 
+  const debouncedSearchValue = useDebounce(searchValue, 300);
+
   useEffect(() => {
-    if (searchValue) {
-      const normalizedSearch = searchValue.trim().toLowerCase();
+    if (debouncedSearchValue) {
+      const normalizedSearch = debouncedSearchValue.trim().toLowerCase();
       const filtered = members.filter((member) =>
         member.email.toLowerCase().includes(normalizedSearch)
       );
@@ -72,7 +74,7 @@ function WorkspaceMembersTemplates({
     } else {
       setFilteredMembers(members);
     }
-  }, [searchValue, members]);
+  }, [debouncedSearchValue, members]);
 
   const userRole = useSelector(
     (state: RootState) => state.workspace.memberRole

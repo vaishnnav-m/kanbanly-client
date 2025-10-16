@@ -52,3 +52,14 @@ export const getActiveSprint = async (
   );
   return result.data;
 };
+
+export const completeSprint = async (payload: {
+  workspaceId: string;
+  projectId: string;
+  sprintId: string;
+}) => {
+  const result = await api.patch(
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/sprints/${payload.sprintId}/complete`
+  );
+  return result.data;
+};
