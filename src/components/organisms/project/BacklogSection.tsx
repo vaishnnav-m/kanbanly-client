@@ -1,11 +1,5 @@
 "use client";
-import {
-  ChevronDown,
-  ChevronRight,
-  CornerDownLeft,
-  MoreHorizontal,
-  Plus,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, CornerDownLeft, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IssueCard } from "@/components/molecules/project/IssueCard";
@@ -18,9 +12,9 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/atoms/select";
-import { SetStateAction, Dispatch, useState, useEffect } from "react";
-import { IEpic } from "@/lib/api/epic/epic.types";
+import { useState, useEffect } from "react";
 import { workItemTypeMap } from "@/lib/constants/workitem.constats";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface BacklogSectionProps {
   backlogSection?: Section;
@@ -35,22 +29,8 @@ interface BacklogSectionProps {
   handleDragEnd: () => void;
   toggleSection: (sectionId: string) => void;
   // Sprint creation controls
-  creatingSprint?: boolean;
-  setCreatingSprint?: (v: boolean) => void;
-  newSprintName?: string;
-  setNewSprintName?: (v: string) => void;
   handleAddSprint?: () => void;
   createTask: (data: TaskCreationPayload) => void;
-  handleStatusChange: (value: TaskStatus, taskId: string) => void;
-  handleParentAttach: (
-    parentType: "epic" | "task",
-    parentId: string,
-    taskId: string
-  ) => void;
-  isAttaching: boolean;
-  epics: IEpic[];
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
 }
 
 export function BacklogSection({
@@ -60,18 +40,8 @@ export function BacklogSection({
   handleDragStart,
   handleDragEnd,
   toggleSection,
-  creatingSprint,
-  setCreatingSprint,
-  newSprintName,
-  setNewSprintName,
   handleAddSprint,
   createTask,
-  handleStatusChange,
-  handleParentAttach,
-  isAttaching,
-  epics,
-  setIsTaskModalOpen,
-  setSelectedTask,
 }: BacklogSectionProps) {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
   const [newIssueTitle, setNewIssueTitle] = useState("");
@@ -82,6 +52,8 @@ export function BacklogSection({
   const [selectedIssueType, setSelectedIssueType] = useState(
     workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
   );
+
+  const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
 
   useEffect(() => {
     setSelectedIssueType(
@@ -173,55 +145,19 @@ export function BacklogSection({
               {backlogCounts.completed}
             </Badge>
           </div>
-          {/* Sprint creation button/input */}
-          {creatingSprint ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newSprintName}
-                onChange={(e) => setNewSprintName?.(e.target.value)}
-                placeholder="Sprint name"
-                className="px-2 py-1 rounded border border-border bg-background text-sm"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleAddSprint?.();
-                  if (e.key === "Escape") setCreatingSprint?.(false);
-                }}
-              />
+          <>
+            {backlogSection.issueCount > 0 && (
               <Button
                 size="sm"
+                variant="outline"
+                className="text-gray-500 dark:text-white text-xs h-7"
                 onClick={handleAddSprint}
-                disabled={!newSprintName?.trim()}
-                className="px-3"
               >
-                Add
+                <Plus className="w-4 h-4" />
+                Create Sprint
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCreatingSprint?.(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <>
-              {backlogSection.issueCount > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-gray-500 dark:text-white text-xs h-7"
-                  onClick={() => setCreatingSprint?.(true)}
-                >
-                  <Plus className="w-4 h-4" />
-                  Create Sprint
-                </Button>
-              )}
-            </>
-          )}
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
+            )}
+          </>
         </div>
       </div>
       {backlogSection.expanded && (
@@ -249,10 +185,6 @@ export function BacklogSection({
                     assignee={issue.assignee}
                     workItemType={issue.workItemType}
                     epic={issue.epic}
-                    handleStatusChange={handleStatusChange}
-                    handleParentAttach={handleParentAttach}
-                    isAttaching={isAttaching}
-                    epics={epics}
                   />
                 </div>
               ))}
@@ -333,7 +265,7 @@ export function BacklogSection({
               className="mt-3 text-muted-foreground hover:text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-800/30"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create issue
+              Create Workitem
             </Button>
           )}
         </div>

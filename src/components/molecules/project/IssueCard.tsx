@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
-import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
+import { TaskEpic } from "@/lib/api/epic/epic.types";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { getWorkItemTypeIcon } from "@/lib/task-utils";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
@@ -28,6 +28,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { AssigneeCard } from "../task/AssigneeCard";
 import { epicColors } from "@/lib/constants/color.constants";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IssueCardProps {
   id: string;
@@ -36,14 +37,6 @@ interface IssueCardProps {
   workItemType: WorkItemType;
   epic?: TaskEpic;
   assignee?: WorkspaceMember;
-  handleStatusChange: (value: TaskStatus, taskId: string) => void;
-  handleParentAttach: (
-    parentType: "epic" | "task",
-    parentId: string,
-    taskId: string
-  ) => void;
-  isAttaching: boolean;
-  epics: IEpic[];
 }
 
 export function IssueCard({
@@ -53,19 +46,12 @@ export function IssueCard({
   workItemType,
   epic,
   assignee,
-  handleStatusChange,
-  handleParentAttach,
-  isAttaching,
-  epics,
 }: IssueCardProps) {
+  const taskContext = useTaskPageContext();
   const statusValues = Object.values(TaskStatus);
 
   const IconComponent = getWorkItemTypeIcon(workItemType).icon;
 
-  // function handleEpicAdd() {
-  //   console.log("working");
-  //   handleParentAttach("epic", "asdf", id);
-  // }
   const [isEpicSelectorOpen, setIsEpicSelectorOpen] = useState(false);
 
   return (
@@ -103,11 +89,11 @@ export function IssueCard({
               <Button
                 variant="outline"
                 className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
-                disabled={isAttaching}
+                disabled={taskContext.isAttaching}
                 onClick={(e) => e.stopPropagation()}
               >
                 <Plus className="size-3 mr-1" />
-                {isAttaching ? "Attaching..." : "Add Epic"}
+                {taskContext.isAttaching ? "Attaching..." : "Add Epic"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-64" align="end">
@@ -116,12 +102,16 @@ export function IssueCard({
                 <CommandList>
                   <CommandEmpty>No epics found.</CommandEmpty>
                   <CommandGroup>
-                    {epics.map((epicOption) => (
+                    {taskContext.epics.map((epicOption) => (
                       <CommandItem
                         key={epicOption.epicId}
                         value={epicOption.title}
                         onSelect={() => {
-                          handleParentAttach("epic", epicOption.epicId, id);
+                          taskContext.handleParentAttach(
+                            "epic",
+                            epicOption.epicId,
+                            id
+                          );
                           setIsEpicSelectorOpen(false);
                         }}
                         className="flex items-center gap-2 cursor-pointer"
@@ -142,7 +132,7 @@ export function IssueCard({
         <Select
           value={status}
           onValueChange={(value: string) =>
-            handleStatusChange(value as TaskStatus, id)
+            taskContext.handleStatusChange(value as TaskStatus, id)
           }
         >
           <SelectTrigger
@@ -191,14 +181,7 @@ export function IssueCard({
           </SelectContent>
         </Select>
 
-        {assignee && (
-          <AssigneeCard
-            members={[]}
-            onInvite={() => {}}
-            taskId={id}
-            assignedTo={assignee}
-          />
-        )}
+        {assignee && <AssigneeCard taskId={id} assignedTo={assignee} />}
       </div>
     </div>
   );

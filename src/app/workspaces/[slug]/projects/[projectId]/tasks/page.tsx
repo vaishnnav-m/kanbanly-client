@@ -7,6 +7,7 @@ import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useAddEpic, useGetAllEpics } from "@/lib/hooks/useEpic";
 import {
   useAttachParrent,
+  useAttachSprint,
   useChangeStatus,
   useCreateTask,
   useEditTask,
@@ -16,6 +17,7 @@ import {
 import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { TaskStatus } from "@/types/task.enum";
+import { useGetActiveSprint, useGetAllSprints } from "@/lib/hooks/useSprint";
 
 export default function TasksListingPage() {
   const [filters, setFilters] = useState<{
@@ -60,6 +62,13 @@ export default function TasksListingPage() {
 
   // hook to attach parent
   const { mutate: attachParent, isPending: isAttaching } = useAttachParrent();
+  const { mutate: attachSprint } = useAttachSprint();
+
+  // hook to get all sprints
+  const { data: sprintsData } = useGetAllSprints({ projectId, workspaceId });
+  const sprints = sprintsData?.data ? sprintsData.data : [];
+  // hook to get active sprint
+  const { data: activeSprintData } = useGetActiveSprint(workspaceId, projectId);
 
   // function to handle task creation
   function handleCreateTask(data: TaskCreationPayload) {
@@ -106,6 +115,15 @@ export default function TasksListingPage() {
     });
   }
 
+  function handleSprintAttach(taskId: string, sprintId: string) {
+    attachSprint({
+      projectId,
+      taskId,
+      workspaceId,
+      sprintId,
+    });
+  }
+
   return (
     <TaskListingPageTemplate
       tasks={tasks}
@@ -125,6 +143,9 @@ export default function TasksListingPage() {
       isAttaching={isAttaching}
       filters={filters}
       setFilters={setFilters}
+      sprints={sprints}
+      activeSprint={activeSprintData?.data}
+      handleSprintAttach={handleSprintAttach}
     />
   );
 }

@@ -1,10 +1,6 @@
 "use client";
-
-import * as React from "react";
-import {
-  ThemeProvider as NextThemesProvider,
-  useTheme as useNextTheme,
-} from "next-themes";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { createContext, ReactNode, useContext } from "react";
 
 type Theme = "light" | "dark" | "system";
 
@@ -13,12 +9,10 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void;
 }
 
-const ThemeContext = React.createContext<ThemeContextType | undefined>(
-  undefined
-);
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const useTheme = () => {
-  const context = React.useContext(ThemeContext);
+  const context = useContext(ThemeContext);
   if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
@@ -26,7 +20,7 @@ export const useTheme = () => {
 };
 
 interface ThemeProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   defaultTheme?: Theme;
   attribute?: "class" | "data-theme";
   storageKey?: string;

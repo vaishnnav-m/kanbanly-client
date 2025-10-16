@@ -16,12 +16,11 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
 import { CreateTaskModal } from "../task/CreateTask";
 import { TaskListing } from "@/lib/api/task/task.types";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface ListViewProps {
   projectId: string;
   tasks: TaskListing[];
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
   handleStatusChange: (status: TaskStatus, taskId: string) => void;
   handlePriorityChange: (priority: TaskPriority, taskId: string) => void;
   filters: { status?: string; priority?: string; search?: string };
@@ -39,11 +38,10 @@ export const ListView = ({
   projectId,
   handleStatusChange,
   handlePriorityChange,
-  setIsTaskModalOpen,
-  setSelectedTask,
   filters,
   setFilters,
 }: ListViewProps) => {
+  const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
   // priorities and status
   const statusValues = Object.values(TaskStatus);
   const priorites = Object.values(TaskPriority);

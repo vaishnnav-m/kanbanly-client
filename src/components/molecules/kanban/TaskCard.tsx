@@ -1,34 +1,25 @@
 "use client";
-import { Dispatch, DragEvent, SetStateAction, useRef, useState } from "react";
+import { DragEvent, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { BoardTask } from "@/types/board.types";
 import { DropIndicator } from "./DropIndicator";
 import { Ellipsis } from "lucide-react";
 import { InviteUserDropdown } from "../InviteUserDropdown";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { workItemTypeMap } from "@/lib/constants/workitem.constats";
 import { AssigneeCard } from "../task/AssigneeCard";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface TaskCardProps {
   taskData: BoardTask;
-  onInvite: (taskId: string, data: { assignedTo: string }) => void;
   handleDragStart: (
     e: DragEvent<HTMLDivElement>,
     task: Omit<BoardTask, "workItemType">
   ) => void;
-  members: WorkspaceMember[];
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
 }
 
-export const TaskCard = ({
-  taskData,
-  members,
-  handleDragStart,
-  onInvite,
-  setIsTaskModalOpen,
-  setSelectedTask,
-}: TaskCardProps) => {
+export const TaskCard = ({ taskData, handleDragStart }: TaskCardProps) => {
+  const { setSelectedTask, setIsTaskModalOpen, members, onInvite } =
+    useTaskPageContext();
   const [isInvitingUser, setIsInvitingUser] = useState(false);
 
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -78,13 +69,16 @@ export const TaskCard = ({
             <div className="flex items-center gap-2">
               {taskData.workItemType && (
                 <span className="text-xs font-medium">
-                  {workItemTypeMap[taskData.workItemType]?.icon}
+                  {
+                    workItemTypeMap[
+                      taskData.workItemType as keyof typeof workItemTypeMap
+                    ]?.icon
+                  }
                 </span>
               )}
             </div>
             {/* Assignee */}
             <AssigneeCard
-              members={members}
               onInvite={onInvite}
               taskId={taskData.taskId}
               assignedTo={taskData.assignedTo || null}

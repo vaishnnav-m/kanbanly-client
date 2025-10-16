@@ -4,36 +4,31 @@ import { Card, CardContent } from "@/components/atoms/card";
 import { Resizable } from "re-resizable";
 import React, { useState } from "react";
 import { ConfirmationModal } from "../admin/ConfirmationModal";
-import { IEpic } from "@/lib/api/epic/epic.types";
+import { EpicUpdationPayload, IEpic } from "@/lib/api/epic/epic.types";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
 import { useSelector } from "react-redux";
 import { EpicHeader } from "@/components/molecules/epic/EpicHeader";
 import { EpicInfo } from "@/components/molecules/epic/EpicInfo";
-import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { EpicChild } from "@/components/molecules/epic/EpicChild";
+import { TaskStatus } from "@/types/task.enum";
 
 interface EpicDetailsModalProps {
   epic?: IEpic;
   isVisible: boolean;
   close: () => void;
-  members: WorkspaceMember[];
-  onInviteMember: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
   onDeleteEpic: (epicId: string) => void;
+  handleEpicUpdate: (data: EpicUpdationPayload, epicId: string) => void;
+  handleStatusChange: (value: TaskStatus, taskId: string) => void;
 }
 
 export const EpicDetailsModal = ({
   epic,
   isVisible,
   close,
-  members,
-  onInviteMember,
   onDeleteEpic,
+  handleEpicUpdate,
+  handleStatusChange,
 }: EpicDetailsModalProps) => {
   const [width, setWidth] = useState(448);
   // modal states
@@ -52,6 +47,22 @@ export const EpicDetailsModal = ({
   if (!isVisible || !epic) return null;
 
   if (!epic) return null;
+
+  function handleSubmit() {
+    const data: Partial<EpicUpdationPayload> = {
+      ...(editingDescription && { description: editingDescription }),
+      ...(editingName && { title: editingName }),
+      ...(editingDueDate && { dueDate: editingDueDate }),
+    };
+
+    if (!epic?.epicId) return;
+
+    handleEpicUpdate(data, epic.epicId);
+
+    setEditingName(null);
+    setEditingDescription(null);
+    setEditingDueDate(null);
+  }
 
   return (
     <div className="fixed top-4 right-4 h-[calc(100vh-2rem)] z-50">
@@ -95,7 +106,7 @@ export const EpicDetailsModal = ({
               editingDueDate !== null ||
               editingName !== null) && (
               <div className="w-full flex">
-                <Button onClick={() => {}} className="w-full">
+                <Button onClick={handleSubmit} className="w-full">
                   Save Changes
                 </Button>
                 <Button
@@ -114,8 +125,7 @@ export const EpicDetailsModal = ({
 
             <EpicChild
               epic={epic}
-              members={members}
-              onInviteMember={onInviteMember}
+              handleStatusChange={handleStatusChange}
             />
           </CardContent>
 

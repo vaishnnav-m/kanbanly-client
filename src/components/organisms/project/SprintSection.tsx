@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import {
   ChevronDown,
   ChevronRight,
-  Calendar,
   MoreHorizontal,
   Plus,
+  PenBox,
 } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
@@ -12,6 +12,14 @@ import { IssueCard } from "@/components/molecules/project/IssueCard";
 import type { Section, Issue } from "./BacklogView";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { TaskStatus } from "@/types/task.enum";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
+import { UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
+import { useCallback, useState } from "react";
+import SprintStartModal from "../sprint/SprintStartModal";
+import { useGetOneSprint } from "@/lib/hooks/useSprint";
+import { useParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 interface SprintSectionProps {
   sprintSection?: Section;
@@ -26,7 +34,24 @@ interface SprintSectionProps {
   handleDragEnd: () => void;
   toggleSection: (sectionId: string) => void;
   createTask: (data: TaskCreationPayload) => void;
+  handleUpdateSprint: ({
+    sprintId,
+    sprintData,
+  }: {
+    sprintId: string;
+    sprintData: UpdateSprintPayload;
+    mode: "start" | "update";
+  }) => void;
+  handleCompleteSprint: (sprintId: string) => void;
 }
+
+const initialSprintFormData: UpdateSprintPayload = {
+  name: "",
+  goal: "",
+  duration: "1-week",
+  startDate: undefined,
+  endDate: undefined,
+};
 
 export function SprintSection({
   sprintSection,
@@ -35,7 +60,41 @@ export function SprintSection({
   handleDragStart,
   handleDragEnd,
   toggleSection,
+  handleUpdateSprint,
+  handleCompleteSprint,
 }: SprintSectionProps) {
+  const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
+  const [isSprintStarting, setIsSprintStarting] = useState(false);
+  const [mode, setMode] = useState<"start" | "update">("start");
+
+  const params = useParams();
+  const projectId = params.projectId as string;
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const { data } = useGetOneSprint(
+    workspaceId,
+    projectId,
+    sprintSection?.id || ""
+  );
+
+  const sprintData = data?.data ? data.data : null;
+
+  const [sprintFormData, setSprintFormData] = useState<UpdateSprintPayload>(
+    initialSprintFormData
+  );
+
+  const handleFormDataChange = useCallback(
+    (
+      field: keyof UpdateSprintPayload,
+      value: UpdateSprintPayload[keyof UpdateSprintPayload]
+    ) => {
+      setSprintFormData((prevData) => ({ ...prevData, [field]: value }));
+    },
+    []
+  );
+
   if (!sprintSection) return null;
   const sprintCounts = sprintSection.issues.reduce(
     (acc, issue) => {
@@ -50,6 +109,25 @@ export function SprintSection({
     },
     { todo: 0, inProgress: 0, completed: 0 }
   );
+
+  const handleStartSprint = () => {
+    const newSprintData = {
+      ...(sprintFormData.name && { name: sprintFormData.name }),
+      ...(sprintFormData.goal && { goal: sprintFormData.goal }),
+      ...(sprintFormData.startDate && { startDate: sprintFormData.startDate }),
+      ...(sprintFormData.endDate && { endDate: sprintFormData.endDate }),
+    };
+
+    handleUpdateSprint({
+      sprintId: sprintSection.id,
+      sprintData: newSprintData,
+      mode,
+    });
+
+    setSprintFormData(initialSprintFormData);
+    setIsSprintStarting(false);
+  };
+
   return (
     <div
       className="dark:bg-gray-800/20 rounded-lg"
@@ -71,11 +149,19 @@ export function SprintSection({
           <h3 className="font-medium text-foreground">{sprintSection.title}</h3>
           {sprintSection.subtitle && (
             <Button
+              onClick={() => {
+                if (sprintSection.sprintStatus !== "active") {
+                  setMode("update");
+                  setIsSprintStarting(true);
+                }
+              }}
               variant="ghost"
               size="sm"
               className="text-xs text-muted-foreground h-6"
             >
-              <Calendar className="w-3 h-3 mr-1" />
+              {sprintSection.sprintStatus !== "active" && (
+                <PenBox className="w-3 h-3 mr-1" />
+              )}
               {sprintSection.subtitle}
             </Button>
           )}
@@ -104,13 +190,31 @@ export function SprintSection({
               {sprintCounts.completed}
             </Badge>
           </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-gray-500 dark:text-white text-xs h-7"
-          >
-            Start sprint
-          </Button>
+          {sprintSection.sprintStatus === "active" ? (
+            <Button
+              onClick={() => {
+                handleCompleteSprint(sprintSection.id);
+              }}
+              size="sm"
+              variant="outline"
+              className="text-gray-500 dark:text-white text-xs h-7"
+            >
+              Complete sprint
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                setMode("start");
+                setIsSprintStarting(true);
+              }}
+              size="sm"
+              variant="outline"
+              className="text-gray-500 dark:text-white text-xs h-7"
+            >
+              Start sprint
+            </Button>
+          )}
+
           <Button variant="ghost" size="sm">
             <MoreHorizontal className="w-4 h-4" />
           </Button>
@@ -128,7 +232,11 @@ export function SprintSection({
                     handleDragStart(e, issue, sprintSection.id, index)
                   }
                   onDragEnd={handleDragEnd}
-                  className="cursor-move hover:bg-issue-hover transition-colors"
+                  className="cursor-pointer hover:bg-issue-hover transition-colors"
+                  onClick={() => {
+                    setIsTaskModalOpen(true);
+                    setSelectedTask(issue.id);
+                  }}
                 >
                   <IssueCard
                     id={issue.id}
@@ -136,6 +244,7 @@ export function SprintSection({
                     status={issue.status as TaskStatus}
                     assignee={issue.assignee}
                     workItemType={issue.workItemType}
+                    epic={issue.epic}
                   />
                 </div>
               ))}
@@ -147,9 +256,9 @@ export function SprintSection({
                   Plan your sprint
                 </h4>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Drag work items from the Backlog section, or create new work items, to
-                  plan the work for this sprint. Select Start sprint when
-                  you&#39;re ready.
+                  Drag work items from the Backlog section, or create new work
+                  items, to plan the work for this sprint. Select Start sprint
+                  when you&#39;re ready.
                 </p>
               </div>
             </div>
@@ -160,10 +269,19 @@ export function SprintSection({
             className="mt-3 text-muted-foreground hover:text-foreground"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create issue
+            Create Workitem
           </Button>
         </div>
       )}
+      <SprintStartModal
+        onOpenChange={setIsSprintStarting}
+        open={isSprintStarting}
+        sprintFormData={sprintFormData}
+        onFormDataChange={handleFormDataChange}
+        onSubmit={handleStartSprint}
+        sprintData={sprintData}
+        mode={mode}
+      />
     </div>
   );
 }

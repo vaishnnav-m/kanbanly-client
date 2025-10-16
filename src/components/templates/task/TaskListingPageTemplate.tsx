@@ -1,5 +1,11 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { projectTemplate } from "@/types/project.enum";
@@ -16,6 +22,8 @@ import {
 } from "@/components/organisms/project/BacklogView";
 import { IEpic } from "@/lib/api/epic/epic.types";
 import { formatDataIntoSections } from "@/lib/task-utils";
+import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
+import { TaskPageContext } from "@/contexts/TaskPageContext";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -36,6 +44,7 @@ interface TaskListingPageTemplateProps {
     parentId: string,
     taskId: string
   ) => void;
+  handleSprintAttach: (taskId: string, sprintId: string) => void;
   isAttaching: boolean;
   filters: { status?: string; priority?: string; search?: string };
   setFilters: Dispatch<
@@ -45,6 +54,8 @@ interface TaskListingPageTemplateProps {
       search?: string;
     }>
   >;
+  sprints: ISprintResponse[];
+  activeSprint?: ISprint;
 }
 
 function TaskListingPageTemplate({
@@ -64,6 +75,9 @@ function TaskListingPageTemplate({
   isAttaching,
   filters,
   setFilters,
+  sprints,
+  handleSprintAttach,
+  activeSprint,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -82,15 +96,22 @@ function TaskListingPageTemplate({
   );
 
   // map tasks to board view format
-  const boardTasks = tasks.map((task) => ({
-    taskId: task.taskId,
-    task: task.task,
-    status: task.status,
-    assignedTo: task.assignedTo as WorkspaceMember,
-    workItemType: task.workItemType,
-  }));
+  const boardTasks = useMemo(
+    () =>
+      tasks.map((task) => ({
+        taskId: task.taskId,
+        task: task.task,
+        status: task.status,
+        assignedTo: task.assignedTo as WorkspaceMember,
+        workItemType: task.workItemType,
+      })),
+    [tasks]
+  );
 
-  const formatedTasks: Section[] = formatDataIntoSections(tasks, members, []);
+  const formatedTasks: Section[] = useMemo(
+    () => formatDataIntoSections(tasks, members, sprints),
+    [tasks, members, sprints]
+  );
 
   const [activeTab, setActiveTab] = useState("Board");
   const tabs = ["Board", "List", "Backlog", "Timeline"];
@@ -100,113 +121,121 @@ function TaskListingPageTemplate({
   );
 
   // function handle status change
-  function handleStatusChange(value: TaskStatus, taskId: string) {
-    changeStatus(value, taskId);
-  }
+  const handleStatusChange = useCallback(
+    (value: TaskStatus, taskId: string) => {
+      changeStatus(value, taskId);
+    },
+    [changeStatus]
+  );
 
   // function to handle priority change
-  function handlePriorityChange(value: TaskPriority, taskId: string) {
-    handleEditTask(taskId, { priority: value });
-  }
+  const handlePriorityChange = useCallback(
+    (value: TaskPriority, taskId: string) => {
+      handleEditTask(taskId, { priority: value });
+    },
+    [handleEditTask]
+  );
+
+  const contextValue = {
+    members,
+    epics,
+    setSelectedTask,
+    setIsTaskModalOpen,
+    onInvite: handleEditTask,
+    handleParentAttach,
+    handleStatusChange,
+    isAttaching,
+    activeSprint,
+  };
 
   return (
-    <div className="bg-background">
-      {/* Header */}
-      <div className="border-b border-border">
-        <div className="flex items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold text-foreground">
-                {projectName}
-              </h1>
+    <TaskPageContext.Provider value={contextValue}>
+      <div className="bg-background">
+        {/* Header */}
+        <div className="border-b border-border">
+          <div className="flex items-center justify-between px-6 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-semibold text-foreground">
+                  {projectName}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="px-6">
+            <div className="flex gap-6">
+              {tabs.map((tab) => {
+                if (
+                  tab === "Backlog" &&
+                  currentProjectTemplate !== projectTemplate.scrum
+                ) {
+                  return null;
+                }
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === tab
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="px-6">
-          <div className="flex gap-6">
-            {tabs.map((tab) => {
-              if (
-                tab === "Backlog" &&
-                currentProjectTemplate !== projectTemplate.scrum
-              ) {
-                return null;
-              }
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab
-                      ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab}
-                </button>
-              );
-            })}
-          </div>
+        {/* Content */}
+        <div className="p-6">
+          {activeTab === "Board" && (
+            <BoardView
+              tasksData={boardTasks}
+              createTask={createTask}
+              isCreating={isCreating}
+              handleStatusChange={handleStatusChange}
+              setActiveTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === "List" && (
+            <ListView
+              projectId={projectId}
+              tasks={tasks}
+              handlePriorityChange={handlePriorityChange}
+              handleStatusChange={handleStatusChange}
+              filters={filters}
+              setFilters={setFilters}
+            />
+          )}
+
+          {activeTab === "Backlog" && (
+            <BacklogView
+              addEpic={addEpic}
+              sectionsData={formatedTasks}
+              createTask={createTask}
+              handleStatusChange={handleStatusChange}
+              handleSprintAttach={handleSprintAttach}
+              setActiveTab={setActiveTab}
+            />
+          )}
         </div>
+
+        <TaskDetails
+          handleEditTask={handleEditTask}
+          removeTask={removeTask}
+          isVisible={isTaskModalOpen}
+          close={() => setIsTaskModalOpen(false)}
+          task={taskData && taskData.data}
+          isEditing={isEditing}
+        />
       </div>
-
-      {/* Content */}
-      <div className="p-6">
-        {activeTab === "Board" && (
-          <BoardView
-            tasksData={boardTasks}
-            createTask={createTask}
-            isCreating={isCreating}
-            handleStatusChange={handleStatusChange}
-            members={members}
-            onInvite={(taskId, data) => handleEditTask(taskId, data)}
-            setIsTaskModalOpen={setIsTaskModalOpen}
-            setSelectedTask={setSelectedTask}
-          />
-        )}
-
-        {activeTab === "List" && (
-          <ListView
-            projectId={projectId}
-            tasks={tasks}
-            handlePriorityChange={handlePriorityChange}
-            handleStatusChange={handleStatusChange}
-            setIsTaskModalOpen={setIsTaskModalOpen}
-            setSelectedTask={setSelectedTask}
-            filters={filters}
-            setFilters={setFilters}
-          />
-        )}
-
-        {activeTab === "Backlog" && (
-          <BacklogView
-            addEpic={addEpic}
-            epics={epics}
-            sectionsData={formatedTasks}
-            createTask={createTask}
-            handleStatusChange={handleStatusChange}
-            handleParentAttach={handleParentAttach}
-            isAttaching={isAttaching}
-            setIsTaskModalOpen={setIsTaskModalOpen}
-            setSelectedTask={setSelectedTask}
-            members={members}
-            onInvite={(taskId, data) => handleEditTask(taskId, data)}
-          />
-        )}
-      </div>
-
-      <TaskDetails
-        handleEditTask={handleEditTask}
-        removeTask={removeTask}
-        isVisible={isTaskModalOpen}
-        close={() => setIsTaskModalOpen(false)}
-        task={taskData && taskData.data}
-        members={members}
-        onInvite={(taskId, data) => handleEditTask(taskId, data)}
-        isEditing={isEditing}
-      />
-    </div>
+    </TaskPageContext.Provider>
   );
 }
 

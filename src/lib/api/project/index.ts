@@ -9,8 +9,24 @@ export const createProject = async (payload: ProjectCreationArgs) => {
   return response.data;
 };
 
-export const getAllProjects = async (data: { workspaceId: string }) => {
-  const response = await api.get(`/workspace/${data.workspaceId}/projects`);
+export const getAllProjects = async (data: {
+  workspaceId: string;
+  filters: {
+    search?: string;
+    memberCount?: { min?: number; max?: number };
+  };
+  sorting?: {
+    sortBy?: string;
+    order?: string;
+  };
+}) => {
+  const params = {
+    ...data.filters,
+    ...data.sorting,
+  };
+  const response = await api.get(`/workspace/${data.workspaceId}/projects`, {
+    params,
+  });
   return response.data;
 };
 

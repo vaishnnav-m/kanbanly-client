@@ -44,10 +44,20 @@ export const useCreateProject = () => {
   });
 };
 
-export const useGetAllProjects = (workspaceId: string) => {
+export const useGetAllProjects = (
+  workspaceId: string,
+  filters: {
+    search?: string;
+    memberCount?: { min?: number; max?: number };
+  },
+  sorting?: {
+    sortBy?: string;
+    order?: string;
+  }
+) => {
   return useQuery<ApiResponse<IProject[]>, Error>({
-    queryKey: ["getProjects", workspaceId],
-    queryFn: () => getAllProjects({ workspaceId }),
+    queryKey: ["getProjects", workspaceId, filters, sorting],
+    queryFn: () => getAllProjects({ workspaceId, filters, sorting }),
     enabled: !!workspaceId,
   });
 };

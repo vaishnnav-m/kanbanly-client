@@ -6,14 +6,27 @@ import { SprintSection } from "./SprintSection";
 import { BacklogSection } from "./BacklogSection";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { IEpic, TaskEpic } from "@/lib/api/epic/epic.types";
+import { EpicUpdationPayload, TaskEpic } from "@/lib/api/epic/epic.types";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { BacklogHeader } from "@/components/molecules/backlog/BacklogHeader";
 import { EpicDetailsModal } from "../epic/EpicDetailsModal";
-import { useDeleteEpic, useGetEpicById } from "@/lib/hooks/useEpic";
+import {
+  useDeleteEpic,
+  useGetEpicById,
+  useUpdateEpic,
+} from "@/lib/hooks/useEpic";
 import { useParams } from "next/navigation";
+import {
+  useCompleteSprint,
+  useCreateSprint,
+  useStartSprint,
+  useUpdateSprint,
+} from "@/lib/hooks/useSprint";
+import { UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Types
 export interface Issue {
@@ -31,48 +44,32 @@ export interface Section {
   id: string;
   title: string;
   subtitle?: string;
+  goal?: string;
+  startDate?: Date;
+  endDate?: Date;
   type: "sprint" | "backlog";
   issueCount: number;
   expanded: boolean;
   issues: Issue[];
-  sprintStatus?: string;
+  sprintStatus?: "active" | "future" | "completed";
 }
 
 interface BacklogViewProps {
   addEpic: (title: string, color: string) => void;
-  epics: IEpic[] | [];
   sectionsData: Section[] | [];
   createTask: (data: TaskCreationPayload) => void;
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
-  handleParentAttach: (
-    parentType: "epic" | "task",
-    parentId: string,
-    taskId: string
-  ) => void;
-  isAttaching: boolean;
-  setIsTaskModalOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedTask: Dispatch<SetStateAction<string>>;
-  members: WorkspaceMember[];
-  onInvite: (
-    taskId: string,
-    data: {
-      assignedTo: string;
-    }
-  ) => void;
+  handleSprintAttach: (taskId: string, sprintId: string) => void;
+  setActiveTab: Dispatch<SetStateAction<string>>;
 }
 
 export function BacklogView({
   addEpic,
-  epics,
   sectionsData,
   createTask,
   handleStatusChange,
-  handleParentAttach,
-  isAttaching,
-  setIsTaskModalOpen,
-  setSelectedTask,
-  members,
-  onInvite,
+  handleSprintAttach,
+  setActiveTab,
 }: BacklogViewProps) {
   const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
@@ -90,14 +87,41 @@ export function BacklogView({
     (state: RootState) => state.workspace.workspaceId
   );
 
+  //  get one epic data
   const { data: epicData } = useGetEpicById(
     workspaceId,
     projectId,
     selectedEpic,
     { enabled: !!selectedEpic && isEpicModalOpen }
   );
-
+  // epic deletion hook
   const { mutate: deleteEpic } = useDeleteEpic();
+  // epic updation hook
+  const { mutate: updateEpic } = useUpdateEpic();
+
+  const handleEpicUpdate = (data: EpicUpdationPayload, epicId: string) => {
+    updateEpic({ data, epicId, projectId, workspaceId });
+  };
+
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  // sprint creation
+  const { mutate: createSprint } = useCreateSprint();
+  const { mutate: updateSprint } = useUpdateSprint();
+  const { mutate: startSprint } = useStartSprint({
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Sprint Started Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({ queryKey: ["getActiveSprint"] });
+      setActiveTab("Board");
+    },
+  });
+  const { mutate: completeSprint } = useCompleteSprint();
 
   useEffect(() => {
     setSections(sectionsData);
@@ -124,15 +148,13 @@ export function BacklogView({
     };
   }, [setShowEpics]);
 
-  // Sprint creation state
-  const [creatingSprint, setCreatingSprint] = useState(false);
-  const [newSprintName, setNewSprintName] = useState("");
-
+  // plan name
   const planName = useSelector(
     (state: RootState) => state.subscription.planName
   )
     .split(" ")[0]
     .toLowerCase();
+
   if (planName === "free") {
     return (
       <div
@@ -144,6 +166,7 @@ export function BacklogView({
       </div>
     );
   }
+
   const toggleSection = (sectionId: string) => {
     setSections(
       sections.map((section) =>
@@ -171,7 +194,7 @@ export function BacklogView({
 
     if (!draggedIssue) return;
 
-    const { issue, sourceSection, sourceIndex } = draggedIssue;
+    const { issue, sourceSection } = draggedIssue;
 
     // Don't allow dropping on the same section
     if (sourceSection === targetSection) {
@@ -179,36 +202,11 @@ export function BacklogView({
       return;
     }
 
-    // Remove issue from source section
-    setSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id === sourceSection) {
-          const newIssues = [...section.issues];
-          newIssues.splice(sourceIndex, 1);
-          return {
-            ...section,
-            issues: newIssues,
-            issueCount: newIssues.length,
-          };
-        }
-        return section;
-      })
-    );
-
-    // Add issue to target section
-    setSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id === targetSection) {
-          const newIssues = [...section.issues, issue];
-          return {
-            ...section,
-            issues: newIssues,
-            issueCount: newIssues.length,
-          };
-        }
-        return section;
-      })
-    );
+    if (targetSection === "backlog-section") {
+      handleSprintAttach(issue.id, "");
+    } else {
+      handleSprintAttach(issue.id, targetSection);
+    }
 
     setDraggedIssue(null);
   };
@@ -224,26 +222,35 @@ export function BacklogView({
 
   // Add new sprint
   const handleAddSprint = () => {
-    if (!newSprintName.trim()) return;
-    const newSprint: Section = {
-      id: `sprint-${Date.now()}`,
-      title: newSprintName.trim(),
-      subtitle: "",
-      type: "sprint",
-      issueCount: 0,
-      expanded: true,
-      issues: [],
-      sprintStatus: "planned",
-    };
-    setSections([...sections, newSprint]);
-    setCreatingSprint(false);
-    setNewSprintName("");
+    createSprint({
+      projectId,
+      workspaceId,
+    });
+  };
+
+  const handleUpdateSprint = ({
+    sprintId,
+    sprintData,
+    mode,
+  }: {
+    sprintId: string;
+    sprintData: UpdateSprintPayload;
+    mode: "start" | "update";
+  }) => {
+    if (mode === "start") {
+      startSprint({ data: sprintData, projectId, sprintId, workspaceId });
+    } else {
+      updateSprint({ data: sprintData, projectId, sprintId, workspaceId });
+    }
+  };
+
+  const handleCompleteSprint = (sprintId: string) => {
+    completeSprint({ workspaceId, projectId, sprintId });
   };
 
   return (
     <div className="flex-1 h-full flex gap-2">
       <EpicsSidebar
-        epics={epics}
         showEpics={showEpics}
         addEpic={addEpic}
         setIsEpicModalOpen={setIsEpicModalOpen}
@@ -268,6 +275,8 @@ export function BacklogView({
             toggleSection={toggleSection}
             // task creation
             createTask={createTask}
+            handleUpdateSprint={handleUpdateSprint}
+            handleCompleteSprint={handleCompleteSprint}
           />
         ))}
 
@@ -281,28 +290,18 @@ export function BacklogView({
           // task creation
           createTask={createTask}
           // Sprint creation controls
-          creatingSprint={creatingSprint}
-          setCreatingSprint={setCreatingSprint}
-          newSprintName={newSprintName}
-          setNewSprintName={setNewSprintName}
           handleAddSprint={handleAddSprint}
-          handleStatusChange={handleStatusChange}
-          handleParentAttach={handleParentAttach}
-          isAttaching={isAttaching}
-          epics={epics}
-          setIsTaskModalOpen={setIsTaskModalOpen}
-          setSelectedTask={setSelectedTask}
         />
       </div>
       <EpicDetailsModal
         close={() => setIsEpicModalOpen(false)}
         epic={epicData?.data}
         isVisible={isEpicModalOpen}
-        members={members}
-        onInviteMember={onInvite}
         onDeleteEpic={(epicId: string) => {
-          deleteEpic({ epicId, projectId, workspaceId  });
+          deleteEpic({ epicId, projectId, workspaceId });
         }}
+        handleEpicUpdate={handleEpicUpdate}
+        handleStatusChange={handleStatusChange}
       />
     </div>
   );

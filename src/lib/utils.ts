@@ -1,6 +1,8 @@
+"use client";
 import { workspaceIcons } from "@/lib/constants/icons";
 import { workspaceRoles } from "@/types/roles.enum";
 import { clsx, type ClassValue } from "clsx";
+import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -137,3 +139,28 @@ export const hasPermission = (
   if (!permissions) return false;
   return permissions.has(permission);
 };
+
+export const formatDateForInput = (
+  date: Date | string | null | undefined
+): string => {
+  if (!date) return ""; // Return empty string for null/undefined
+  try {
+    return new Date(date).toISOString().split("T")[0];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return "";
+  }
+};
+
+export function useDebounce(value: string, delay: number): string {
+  const [debouncedValue, setDebouncedValue] = useState<string>(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  return debouncedValue;
+}
