@@ -51,11 +51,11 @@ export const formatDataIntoSections = (
     const issues = createIssuesArray(sprintTasks);
 
     const formattedStartDate = sprint.startDate
-      ? formatDate(sprint.startDate.toISOString())
+      ? formatDate(sprint.startDate as unknown as string)
       : "TBD";
 
     const formattedEndDate = sprint.endDate
-      ? formatDate(sprint.endDate.toISOString())
+      ? formatDate(sprint.endDate as unknown as string)
       : "TBD";
 
     return {

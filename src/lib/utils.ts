@@ -137,3 +137,15 @@ export const hasPermission = (
   if (!permissions) return false;
   return permissions.has(permission);
 };
+
+export const formatDateForInput = (
+  date: Date | string | null | undefined
+): string => {
+  if (!date) return ""; // Return empty string for null/undefined
+  try {
+    return new Date(date).toISOString().split("T")[0];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return "";
+  }
+};

@@ -140,9 +140,6 @@ export const TaskDetails = ({
               memberRole={role}
               workItemType={task.workItemType}
               parent={task.parent}
-              epics={[]}
-              handleParentAttach={() => {}}
-              isAttaching={false}
             />
 
             {/* Tabs */}

@@ -7,7 +7,7 @@ export enum SprintStatus {
 export interface ISprint {
   sprintId: string;
   name: string;
-  description?: string;
+  goal?: string;
   workspaceId: string;
   projectId: string;
   createdBy: string;
@@ -15,17 +15,24 @@ export interface ISprint {
   endDate: Date;
 }
 
-export interface CreateSprintPayload {
-  name: string;
-  descripiton?: string;
-  startDate?: Date;
-  endDate?: Date;
+export interface UpdateSprintPayload {
+  name?: string;
+  goal?: string;
+  duration?: string;
+  startDate?: Date | null;
+  endDate?: Date | null;
+}
+
+export interface UpdateSprintArgs {
+  workspaceId: string;
+  projectId: string;
+  sprintId: string;
+  data: UpdateSprintPayload;
 }
 
 export interface CreateSprintArgs {
   workspaceId: string;
   projectId: string;
-  sprintData: CreateSprintPayload;
 }
 
 export interface ISprintResponse {

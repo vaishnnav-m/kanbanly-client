@@ -1,7 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse, BaseApiParams } from "../api/common.types";
-import { CreateSprintArgs, ISprintResponse } from "../api/sprint/sprint.types";
-import { createSprint, getAllSprints } from "../api/sprint";
+import {
+  CreateSprintArgs,
+  ISprint,
+  ISprintResponse,
+  UpdateSprintArgs,
+} from "../api/sprint/sprint.types";
+import {
+  createSprint,
+  getAllSprints,
+  getOneSprint,
+  startSprint,
+  updateSprint,
+} from "../api/sprint";
 import { useToastMessage } from "./useToastMessage";
 
 export const useCreateSprint = () => {
@@ -39,5 +50,68 @@ export const useGetAllSprints = (params: BaseApiParams) => {
     ],
     queryFn: () => getAllSprints(params),
     enabled: !!params.workspaceId || !!params.projectId,
+  });
+};
+
+export const useGetOneSprint = (
+  workspaceId: string,
+  projectId: string,
+  sprintId: string
+) => {
+  return useQuery<ApiResponse<ISprint>, Error>({
+    queryKey: ["getOneSprint", workspaceId, projectId, sprintId],
+    queryFn: () => getOneSprint(workspaceId, projectId, sprintId),
+    enabled: !!workspaceId || !!projectId || !!sprintId,
+  });
+};
+
+export const useUpdateSprint = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, UpdateSprintArgs>({
+    mutationKey: ["updateSprint"],
+    mutationFn: updateSprint,
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Sprint Updation Successfull",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Sprint Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useStartSprint = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, UpdateSprintArgs>({
+    mutationKey: ["startSprint"],
+    mutationFn: startSprint,
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Sprint Started Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Sprint Starting Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
   });
 };

@@ -20,40 +20,31 @@ import { hasPermission, PERMISSIONS } from "@/lib/utils";
 import React, { useState } from "react";
 import { workspaceRoles } from "@/types/roles.enum";
 import { epicColors } from "@/lib/constants/color.constants";
-import { IEpic } from "@/lib/api/epic/epic.types";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IWorkItemParentProps {
   workItemType: WorkItemType;
   memberRole: workspaceRoles;
-  isAttaching: boolean;
   taskId: string;
   // objects and arrays
-  epics: IEpic[];
   parent?: {
     parentId: string;
     title: string;
     type: WorkItemType;
     color?: string;
   };
-  // functions
-  handleParentAttach: (
-    parentType: "epic" | "task",
-    parentId: string,
-    taskId: string
-  ) => void;
 }
 
 export const WorkItemParent = ({
   taskId,
-  workItemType,
+  // workItemType,
   parent,
   memberRole,
-  epics,
-  isAttaching,
-  handleParentAttach,
 }: IWorkItemParentProps) => {
   const canEdit = hasPermission(memberRole, PERMISSIONS.EDIT_TASK);
   const [isEpicSelectorOpen, setIsEpicSelectorOpen] = useState(false);
+
+  const { epics, handleParentAttach, isAttaching } = useTaskPageContext();
 
   return (
     <div className="space-y-2">

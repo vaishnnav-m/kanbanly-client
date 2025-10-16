@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Lock } from "lucide-react";
 import { EpicsSidebar } from "./EpicsSidebar";
 import { SprintSection } from "./SprintSection";
@@ -18,7 +18,12 @@ import {
   useUpdateEpic,
 } from "@/lib/hooks/useEpic";
 import { useParams } from "next/navigation";
-import { useCreateSprint } from "@/lib/hooks/useSprint";
+import {
+  useCreateSprint,
+  useStartSprint,
+  useUpdateSprint,
+} from "@/lib/hooks/useSprint";
+import { UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
 
 // Types
 export interface Issue {
@@ -36,6 +41,9 @@ export interface Section {
   id: string;
   title: string;
   subtitle?: string;
+  goal?: string;
+  startDate?: Date;
+  endDate?: Date;
   type: "sprint" | "backlog";
   issueCount: number;
   expanded: boolean;
@@ -48,13 +56,8 @@ interface BacklogViewProps {
   sectionsData: Section[] | [];
   createTask: (data: TaskCreationPayload) => void;
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
-  handleParentAttach: (
-    parentType: "epic" | "task",
-    parentId: string,
-    taskId: string
-  ) => void;
-  isAttaching: boolean;
   handleSprintAttach: (taskId: string, sprintId: string) => void;
+  setActiveTab: Dispatch<SetStateAction<string>>;
 }
 
 export function BacklogView({
@@ -62,9 +65,8 @@ export function BacklogView({
   sectionsData,
   createTask,
   handleStatusChange,
-  handleParentAttach,
-  isAttaching,
   handleSprintAttach,
+  setActiveTab,
 }: BacklogViewProps) {
   const [sections, setSections] = useState<Section[]>(sectionsData);
   const [showEpics, setShowEpics] = useState(true);
@@ -100,6 +102,8 @@ export function BacklogView({
 
   // sprint creation
   const { mutate: createSprint } = useCreateSprint();
+  const { mutate: updateSprint } = useUpdateSprint();
+  const { mutate: startSprint } = useStartSprint();
 
   useEffect(() => {
     setSections(sectionsData);
@@ -126,10 +130,7 @@ export function BacklogView({
     };
   }, [setShowEpics]);
 
-  // Sprint creation state
-  const [creatingSprint, setCreatingSprint] = useState(false);
-  const [newSprintName, setNewSprintName] = useState("");
-
+  // plan name
   const planName = useSelector(
     (state: RootState) => state.subscription.planName
   )
@@ -203,14 +204,27 @@ export function BacklogView({
 
   // Add new sprint
   const handleAddSprint = () => {
-    if (!newSprintName.trim()) return;
     createSprint({
       projectId,
-      sprintData: { name: newSprintName },
       workspaceId,
     });
-    setCreatingSprint(false);
-    setNewSprintName("");
+  };
+
+  const handleUpdateSprint = ({
+    sprintId,
+    sprintData,
+    mode,
+  }: {
+    sprintId: string;
+    sprintData: UpdateSprintPayload;
+    mode: "start" | "update";
+  }) => {
+    if (mode === "start") {
+      startSprint({ data: sprintData, projectId, sprintId, workspaceId });
+      setActiveTab("board");
+    } else {
+      updateSprint({ data: sprintData, projectId, sprintId, workspaceId });
+    }
   };
 
   return (
@@ -240,6 +254,7 @@ export function BacklogView({
             toggleSection={toggleSection}
             // task creation
             createTask={createTask}
+            handleUpdateSprint={handleUpdateSprint}
           />
         ))}
 
@@ -253,14 +268,7 @@ export function BacklogView({
           // task creation
           createTask={createTask}
           // Sprint creation controls
-          creatingSprint={creatingSprint}
-          setCreatingSprint={setCreatingSprint}
-          newSprintName={newSprintName}
-          setNewSprintName={setNewSprintName}
           handleAddSprint={handleAddSprint}
-          handleStatusChange={handleStatusChange}
-          handleParentAttach={handleParentAttach}
-          isAttaching={isAttaching}
         />
       </div>
       <EpicDetailsModal

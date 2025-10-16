@@ -140,6 +140,9 @@ function TaskListingPageTemplate({
     setSelectedTask,
     setIsTaskModalOpen,
     onInvite: handleEditTask,
+    handleParentAttach,
+    handleStatusChange,
+    isAttaching,
   };
 
   return (
@@ -213,9 +216,8 @@ function TaskListingPageTemplate({
               sectionsData={formatedTasks}
               createTask={createTask}
               handleStatusChange={handleStatusChange}
-              handleParentAttach={handleParentAttach}
-              isAttaching={isAttaching}
               handleSprintAttach={handleSprintAttach}
+              setActiveTab={setActiveTab}
             />
           )}
         </div>

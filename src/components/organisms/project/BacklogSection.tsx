@@ -35,19 +35,8 @@ interface BacklogSectionProps {
   handleDragEnd: () => void;
   toggleSection: (sectionId: string) => void;
   // Sprint creation controls
-  creatingSprint?: boolean;
-  setCreatingSprint?: (v: boolean) => void;
-  newSprintName?: string;
-  setNewSprintName?: (v: string) => void;
   handleAddSprint?: () => void;
   createTask: (data: TaskCreationPayload) => void;
-  handleStatusChange: (value: TaskStatus, taskId: string) => void;
-  handleParentAttach: (
-    parentType: "epic" | "task",
-    parentId: string,
-    taskId: string
-  ) => void;
-  isAttaching: boolean;
 }
 
 export function BacklogSection({
@@ -57,15 +46,8 @@ export function BacklogSection({
   handleDragStart,
   handleDragEnd,
   toggleSection,
-  creatingSprint,
-  setCreatingSprint,
-  newSprintName,
-  setNewSprintName,
   handleAddSprint,
   createTask,
-  handleStatusChange,
-  handleParentAttach,
-  isAttaching,
 }: BacklogSectionProps) {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
   const [newIssueTitle, setNewIssueTitle] = useState("");
@@ -169,52 +151,19 @@ export function BacklogSection({
               {backlogCounts.completed}
             </Badge>
           </div>
-          {/* Sprint creation button/input */}
-          {creatingSprint ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newSprintName}
-                onChange={(e) => setNewSprintName?.(e.target.value)}
-                placeholder="Sprint name"
-                className="px-2 py-1 rounded border border-border bg-background text-sm"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleAddSprint?.();
-                  if (e.key === "Escape") setCreatingSprint?.(false);
-                }}
-              />
+          <>
+            {backlogSection.issueCount > 0 && (
               <Button
                 size="sm"
+                variant="outline"
+                className="text-gray-500 dark:text-white text-xs h-7"
                 onClick={handleAddSprint}
-                disabled={!newSprintName?.trim()}
-                className="px-3"
               >
-                Add
+                <Plus className="w-4 h-4" />
+                Create Sprint
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCreatingSprint?.(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <>
-              {backlogSection.issueCount > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-gray-500 dark:text-white text-xs h-7"
-                  onClick={() => setCreatingSprint?.(true)}
-                >
-                  <Plus className="w-4 h-4" />
-                  Create Sprint
-                </Button>
-              )}
-            </>
-          )}
+            )}
+          </>
           <Button variant="ghost" size="sm">
             <MoreHorizontal className="w-4 h-4" />
           </Button>
@@ -245,9 +194,6 @@ export function BacklogSection({
                     assignee={issue.assignee}
                     workItemType={issue.workItemType}
                     epic={issue.epic}
-                    handleStatusChange={handleStatusChange}
-                    handleParentAttach={handleParentAttach}
-                    isAttaching={isAttaching}
                   />
                 </div>
               ))}
