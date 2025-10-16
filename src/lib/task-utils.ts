@@ -82,7 +82,6 @@ export const formatDataIntoSections = (
     subtitle: "",
     type: "backlog",
     issueCount: backlogIssues.length,
-    sprintStatus: "",
     expanded: true,
     issues: backlogIssues,
   });
@@ -91,7 +90,6 @@ export const formatDataIntoSections = (
 };
 
 // function to get WORK ITEM TYPE
-
 const issueTypeConfig = {
   [WorkItemType.Task]: {
     label: "Task",

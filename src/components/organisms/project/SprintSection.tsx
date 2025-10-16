@@ -126,6 +126,8 @@ export function SprintSection({
     setIsSprintStarting(false);
   };
 
+  console.log("sprint", sprintSection);
+
   return (
     <div
       className="dark:bg-gray-800/20 rounded-lg"
@@ -148,14 +150,18 @@ export function SprintSection({
           {sprintSection.subtitle && (
             <Button
               onClick={() => {
-                setMode("update");
-                setIsSprintStarting(true);
+                if (sprintSection.sprintStatus !== "active") {
+                  setMode("update");
+                  setIsSprintStarting(true);
+                }
               }}
               variant="ghost"
               size="sm"
               className="text-xs text-muted-foreground h-6"
             >
-              <PenBox className="w-3 h-3 mr-1" />
+              {sprintSection.sprintStatus !== "active" && (
+                <PenBox className="w-3 h-3 mr-1" />
+              )}
               {sprintSection.subtitle}
             </Button>
           )}
@@ -184,17 +190,32 @@ export function SprintSection({
               {sprintCounts.completed}
             </Badge>
           </div>
-          <Button
-            onClick={() => {
-              setMode("start");
-              setIsSprintStarting(true);
-            }}
-            size="sm"
-            variant="outline"
-            className="text-gray-500 dark:text-white text-xs h-7"
-          >
-            Start sprint
-          </Button>
+          {sprintSection.sprintStatus === "active" ? (
+            <Button
+              onClick={() => {
+                setMode("start");
+                setIsSprintStarting(true);
+              }}
+              size="sm"
+              variant="outline"
+              className="text-gray-500 dark:text-white text-xs h-7"
+            >
+              Complete sprint
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                setMode("start");
+                setIsSprintStarting(true);
+              }}
+              size="sm"
+              variant="outline"
+              className="text-gray-500 dark:text-white text-xs h-7"
+            >
+              Start sprint
+            </Button>
+          )}
+
           <Button variant="ghost" size="sm">
             <MoreHorizontal className="w-4 h-4" />
           </Button>

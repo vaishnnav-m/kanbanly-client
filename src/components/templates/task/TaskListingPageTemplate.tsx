@@ -22,7 +22,7 @@ import {
 } from "@/components/organisms/project/BacklogView";
 import { IEpic } from "@/lib/api/epic/epic.types";
 import { formatDataIntoSections } from "@/lib/task-utils";
-import { ISprintResponse } from "@/lib/api/sprint/sprint.types";
+import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
 
 interface TaskListingPageTemplateProps {
@@ -55,6 +55,7 @@ interface TaskListingPageTemplateProps {
     }>
   >;
   sprints: ISprintResponse[];
+  activeSprint?: ISprint;
 }
 
 function TaskListingPageTemplate({
@@ -76,6 +77,7 @@ function TaskListingPageTemplate({
   setFilters,
   sprints,
   handleSprintAttach,
+  activeSprint,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -143,6 +145,7 @@ function TaskListingPageTemplate({
     handleParentAttach,
     handleStatusChange,
     isAttaching,
+    activeSprint,
   };
 
   return (
@@ -196,6 +199,7 @@ function TaskListingPageTemplate({
               createTask={createTask}
               isCreating={isCreating}
               handleStatusChange={handleStatusChange}
+              setActiveTab={setActiveTab}
             />
           )}
 

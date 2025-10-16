@@ -24,6 +24,8 @@ import {
   useUpdateSprint,
 } from "@/lib/hooks/useSprint";
 import { UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Types
 export interface Issue {
@@ -48,7 +50,7 @@ export interface Section {
   issueCount: number;
   expanded: boolean;
   issues: Issue[];
-  sprintStatus?: string;
+  sprintStatus?: "active" | "future" | "completed";
 }
 
 interface BacklogViewProps {
@@ -100,10 +102,24 @@ export function BacklogView({
     updateEpic({ data, epicId, projectId, workspaceId });
   };
 
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
   // sprint creation
   const { mutate: createSprint } = useCreateSprint();
   const { mutate: updateSprint } = useUpdateSprint();
-  const { mutate: startSprint } = useStartSprint();
+  const { mutate: startSprint } = useStartSprint({
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Sprint Started Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({ queryKey: ["getActiveSprint"] });
+      setActiveTab("Board");
+    },
+  });
 
   useEffect(() => {
     setSections(sectionsData);
@@ -221,7 +237,6 @@ export function BacklogView({
   }) => {
     if (mode === "start") {
       startSprint({ data: sprintData, projectId, sprintId, workspaceId });
-      setActiveTab("board");
     } else {
       updateSprint({ data: sprintData, projectId, sprintId, workspaceId });
     }

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ApiResponse, BaseApiParams } from "../api/common.types";
 import {
   CreateSprintArgs,
@@ -8,6 +13,7 @@ import {
 } from "../api/sprint/sprint.types";
 import {
   createSprint,
+  getActiveSprint,
   getAllSprints,
   getOneSprint,
   startSprint,
@@ -90,21 +96,17 @@ export const useUpdateSprint = () => {
   });
 };
 
-export const useStartSprint = () => {
+export const useStartSprint = (
+  options?: Omit<
+    UseMutationOptions<ApiResponse, Error, UpdateSprintArgs>,
+    "mutationKey" | "mutationFn" | "onError"
+  >
+) => {
   const toast = useToastMessage();
-  const queryClient = useQueryClient();
 
   return useMutation<ApiResponse, Error, UpdateSprintArgs>({
     mutationKey: ["startSprint"],
     mutationFn: startSprint,
-    onSuccess: () => {
-      toast.showSuccess({
-        title: "Sprint Started Successfully",
-        duration: 6000,
-      });
-      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
-      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
-    },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -113,5 +115,14 @@ export const useStartSprint = () => {
         duration: 6000,
       });
     },
+    ...options,
+  });
+};
+
+export const useGetActiveSprint = (workspaceId: string, projectId: string) => {
+  return useQuery<ApiResponse<ISprint>, Error>({
+    queryKey: ["getActiveSprint", workspaceId, projectId],
+    queryFn: () => getActiveSprint(workspaceId, projectId),
+    enabled: !!workspaceId || !!projectId,
   });
 };

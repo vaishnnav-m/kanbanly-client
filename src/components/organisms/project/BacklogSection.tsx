@@ -1,11 +1,5 @@
 "use client";
-import {
-  ChevronDown,
-  ChevronRight,
-  CornerDownLeft,
-  MoreHorizontal,
-  Plus,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, CornerDownLeft, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IssueCard } from "@/components/molecules/project/IssueCard";
@@ -164,9 +158,6 @@ export function BacklogSection({
               </Button>
             )}
           </>
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
         </div>
       </div>
       {backlogSection.expanded && (

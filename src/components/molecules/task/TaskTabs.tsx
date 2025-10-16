@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/atoms/table";
 import { PriorityBadge } from "@/lib/constants/workitem.constats";
-import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
+import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Bug, CheckCircle2, Circle, CircleDashed, Ticket } from "lucide-react";
 
@@ -32,31 +32,32 @@ export const TaskTabs = () => {
     }
   };
 
-  const subtasks = [
-    {
-      taskId: "TASK-8782",
-      task: "Understanding client design brief",
-      priority: TaskPriority.high,
-      status: TaskStatus.Completed,
-      workItemType: WorkItemType.Task,
-      dueDate: new Date("2025-10-10"),
-    },
-    {
-      taskId: "TASK-8783",
-      task: "Understanding client design brief",
-      priority: TaskPriority.medium,
-      status: TaskStatus.InProgress,
-      workItemType: WorkItemType.Task,
-      dueDate: new Date("2025-10-10"),
-    },
-    {
-      taskId: "TASK-8781",
-      task: "Understanding client design brief",
-      priority: TaskPriority.low,
-      status: TaskStatus.Todo,
-      workItemType: WorkItemType.Task,
-      dueDate: new Date("2025-10-10"),
-    },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const subtasks: any[] = [
+    // {
+    //   taskId: "TASK-8782",
+    //   task: "Understanding client design brief",
+    //   priority: TaskPriority.high,
+    //   status: TaskStatus.Completed,
+    //   workItemType: WorkItemType.Task,
+    //   dueDate: new Date("2025-10-10"),
+    // },
+    // {
+    //   taskId: "TASK-8783",
+    //   task: "Understanding client design brief",
+    //   priority: TaskPriority.medium,
+    //   status: TaskStatus.InProgress,
+    //   workItemType: WorkItemType.Task,
+    //   dueDate: new Date("2025-10-10"),
+    // },
+    // {
+    //   taskId: "TASK-8781",
+    //   task: "Understanding client design brief",
+    //   priority: TaskPriority.low,
+    //   status: TaskStatus.Todo,
+    //   workItemType: WorkItemType.Task,
+    //   dueDate: new Date("2025-10-10"),
+    // },
   ];
 
   return (
@@ -85,31 +86,37 @@ export const TaskTabs = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subtasks.map((task) => (
-                <TableRow key={task.taskId}>
-                  <TableCell className="font-medium">
-                    <WorkItemTypeIcon type={task.workItemType} />
-                  </TableCell>
-                  <TableCell className="font-medium">{task.task}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <StatusIcon status={task.status} />
-                      <span className="text-sm text-muted-foreground">
-                        {task.status}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <PriorityBadge priority={task.priority} />
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {task.dueDate.toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </TableCell>
+              {subtasks.length ? (
+                subtasks.map((task) => (
+                  <TableRow key={task.taskId}>
+                    <TableCell className="font-medium">
+                      <WorkItemTypeIcon type={task.workItemType} />
+                    </TableCell>
+                    <TableCell className="font-medium">{task.task}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <StatusIcon status={task.status} />
+                        <span className="text-sm text-muted-foreground">
+                          {task.status}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <PriorityBadge priority={task.priority} />
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {task.dueDate.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell className="text-center" colSpan={5}>No Children</TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>
