@@ -206,10 +206,9 @@ export function BacklogSection({
             <div className="mt-3 flex items-center gap-2">
               <Select
                 value={newIssueType}
-                onValueChange={(value) => {
-                  console.log("value is", value);
-                  setNewIssueType(value as WorkItemType);
-                }}
+                onValueChange={(value) =>
+                  setNewIssueType(value as WorkItemType)
+                }
               >
                 <SelectTrigger className="w-auto h-9 border-border bg-background">
                   <div className="flex items-center gap-2">

@@ -49,7 +49,7 @@ const initialSprintFormData: UpdateSprintPayload = {
   name: "",
   goal: "",
   duration: "1-week",
-  startDate: undefined,
+  startDate: new Date(),
   endDate: undefined,
 };
 
@@ -136,16 +136,17 @@ export function SprintSection({
     >
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => toggleSection(sprintSection.id)}
-            className="p-1 hover:bg-muted rounded-sm"
+            className="p-1 hover:bg-muted rounded-sm h-fit"
           >
             {sprintSection.expanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
               <ChevronRight className="w-4 h-4" />
             )}
-          </button>
+          </Button>
           <h3 className="font-medium text-foreground">{sprintSection.title}</h3>
           {sprintSection.subtitle && (
             <Button

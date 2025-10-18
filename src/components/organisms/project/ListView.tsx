@@ -11,11 +11,13 @@ import {
 import { RootState } from "@/store";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { Select } from "@radix-ui/react-select";
-import { Calendar, Ellipsis, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
 import { CreateTaskModal } from "../task/CreateTask";
 import { TaskListing } from "@/lib/api/task/task.types";
+import CustomTable from "../CustomTable";
+import { createTaskColumns } from "@/lib/columns/task.column";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface ListViewProps {
@@ -50,14 +52,21 @@ export const ListView = ({
   const role = useSelector((state: RootState) => state.workspace.memberRole);
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
+  const taskColumns = createTaskColumns({
+    handleStatusChange,
+    handlePriorityChange,
+    setIsTaskModalOpen,
+    setSelectedTask,
+  });
+
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
+    <div>
+      <div className="flex items-center justify-between mb-3 bg-gray-800/20 p-3 rounded-lg border-b border-border">
         <div className="flex items-center gap-3">
           {role !== "member" && (
             <Button
               onClick={() => setIsTaskCreationModalOpen(true)}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-card hover:bg-card/90"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add task
@@ -72,7 +81,7 @@ export const ListView = ({
                 setFilters({ ...filters, status: value })
               }
             >
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[150px] dark:bg-card/60">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -92,7 +101,7 @@ export const ListView = ({
                 setFilters({ ...filters, priority: value })
               }
             >
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[150px] dark:bg-card/60">
                 <SelectValue placeholder="Filter by priority" />
               </SelectTrigger>
               <SelectContent>
@@ -105,10 +114,6 @@ export const ListView = ({
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {/* <Button className="hover:bg-primary/10" variant="outline" size="sm">
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              Sort
-            </Button> */}
             {(filters.priority || filters.status) && (
               <Button
                 variant="ghost"
@@ -125,138 +130,22 @@ export const ListView = ({
         {/* search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search tasks..." className="pl-10 w-64" />
+          <Input
+            placeholder="Search tasks..."
+            className="pl-10 w-64 dark:bg-card/60"
+          />
         </div>
       </div>
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
-        {/* Table Header */}
-        <div className="grid grid-cols-[1fr_200px_200px_200px_40px] gap-4 p-4 bg-muted/50 border-b border-border text-sm font-medium text-muted-foreground">
-          <div>Name</div>
-          <div>Status</div>
-          <div>Priority</div>
-          <div>Due Date</div>
-        </div>
-
-        {/* Tasks */}
-        {tasks.length ? (
-          tasks.map((task) => (
-            <div
-              key={task.taskId}
-              className="grid grid-cols-[1fr_200px_200px_200px_40px] gap-4 p-4 border-b border-border hover:bg-muted/30 transition-colors group"
-            >
-              <div className="flex items-center">
-                <span
-                  className={`${
-                    task.status === TaskStatus.Completed
-                      ? "text-muted-foreground"
-                      : "text-foreground"
-                  }`}
-                >
-                  {task.task}
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <Select
-                  value={task.status}
-                  onValueChange={(value: string) =>
-                    handleStatusChange(value as TaskStatus, task.taskId)
-                  }
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a fruit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {statusValues.map((value) => (
-                        <SelectItem
-                          key={value}
-                          className="focus:bg-slate-500/40"
-                          value={value.toLowerCase()}
-                        >
-                          {value}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center px-3">
-                {role !== "member" ? (
-                  <Select
-                    value={task.priority}
-                    onValueChange={(value: string) =>
-                      handlePriorityChange(value as TaskPriority, task.taskId)
-                    }
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select The Priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {priorites.map((value) => (
-                          <SelectItem
-                            key={value}
-                            className="focus:bg-slate-500/40"
-                            value={value.toLowerCase()}
-                          >
-                            {value}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <span>{task.priority}</span>
-                )}
-              </div>
-
-              <div className="flex items-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 hover:bg-transparent"
-                >
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  {task.dueDate ? (
-                    <span>
-                      {new Date(task.dueDate).toLocaleDateString("en-IN", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </Button>
-              </div>
-
-              <div className="flex items-center relative">
-                <Button
-                  onClick={() => {
-                    setSelectedTask(task.taskId);
-                    setIsTaskModalOpen(true);
-                  }}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent"
-                >
-                  <Ellipsis className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="w-full p-4 text-center">No Tasks</div>
-        )}
-      </div>
+      <CustomTable<TaskListing>
+        columns={taskColumns}
+        data={tasks}
+        className="bg-gray-800/20 rounded-xl"
+      />
       <CreateTaskModal
         isOpen={isTaskCreationModalOpen}
         onClose={() => setIsTaskCreationModalOpen(false)}
         projectId={projectId}
       />
-    </>
+    </div>
   );
 };

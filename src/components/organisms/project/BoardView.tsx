@@ -43,7 +43,7 @@ export const BoardView = ({
   return (
     <div className="w-full h-full flex gap-3">
       {template === "scrum" && !activeSprint ? (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-800/20 rounded-lg border-2 border-dashed border-gray-700 text-center p-8">
+        <div className="w-full h-full flex flex-col items-center justify-center dark:bg-gray-800/20 rounded-lg border-2 border-dashed border-gray-700 text-center p-8">
           {/* Icon representing planning or a sprint */}
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -22,12 +22,12 @@ export const useGetUsers = (
 };
 
 export const useUpdateUserStatus = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const toast = useToastMessage();
   return useMutation<ApiResponse<User>, Error, { id: string }>({
     mutationFn: updateUserStatus,
     onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ["fetchAllUsers"] });
+      // queryClient.invalidateQueries({ queryKey: ["fetchAllUsers"] });
       toast.showSuccess({
         title: "Success fully updated",
         description: response.message,

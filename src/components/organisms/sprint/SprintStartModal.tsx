@@ -66,7 +66,6 @@ export default function SprintStartModal({
     };
     const weeksToAdd = durationMap[sprintFormData.duration || ""];
 
-    console.log("inside useEffect", newStartDate, weeksToAdd);
     if (weeksToAdd) {
       const newEndDate = new Date(newStartDate);
       newEndDate.setDate(newStartDate.getDate() + weeksToAdd * 7);

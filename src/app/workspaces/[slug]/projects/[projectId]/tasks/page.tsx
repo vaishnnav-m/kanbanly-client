@@ -20,7 +20,7 @@ import { TaskStatus } from "@/types/task.enum";
 import { useGetActiveSprint, useGetAllSprints } from "@/lib/hooks/useSprint";
 
 export default function TasksListingPage() {
-  const [filters, setFilters] = useState<{
+const [filters, setFilters] = useState<{
     status?: string;
     priority?: string;
     search?: string;

@@ -122,7 +122,7 @@ function CustomTable<T extends BaseRowData>({
 
   if (!data || !data.length) {
     return (
-      <Table>
+      <Table className={className}>
         <TableHeader>
           <TableRow>
             {columns.map((col, idx) => (
@@ -147,7 +147,7 @@ function CustomTable<T extends BaseRowData>({
   }
 
   return (
-    <Table>
+    <Table className={className}>
       <TableHeader>
         <TableRow>
           {columns.map((col, idx) => (

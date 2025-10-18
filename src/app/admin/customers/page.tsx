@@ -2,19 +2,31 @@
 import AdminCustomers from "@/components/templates/admin/AdminCustomers";
 import { User } from "@/lib/api/auth/auth.types";
 import { useGetUsers, useUpdateUserStatus } from "@/lib/hooks/useAdmin";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function AdminCustomersPage() {
   const [page, setPage] = useState(1);
   const { data, isPending } = useGetUsers(page);
   const { mutate: updateStatus } = useUpdateUserStatus();
 
-  const users = data?.data?.users ?? [];
+  const usersData = useMemo(() => data?.data?.users ?? [], [data?.data?.users]);
+  const [users, setUsers] = useState(usersData);
+
   const totalPages = data?.data?.totalPages ?? 0;
+
+  useEffect(() => {
+    setUsers(usersData);
+  }, [usersData]);
 
   const handleUpdateStatus = (user: User) => {
     const id = user.userId;
     updateStatus({ id });
+
+    user.isActive = !user.isActive;
+    const filteredUsers = users.filter((user) => user.userId !== id);
+    filteredUsers.push(user);
+
+    setUsers(filteredUsers);
   };
 
   const onPageChange = (page: number) => {
