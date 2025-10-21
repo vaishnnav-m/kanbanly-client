@@ -66,7 +66,7 @@ export const ListView = ({
           {role !== "member" && (
             <Button
               onClick={() => setIsTaskCreationModalOpen(true)}
-              className="bg-card hover:bg-card/90"
+              className="bg-card hover:bg-card/90 border border-border"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add task

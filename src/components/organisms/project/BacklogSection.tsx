@@ -1,20 +1,14 @@
 "use client";
-import { ChevronDown, ChevronRight, CornerDownLeft, Plus } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IssueCard } from "@/components/molecules/project/IssueCard";
 import type { Section, Issue } from "./BacklogView";
 import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/atoms/select";
-import { useState, useEffect } from "react";
-import { workItemTypeMap } from "@/lib/constants/workitem.constats";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
+import { WorkItemCreationInput } from "@/components/molecules/task/WorkItemCreationInput";
 
 interface BacklogSectionProps {
   backlogSection?: Section;
@@ -44,22 +38,8 @@ export function BacklogSection({
   createTask,
 }: BacklogSectionProps) {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
-  const [newIssueTitle, setNewIssueTitle] = useState("");
-  const [newIssueType, setNewIssueType] = useState<WorkItemType>(
-    WorkItemType.Task
-  );
-
-  const [selectedIssueType, setSelectedIssueType] = useState(
-    workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
-  );
 
   const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
-
-  useEffect(() => {
-    setSelectedIssueType(
-      workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
-    );
-  }, [newIssueType]);
 
   if (!backlogSection) return null;
   function handleIssueCreation() {
@@ -68,16 +48,17 @@ export function BacklogSection({
 
   function handleCancelCreation() {
     setIsCreatingIssue(false);
-    setNewIssueTitle("");
-    setNewIssueType(WorkItemType.Task);
   }
 
-  function handleConfirmCreation() {
-    if (!newIssueTitle.trim()) return;
+  function handleConfirmCreation(data: {
+    newIssueTitle: string;
+    newIssueType: string;
+  }) {
+    if (!data.newIssueTitle.trim()) return;
 
     createTask({
-      task: newIssueTitle,
-      workItemType: newIssueType,
+      task: data.newIssueTitle,
+      workItemType: data.newIssueType as WorkItemType,
       status: TaskStatus.Todo,
       priority: TaskPriority.low,
     });
@@ -203,59 +184,11 @@ export function BacklogSection({
             </div>
           )}
           {isCreatingIssue ? (
-            <div className="mt-3 flex items-center gap-2">
-              <Select
-                value={newIssueType}
-                onValueChange={(value) =>
-                  setNewIssueType(value as WorkItemType)
-                }
-              >
-                <SelectTrigger className="w-auto h-9 border-border bg-background">
-                  <div className="flex items-center gap-2">
-                    {selectedIssueType?.icon}
-                    <span className="sr-only">{selectedIssueType?.label}</span>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(workItemTypeMap).map((type) => (
-                    <SelectItem
-                      key={type.label}
-                      value={type.label.toLowerCase()}
-                    >
-                      <div className="flex items-center gap-2">
-                        {type.icon}
-                        <span>{type.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <input
-                type="text"
-                value={newIssueTitle}
-                onChange={(e) => setNewIssueTitle(e.target.value)}
-                placeholder="What needs to be done?"
-                className="flex-grow h-9 px-2 py-1 rounded border border-border bg-background text-sm outline-none focus:border-border focus:ring-1 focus:ring-purple-500/30"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleConfirmCreation();
-                  if (e.key === "Escape") handleCancelCreation();
-                }}
-              />
-              <Button
-                className="border-purple-400"
-                variant="outline"
-                size="sm"
-                onClick={handleConfirmCreation}
-                disabled={!newIssueTitle.trim()}
-              >
-                <CornerDownLeft className="size-4" />
-                Create
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleCancelCreation}>
-                Cancel
-              </Button>
-            </div>
+            <WorkItemCreationInput
+              view="list"
+              handleCancelCreation={handleCancelCreation}
+              handleConfirmCreation={handleConfirmCreation}
+            />
           ) : (
             <Button
               onClick={handleIssueCreation}

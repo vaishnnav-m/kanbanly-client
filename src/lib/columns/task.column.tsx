@@ -19,10 +19,12 @@ interface TaskColumnProps {
 
 interface SubTaskColumnProps {
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
+  view: "epic" | "sub-task";
 }
 
 export const createSubTaskColumns = ({
   handleStatusChange,
+  view,
 }: SubTaskColumnProps): TableColumn<ITask>[] => {
   const columns: TableColumn<ITask>[] = [
     {
@@ -48,12 +50,37 @@ export const createSubTaskColumns = ({
       type: "custom",
       render: (row, value) => <PriorityBadge priority={value} />,
     },
+    ...(view === "epic"
+      ? ([
+          {
+            key: "assignedTo",
+            label: "Assigned To",
+            type: "custom",
+            render: (row, value) => (
+              <AssigneeCard assignedTo={value} taskId={row.taskId} />
+            ),
+          },
+        ] as TableColumn<ITask>[])
+      : []),
     {
-      key: "assignedTo",
-      label: "Assigned To",
+      key: "dueDate",
+      label: "Due Date",
       type: "custom",
-      render: (row, value) => (
-        <AssigneeCard assignedTo={value} taskId={row.taskId} />
+      render: (row, dueDate) => (
+        <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent">
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          {dueDate ? (
+            <span>
+              {new Date(dueDate).toLocaleDateString("en-IN", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          ) : (
+            <span className="text-sm text-gray-500">None</span>
+          )}
+        </Button>
       ),
     },
   ];
@@ -96,9 +123,11 @@ export const createTaskColumns = ({
       label: "Assigned To",
       type: "custom",
       render: (row, value) => (
-        <div className="space-x-2">
+        <div className="space-x-2 flex items-center">
           <AssigneeCard assignedTo={value} taskId={row.taskId} />
-          <span className="opacity-0 xl:opacity-100">{value?.name}</span>
+          <span className="opacity-0 xl:opacity-100">
+            {value?.name ? value.name : "Unassigned"}
+          </span>
         </div>
       ),
     },

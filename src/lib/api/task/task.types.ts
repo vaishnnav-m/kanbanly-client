@@ -10,6 +10,8 @@ export interface TaskCreationPayload {
   status?: TaskStatus;
   assignedTo?: string;
   dueDate?: Date | string;
+  sprintId?: string;
+  parentId?: string;
 }
 
 export interface AttachParentPayload {

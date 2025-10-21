@@ -13,6 +13,7 @@ interface IEpicChildProps {
 export const EpicChild = ({ epic, handleStatusChange }: IEpicChildProps) => {
   const columns = createSubTaskColumns({
     handleStatusChange,
+    view: "epic",
   });
 
   return (

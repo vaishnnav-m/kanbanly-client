@@ -5,21 +5,29 @@ import {
   MoreHorizontal,
   Plus,
   PenBox,
+  CornerDownLeft,
 } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { IssueCard } from "@/components/molecules/project/IssueCard";
 import type { Section, Issue } from "./BacklogView";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
-import { TaskStatus } from "@/types/task.enum";
+import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 import { UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SprintStartModal from "../sprint/SprintStartModal";
 import { useGetOneSprint } from "@/lib/hooks/useSprint";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/atoms/select";
+import { workItemTypeMap } from "@/lib/constants/workitem.constats";
 
 interface SprintSectionProps {
   sprintSection?: Section;
@@ -62,10 +70,26 @@ export function SprintSection({
   toggleSection,
   handleUpdateSprint,
   handleCompleteSprint,
+  createTask,
 }: SprintSectionProps) {
   const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
   const [isSprintStarting, setIsSprintStarting] = useState(false);
   const [mode, setMode] = useState<"start" | "update">("start");
+  // workitem creation
+  const [isCreatingIssue, setIsCreatingIssue] = useState(false);
+  const [newIssueTitle, setNewIssueTitle] = useState("");
+  const [newIssueType, setNewIssueType] = useState<WorkItemType>(
+    WorkItemType.Task
+  );
+  const [selectedIssueType, setSelectedIssueType] = useState(
+    workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
+  );
+
+  useEffect(() => {
+    setSelectedIssueType(
+      workItemTypeMap[newIssueType as keyof typeof workItemTypeMap]
+    );
+  }, [newIssueType]);
 
   const params = useParams();
   const projectId = params.projectId as string;
@@ -127,6 +151,31 @@ export function SprintSection({
     setSprintFormData(initialSprintFormData);
     setIsSprintStarting(false);
   };
+
+  // handle create workitem
+  function handleIssueCreation() {
+    setIsCreatingIssue(true);
+  }
+
+  function handleCancelCreation() {
+    setIsCreatingIssue(false);
+    setNewIssueTitle("");
+    setNewIssueType(WorkItemType.Task);
+  }
+
+  function handleConfirmCreation() {
+    if (!newIssueTitle.trim()) return;
+
+    createTask({
+      task: newIssueTitle,
+      workItemType: newIssueType,
+      status: TaskStatus.Todo,
+      priority: TaskPriority.low,
+      sprintId: sprintSection?.id,
+    });
+
+    handleCancelCreation();
+  }
 
   return (
     <div
@@ -264,14 +313,74 @@ export function SprintSection({
               </div>
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mt-3 text-muted-foreground hover:text-foreground"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Workitem
-          </Button>
+          {isCreatingIssue ? (
+            <div className="mt-3 flex items-center gap-2">
+              <Select
+                value={newIssueType}
+                onValueChange={(value) =>
+                  setNewIssueType(value as WorkItemType)
+                }
+              >
+                <SelectTrigger className="w-auto h-9 border-border bg-background">
+                  <div className="flex items-center gap-2">
+                    {selectedIssueType?.icon}
+                    <span className="sr-only">{selectedIssueType?.label}</span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(workItemTypeMap).map(
+                    (type) =>
+                      type.label !== "Epic" && (
+                        <SelectItem
+                          key={type.label}
+                          value={type.label.toLowerCase()}
+                        >
+                          <div className="flex items-center gap-2">
+                            {type.icon}
+                            <span>{type.label}</span>
+                          </div>
+                        </SelectItem>
+                      )
+                  )}
+                </SelectContent>
+              </Select>
+              <input
+                type="text"
+                value={newIssueTitle}
+                onChange={(e) => setNewIssueTitle(e.target.value)}
+                placeholder="What needs to be done?"
+                className="flex-grow h-9 px-2 py-1 rounded border border-border bg-background text-sm outline-none focus:border-border focus:ring-1 focus:ring-purple-500/30"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleConfirmCreation();
+                  if (e.key === "Escape") handleCancelCreation();
+                }}
+              />
+              <Button
+                className="border-purple-400"
+                variant="outline"
+                size="sm"
+                onClick={handleConfirmCreation}
+                disabled={!newIssueTitle.trim()}
+              >
+                <CornerDownLeft className="size-4" />
+                Create
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleCancelCreation}>
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={handleIssueCreation}
+              variant="ghost"
+              size="sm"
+              className="mt-3 text-muted-foreground hover:text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-800/30"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Workitem
+            </Button>
+          )}
         </div>
       )}
       <SprintStartModal

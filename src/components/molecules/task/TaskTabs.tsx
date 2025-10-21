@@ -1,64 +1,55 @@
 import { Badge } from "@/components/atoms/badge";
+import { Button } from "@/components/atoms/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/atoms/table";
-import { PriorityBadge } from "@/lib/constants/workitem.constats";
-import { TaskStatus, WorkItemType } from "@/types/task.enum";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { Bug, CheckCircle2, Circle, CircleDashed, Ticket } from "lucide-react";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/atoms/tabs";
+import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
+import { Plus } from "lucide-react";
+import { WorkItemCreationInput } from "./WorkItemCreationInput";
+import { useState } from "react";
+import { ITask, TaskCreationPayload } from "@/lib/api/task/task.types";
+import { createSubTaskColumns } from "@/lib/columns/task.column";
+import CustomTable from "@/components/organisms/CustomTable";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
-export const TaskTabs = () => {
-  const WorkItemTypeIcon = ({ type }: { type: WorkItemType }) => {
-    if (type === WorkItemType.Bug) {
-      return <Bug className="h-4 w-4 text-red-500" />;
-    }
-    return <Ticket className="h-4 w-4 text-muted-foreground" />;
-  };
+interface TaskTabsProps {
+  createTask: (data: TaskCreationPayload) => void;
+  taskId: string;
+  subTasks?: ITask[];
+}
 
-  // Icon for Task Status (Done, In Progress, Todo)
-  const StatusIcon = ({ status }: { status: TaskStatus }) => {
-    switch (status) {
-      case TaskStatus.Completed:
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case TaskStatus.InProgress:
-        return <CircleDashed className="h-4 w-4 text-blue-500" />;
-      default:
-        return <Circle className="h-4 w-4 text-muted-foreground" />;
-    }
-  };
+export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
+  const [isCreatingIssue, setIsCreatingIssue] = useState(false);
+  const { handleStatusChange } = useTaskPageContext();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const subtasks: any[] = [
-    // {
-    //   taskId: "TASK-8782",
-    //   task: "Understanding client design brief",
-    //   priority: TaskPriority.high,
-    //   status: TaskStatus.Completed,
-    //   workItemType: WorkItemType.Task,
-    //   dueDate: new Date("2025-10-10"),
-    // },
-    // {
-    //   taskId: "TASK-8783",
-    //   task: "Understanding client design brief",
-    //   priority: TaskPriority.medium,
-    //   status: TaskStatus.InProgress,
-    //   workItemType: WorkItemType.Task,
-    //   dueDate: new Date("2025-10-10"),
-    // },
-    // {
-    //   taskId: "TASK-8781",
-    //   task: "Understanding client design brief",
-    //   priority: TaskPriority.low,
-    //   status: TaskStatus.Todo,
-    //   workItemType: WorkItemType.Task,
-    //   dueDate: new Date("2025-10-10"),
-    // },
-  ];
+  function handleCancelCreation() {
+    setIsCreatingIssue(false);
+  }
+
+  function handleConfirmCreation(data: {
+    newIssueTitle: string;
+    newIssueType: string;
+  }) {
+    if (!data.newIssueTitle.trim()) return;
+
+    createTask({
+      task: data.newIssueTitle,
+      workItemType: data.newIssueType as WorkItemType,
+      status: TaskStatus.Todo,
+      priority: TaskPriority.low,
+      parentId: taskId,
+    });
+
+    handleCancelCreation();
+  }
+
+  const columns = createSubTaskColumns({
+    handleStatusChange,
+    view: "sub-task",
+  });
 
   return (
     <Tabs defaultValue="subtasks" className="w-full">
@@ -73,53 +64,34 @@ export const TaskTabs = () => {
         <TabsTrigger value="activities">Activities</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="subtasks" className="mt-4">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[20px]"></TableHead> {/* Type Icon */}
-                <TableHead>Task</TableHead>
-                <TableHead className="w-[120px]">Status</TableHead>
-                <TableHead className="w-[120px]">Priority</TableHead>
-                <TableHead className="w-[120px]">Due Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {subtasks.length ? (
-                subtasks.map((task) => (
-                  <TableRow key={task.taskId}>
-                    <TableCell className="font-medium">
-                      <WorkItemTypeIcon type={task.workItemType} />
-                    </TableCell>
-                    <TableCell className="font-medium">{task.task}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <StatusIcon status={task.status} />
-                        <span className="text-sm text-muted-foreground">
-                          {task.status}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <PriorityBadge priority={task.priority} />
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {task.dueDate.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell className="text-center" colSpan={5}>No Children</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+      <TabsContent value="subtasks" className="w-full mt-4 flex justify-center">
+        {subTasks?.length ? (
+          <div className="w-full rounded-md border">
+            <CustomTable
+              columns={columns}
+              data={subTasks || []}
+              emptyMessage="No children"
+            />
+          </div>
+        ) : isCreatingIssue ? (
+          <WorkItemCreationInput
+            view="detail"
+            handleCancelCreation={handleCancelCreation}
+            handleConfirmCreation={handleConfirmCreation}
+          />
+        ) : (
+          <Button
+            variant="outline"
+            className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCreatingIssue(true);
+            }}
+          >
+            <Plus className="size-3 mr-1" />
+            Add Child
+          </Button>
+        )}
       </TabsContent>
 
       <TabsContent value="comments" className="mt-4">

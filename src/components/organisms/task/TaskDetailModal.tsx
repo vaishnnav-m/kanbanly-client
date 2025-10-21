@@ -3,7 +3,11 @@ import { useRef, useState } from "react";
 import { Resizable } from "re-resizable";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
-import { ITaskDetails, TaskCreationPayload } from "@/lib/api/task/task.types";
+import {
+  ITask,
+  ITaskDetails,
+  TaskCreationPayload,
+} from "@/lib/api/task/task.types";
 import { ConfirmationModal } from "../admin/ConfirmationModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -19,18 +23,22 @@ interface TaskDetailsProps {
   isVisible: boolean;
   close: () => void;
   task: ITaskDetails | undefined;
+  createTask: (data: TaskCreationPayload) => void;
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
+  subTasks?: ITask[];
 }
 
 export const TaskDetails = ({
   isVisible,
   close,
   task,
+  createTask,
   removeTask,
   handleEditTask,
   isEditing,
+  subTasks,
 }: TaskDetailsProps) => {
   const [width, setWidth] = useState(448);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -143,7 +151,7 @@ export const TaskDetails = ({
             />
 
             {/* Tabs */}
-            <TaskTabs />
+            <TaskTabs createTask={createTask} taskId={task.taskId} subTasks={subTasks} />
           </CardContent>
 
           <InviteUserDropdown
