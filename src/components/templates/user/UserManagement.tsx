@@ -28,6 +28,8 @@ import {
   UserProfileData,
 } from "@/lib/api/user/user.types";
 import Link from "next/link";
+import { Subscription } from "@/lib/api/subscription/subscription.types";
+import { format } from "date-fns";
 
 interface UserManagementTemplateProps {
   userData: UserProfileData;
@@ -35,6 +37,7 @@ interface UserManagementTemplateProps {
   uploadPassword: (data: UpdateUserPasswordPayload) => void;
   isEditLoading: boolean;
   isPasswordLoading: boolean;
+  subscription?: Subscription;
 }
 
 export function UserManagementTemplate({
@@ -43,6 +46,7 @@ export function UserManagementTemplate({
   isEditLoading,
   isPasswordLoading,
   uploadPassword,
+  subscription,
 }: UserManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPasswordEditing, setIsPasswordEditing] = useState(false);
@@ -453,6 +457,58 @@ export function UserManagementTemplate({
               </CardContent>
             </Card>
           )}
+          <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl shadow-lg p-8">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <p className="text-blue-100 text-sm mb-1">Current Plan</p>
+                <h3 className="text-3xl font-bold">{subscription?.planName}</h3>
+              </div>
+              <span className="bg-white/30 backdrop-blur px-3 py-1 rounded-full text-sm font-medium">
+                {subscription ? "active" : "inactive"}
+              </span>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <p className="text-blue-100 text-sm mb-1">Amount</p>
+                <p className="text-2xl font-bold">
+                  ₹{subscription?.price}
+                  <span className="text-base">
+                    {subscription?.billingCycle === "monthly" ? "/mo" : "/yr"}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="text-blue-100 text-sm mb-1">Ends At</p>
+                <p className="text-lg font-semibold">
+                  {subscription?.currentPeriodEnd &&
+                    format(
+                      new Date(subscription.currentPeriodEnd),
+                      "MMM d, yyyy"
+                    )}
+                </p>
+              </div>
+              <div>
+                <p className="text-blue-100 text-sm mb-1">Member Since</p>
+                <p className="text-lg font-semibold">
+                  {subscription?.createdAt &&
+                    format(
+                      new Date(subscription.createdAt),
+                      "MMM d, yyyy"
+                    )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition">
+                Upgrade Plan
+              </button>
+              <button className="border border-white/50 backdrop-blur text-white px-6 py-2 rounded-lg font-medium hover:bg-white/20 transition">
+                Cancel Subscription
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </main>

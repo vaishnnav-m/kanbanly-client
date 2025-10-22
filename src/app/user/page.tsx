@@ -5,6 +5,7 @@ import {
   UpdateUserPasswordPayload,
   UpdateUserProfilePayload,
 } from "@/lib/api/user/user.types";
+import { useGetUserSubscription } from "@/lib/hooks/useSubscription";
 import {
   useGetUserProfile,
   useUpdateUserPassword,
@@ -13,6 +14,8 @@ import {
 
 export default function UserProfile() {
   const { data, isFetching } = useGetUserProfile();
+  const { data: subscriptionData } = useGetUserSubscription();
+
   const { mutate: updateProfile, isPending: isEditLoading } =
     useUpdateUserProfile();
   const { mutate: updatePassword, isPending: isPasswordPending } =
@@ -37,6 +40,7 @@ export default function UserProfile() {
       uploadEdited={updateUserProfile}
       userData={data.data}
       uploadPassword={handleUpdatePassword}
+      subscription={subscriptionData?.data}
     />
   );
 }
