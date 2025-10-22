@@ -6,6 +6,8 @@ import {
   Plus,
   PenBox,
   CornerDownLeft,
+  Settings,
+  Trash2,
 } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
@@ -28,6 +30,11 @@ import {
   SelectTrigger,
 } from "@/components/atoms/select";
 import { workItemTypeMap } from "@/lib/constants/workitem.constats";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/atoms/popover";
 
 interface SprintSectionProps {
   sprintSection?: Section;
@@ -51,6 +58,7 @@ interface SprintSectionProps {
     mode: "start" | "update";
   }) => void;
   handleCompleteSprint: (sprintId: string) => void;
+  handleDeleteSprint: (sprintId: string) => void;
 }
 
 const initialSprintFormData: UpdateSprintPayload = {
@@ -70,6 +78,7 @@ export function SprintSection({
   toggleSection,
   handleUpdateSprint,
   handleCompleteSprint,
+  handleDeleteSprint,
   createTask,
 }: SprintSectionProps) {
   const { setSelectedTask, setIsTaskModalOpen } = useTaskPageContext();
@@ -253,6 +262,7 @@ export function SprintSection({
             </Button>
           ) : (
             <Button
+              disabled={!sprintSection.issues.length}
               onClick={() => {
                 setMode("start");
                 setIsSprintStarting(true);
@@ -265,9 +275,55 @@ export function SprintSection({
             </Button>
           )}
 
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-2" align="end">
+              <div className="space-y-1">
+                <button
+                  onClick={() => {
+                    if (sprintSection.sprintStatus !== "active") {
+                      setMode("update");
+                      setIsSprintStarting(true);
+                    }
+                  }}
+                  className="w-full text-left p-2 rounded-md hover:bg-gray-700/20 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <Settings className="w-4 h-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium">Manage</div>
+                      <div className="text-xs text-muted-foreground">
+                        Configure settings
+                      </div>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    handleDeleteSprint(sprintSection.id);
+                  }}
+                  className="w-full text-left p-2 rounded-md hover:bg-destructive/10 transition-colors group"
+                >
+                  <div className="flex items-start gap-3">
+                    <Trash2 className="w-4 h-4 mt-0.5 text-muted-foreground group-hover:text-destructive flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium group-hover:text-destructive">
+                        Delete
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Remove permanently
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       {sprintSection.expanded && (

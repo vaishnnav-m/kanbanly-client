@@ -1,5 +1,5 @@
 "use client";
-import { AlertCircle } from "lucide-react";
+// import { AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
-import { Alert, AlertDescription, AlertTitle } from "@/components/atoms/alert";
+// import { Alert, AlertDescription, AlertTitle } from "@/components/atoms/alert";
 import { ISprint, UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
 import { ChangeEvent, useEffect } from "react";
 import { formatDateForInput } from "@/lib/utils";
@@ -210,7 +210,7 @@ export default function SprintStartModal({
             </div>
 
             {/* Sprint Summary */}
-            <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
+            {/* <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
               <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <AlertTitle className="text-blue-900 dark:text-blue-100">
                 Sprint Summary
@@ -222,7 +222,7 @@ export default function SprintStartModal({
                   <li>• Estimated: 35 story points</li>
                 </ul>
               </AlertDescription>
-            </Alert>
+            </Alert> */}
           </div>
         </div>
 

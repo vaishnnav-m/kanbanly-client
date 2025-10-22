@@ -21,12 +21,14 @@ import { useParams } from "next/navigation";
 import {
   useCompleteSprint,
   useCreateSprint,
+  useDeleteSprint,
   useStartSprint,
   useUpdateSprint,
 } from "@/lib/hooks/useSprint";
 import { UpdateSprintPayload } from "@/lib/api/sprint/sprint.types";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { useQueryClient } from "@tanstack/react-query";
+import { ConfirmationModal } from "../admin/ConfirmationModal";
 
 // Types
 export interface Issue {
@@ -86,6 +88,8 @@ export function BacklogView({
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
+  const [selectedSprint, setSelectedSprint] = useState("");
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   //  get one epic data
   const { data: epicData } = useGetEpicById(
@@ -122,6 +126,7 @@ export function BacklogView({
     },
   });
   const { mutate: completeSprint } = useCompleteSprint();
+  const { mutate: deleteSprint } = useDeleteSprint();
 
   useEffect(() => {
     setSections(sectionsData);
@@ -248,6 +253,11 @@ export function BacklogView({
     completeSprint({ workspaceId, projectId, sprintId });
   };
 
+  const handleDeleteSprint = (sprintId: string) => {
+    setSelectedSprint(sprintId);
+    setIsConfirmationOpen(true);
+  };
+
   return (
     <div className="flex-1 h-full flex gap-2">
       <EpicsSidebar
@@ -277,6 +287,7 @@ export function BacklogView({
             createTask={createTask}
             handleUpdateSprint={handleUpdateSprint}
             handleCompleteSprint={handleCompleteSprint}
+            handleDeleteSprint={handleDeleteSprint}
           />
         ))}
 
@@ -302,6 +313,22 @@ export function BacklogView({
         }}
         handleEpicUpdate={handleEpicUpdate}
         handleStatusChange={handleStatusChange}
+      />
+      <ConfirmationModal
+        isOpen={isConfirmationOpen}
+        onClose={() => {
+          setSelectedSprint("");
+          setIsConfirmationOpen(false);
+        }}
+        onConfirm={() => {
+          deleteSprint({ workspaceId, projectId, sprintId: selectedSprint });
+          setSelectedSprint("");
+          setIsConfirmationOpen(false);
+        }}
+        title="Are you sure you want to remove this sprint ?"
+        description="This action cannot be undone. The sprint will be permanently deleted from the project."
+        cancelText="Cancel"
+        confirmText="Delete Sprint"
       />
     </div>
   );

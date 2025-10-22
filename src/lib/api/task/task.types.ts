@@ -82,6 +82,12 @@ export interface ITaskDetails {
     color?: string;
   };
   dueDate: Date;
+  createdBy: {
+    email: string;
+    name: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type TaskListing = Omit<ITask, "description">;

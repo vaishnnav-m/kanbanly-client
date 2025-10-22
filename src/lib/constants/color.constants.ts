@@ -9,7 +9,7 @@ export const epicColors = {
 };
 
 export const workItemStatusColors = {
-  todo: { bg: "bg-gray-600/80", text: "text-gray-900" },
+  todo: { bg: "bg-yellow-500", text: "text-yellow-900" },
   inprogress: { bg: "bg-blue-600", text: "text-blue-900" },
   completed: { bg: "bg-emerald-600", text: "text-emerald-900" },
 };

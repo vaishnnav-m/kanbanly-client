@@ -27,7 +27,10 @@ import { TaskStatus, WorkItemType } from "@/types/task.enum";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { AssigneeCard } from "../task/AssigneeCard";
-import { epicColors } from "@/lib/constants/color.constants";
+import {
+  epicColors,
+  workItemStatusColors,
+} from "@/lib/constants/color.constants";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IssueCardProps {
@@ -136,15 +139,9 @@ export function IssueCard({
           }
         >
           <SelectTrigger
-            className={`w-fit h-fit px-2 py-1 text-xs rounded-full border border-spacing-1 focus:ring-0 focus:outline-none shadow-none ${
-              status === TaskStatus.Todo
-                ? "bg-yellow-500 text-yellow-900"
-                : status === TaskStatus.InProgress
-                ? "bg-blue-500 text-blue-900"
-                : status === TaskStatus.Completed
-                ? "bg-emerald-500 text-emerald-900"
-                : ""
-            }`}
+            className={`w-fit h-fit px-2 py-1 text-xs rounded-full border border-spacing-1 focus:ring-0 focus:outline-none shadow-none 
+              ${workItemStatusColors[status].bg} ${workItemStatusColors[status].text}
+              `}
             style={{
               boxShadow: "none",
               outline: "none",
@@ -160,15 +157,7 @@ export function IssueCard({
               .map((value) => (
                 <SelectItem
                   key={value}
-                  className={`rounded-full flex justify-center border-0 focus:ring-0 focus:outline-none shadow-none my-2 ${
-                    value === TaskStatus.Todo
-                      ? "bg-yellow-500 text-yellow-900 hover:!bg-yellow-600 focus:!bg-yellow-600"
-                      : value === TaskStatus.InProgress
-                      ? "bg-blue-500 text-blue-900 hover:!bg-blue-600 focus:!bg-blue-600"
-                      : value === TaskStatus.Completed
-                      ? "bg-emerald-500 text-emerald-900 hover:!bg-emerald-600 focus:!bg-emerald-600"
-                      : ""
-                  }`}
+                  className={`rounded-full flex justify-center border-0 focus:ring-0 focus:outline-none shadow-none my-2 ${workItemStatusColors[value].bg} ${workItemStatusColors[value].text}`}
                   style={{
                     boxShadow: "none",
                     outline: "none",

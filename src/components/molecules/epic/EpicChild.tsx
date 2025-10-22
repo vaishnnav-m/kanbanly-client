@@ -4,6 +4,7 @@ import CustomTable from "@/components/organisms/CustomTable";
 import { createSubTaskColumns } from "@/lib/columns/task.column";
 import { IEpic } from "@/lib/api/epic/epic.types";
 import { TaskStatus } from "@/types/task.enum";
+import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IEpicChildProps {
   epic: IEpic;
@@ -11,9 +12,12 @@ interface IEpicChildProps {
 }
 
 export const EpicChild = ({ epic, handleStatusChange }: IEpicChildProps) => {
+  const { setSelectedTask } = useTaskPageContext();
+
   const columns = createSubTaskColumns({
     handleStatusChange,
     view: "epic",
+    setSelectedTask,
   });
 
   return (

@@ -40,9 +40,9 @@ export const TaskHeader = ({
         <div className="flex items-center">
           <Badge
             variant="secondary"
-            className={`${statusColors.bg} ${statusColors.text}`}
+            className={`${statusColors.bg} ${statusColors.text} hover:${statusColors.bg} font-medium`}
           >
-            {taskStatus}
+            {taskStatus.toUpperCase()}
           </Badge>
         </div>
         <div className="flex items-center gap-1">
@@ -73,12 +73,12 @@ export const TaskHeader = ({
           onChange={(e) => setEditingName(e.target.value)}
         />
       ) : (
-        <h2 className="text-2xl font-bold tracking-tight text-foreground mt-2">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground mt-2 group">
           {name}
           {canEdit && (
             <PenBox
               onClick={() => setEditingName(name || "")}
-              className="size-3 cursor-pointer inline ml-2"
+              className="size-3 cursor-pointer group-hover:inline ml-2 hidden"
             />
           )}
         </h2>

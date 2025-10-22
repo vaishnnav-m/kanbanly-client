@@ -23,7 +23,7 @@ interface TaskTabsProps {
 
 export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
-  const { handleStatusChange } = useTaskPageContext();
+  const { handleStatusChange, setSelectedTask } = useTaskPageContext();
 
   function handleCancelCreation() {
     setIsCreatingIssue(false);
@@ -49,6 +49,7 @@ export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
   const columns = createSubTaskColumns({
     handleStatusChange,
     view: "sub-task",
+    setSelectedTask,
   });
 
   return (
@@ -64,7 +65,12 @@ export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
         <TabsTrigger value="activities">Activities</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="subtasks" className="w-full mt-4 flex justify-center">
+      <TabsContent
+        value="subtasks"
+        className={`w-full mt-4 flex flex-col ${
+          subTasks?.length ? "" : "items-center"
+        } gap-4`}
+      >
         {subTasks?.length ? (
           <div className="w-full rounded-md border">
             <CustomTable
@@ -73,7 +79,10 @@ export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
               emptyMessage="No children"
             />
           </div>
-        ) : isCreatingIssue ? (
+        ) : (
+          ""
+        )}
+        {isCreatingIssue ? (
           <WorkItemCreationInput
             view="detail"
             handleCancelCreation={handleCancelCreation}
@@ -82,7 +91,7 @@ export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
         ) : (
           <Button
             variant="outline"
-            className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
+            className="w-fit px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
             onClick={(e) => {
               e.stopPropagation();
               setIsCreatingIssue(true);
@@ -96,13 +105,13 @@ export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
 
       <TabsContent value="comments" className="mt-4">
         <div className="text-center py-8 text-muted-foreground rounded-md border">
-          <p className="text-sm">No comments yet</p>
+          <span className="text-sm">No comments yet</span>
         </div>
       </TabsContent>
 
       <TabsContent value="activities" className="mt-4">
         <div className="text-center py-8 text-muted-foreground rounded-md border">
-          <p className="text-sm">No recent activities</p>
+          <span className="text-sm">No recent activities</span>
         </div>
       </TabsContent>
     </Tabs>
