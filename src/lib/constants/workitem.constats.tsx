@@ -13,6 +13,7 @@ import {
   Bug,
   CheckSquare,
   FileText,
+  GitBranch,
   Star,
 } from "lucide-react";
 
@@ -23,15 +24,15 @@ export const workItemTypeMap = {
     label: "Task",
   },
   bug: { icon: <Bug className="size-4 text-red-400" />, label: "Bug" },
-  feature: {
-    icon: <Star className="size-4 text-yellow-400" />,
-    label: "Feature",
-  },
   story: {
     icon: <FileText className="w-4 h-4 text-green-500" />,
     label: "Story",
   },
   epic: { icon: <Star className="size-4 text-purple-400" />, label: "Epic" },
+  subtask: {
+    icon: <GitBranch className="size-4 text-teal-400" />,
+    label: "Subtask",
+  },
 };
 
 // component to get the icon based on work item type

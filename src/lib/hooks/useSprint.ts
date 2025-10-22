@@ -14,6 +14,7 @@ import {
 import {
   completeSprint,
   createSprint,
+  deleteSprint,
   getActiveSprint,
   getAllSprints,
   getOneSprint,
@@ -152,6 +153,37 @@ export const useCompleteSprint = () => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Sprint Completion Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useDeleteSprint = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ApiResponse,
+    Error,
+    { workspaceId: string; projectId: string; sprintId: string }
+  >({
+    mutationKey: ["deleteSprint"],
+    mutationFn: deleteSprint,
+    onSuccess: () => {
+      toast.showSuccess({
+        title: "Sprint Deleted Successfully",
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getSprints"] });
+      queryClient.invalidateQueries({ queryKey: ["getTasks"] });
+      queryClient.invalidateQueries({ queryKey: ["getActiveSprint"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Sprint Deletion Failed",
         description: errorMessage,
         duration: 6000,
       });

@@ -38,6 +38,17 @@ export const getOnetask = async (data: {
   return response.data;
 };
 
+export const getAllSubtasks = async (data: {
+  workspaceId: string;
+  projectId: string;
+  taskId: string;
+}) => {
+  const response = await api.get(
+    `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks/${data.taskId}/sub-tasks`
+  );
+  return response.data;
+};
+
 export const changeStatus = async (data: StatusChangingArgs) => {
   const response = await api.patch(
     `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks/${data.taskId}/status`,

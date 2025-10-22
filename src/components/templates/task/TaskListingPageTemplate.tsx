@@ -12,7 +12,7 @@ import { projectTemplate } from "@/types/project.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { TaskDetails } from "@/components/organisms/task/TaskDetailModal";
-import { useGetOneTask } from "@/lib/hooks/useTask";
+import { useGetAllSubTasks, useGetOneTask } from "@/lib/hooks/useTask";
 import { BoardView } from "@/components/organisms/project/BoardView";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { ListView } from "@/components/organisms/project/ListView";
@@ -87,6 +87,15 @@ function TaskListingPageTemplate({
 
   // task fetching according to id
   const { data: taskData } = useGetOneTask(
+    workspaceId,
+    projectId,
+    selectedTask,
+    {
+      enabled: isTaskModalOpen && !!selectedTask,
+    }
+  );
+
+  const { data: subTasks } = useGetAllSubTasks(
     workspaceId,
     projectId,
     selectedTask,
@@ -228,11 +237,13 @@ function TaskListingPageTemplate({
 
         <TaskDetails
           handleEditTask={handleEditTask}
+          createTask={createTask}
           removeTask={removeTask}
           isVisible={isTaskModalOpen}
           close={() => setIsTaskModalOpen(false)}
           task={taskData && taskData.data}
           isEditing={isEditing}
+          subTasks={subTasks?.data}
         />
       </div>
     </TaskPageContext.Provider>

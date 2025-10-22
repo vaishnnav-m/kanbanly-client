@@ -63,3 +63,14 @@ export const completeSprint = async (payload: {
   );
   return result.data;
 };
+
+export const deleteSprint = async (payload: {
+  workspaceId: string;
+  projectId: string;
+  sprintId: string;
+}) => {
+  const result = await api.delete(
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/sprints/${payload.sprintId}`
+  );
+  return result.data;
+};

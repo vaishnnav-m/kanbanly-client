@@ -12,7 +12,6 @@ export enum TaskStatus {
 
 export enum WorkItemType {
   Bug = "bug",
-  Feature = "feature",
   Task = "task",
   Story = "story",
   Epic = "epic",

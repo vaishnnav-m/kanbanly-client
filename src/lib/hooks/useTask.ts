@@ -21,6 +21,7 @@ import {
   changeStatus,
   createTask,
   editTask,
+  getAllSubtasks,
   getAllTasks,
   getOnetask,
   removeTask,
@@ -64,6 +65,22 @@ export const useGetAllTasks = (
     queryKey: ["getTasks", workspaceId, projectId, filters],
     queryFn: () => getAllTasks({ workspaceId, projectId, filters }),
     enabled: !!workspaceId || !!projectId,
+  });
+};
+
+export const useGetAllSubTasks = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+  options?: Omit<
+    UseQueryOptions<ApiResponse<ITask[]>, Error>,
+    "queryKey" | "queryFn"
+  >
+) => {
+  return useQuery<ApiResponse<ITask[]>, Error>({
+    queryKey: ["getTasks", workspaceId, projectId, taskId],
+    queryFn: () => getAllSubtasks({ workspaceId, projectId, taskId }),
+    ...options,
   });
 };
 
