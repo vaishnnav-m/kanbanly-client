@@ -20,6 +20,7 @@ import { TaskTabs } from "@/components/molecules/task/TaskTabs";
 import { WorkItemParent } from "@/components/molecules/task/WorkItemParent";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 import { AssigneeCard } from "@/components/molecules/task/AssigneeCard";
+import { WorkItemType } from "@/types/task.enum";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -144,20 +145,23 @@ export const TaskDetails = ({
                 </Button>
               </div>
             )}
-
-            <WorkItemParent
-              taskId={task.taskId}
-              memberRole={role}
-              workItemType={task.workItemType}
-              parent={task.parent}
-            />
-
+            {task.workItemType !== WorkItemType.Subtask && (
+              <WorkItemParent
+                taskId={task.taskId}
+                memberRole={role}
+                workItemType={task.workItemType}
+                parent={task.parent}
+              />
+            )}
             {/* Tabs */}
-            <TaskTabs
-              createTask={createTask}
-              taskId={task.taskId}
-              subTasks={subTasks}
-            />
+            {task.workItemType !== WorkItemType.Subtask && (
+              <TaskTabs
+                createTask={createTask}
+                taskId={task.taskId}
+                workItemType={task.workItemType}
+                subTasks={subTasks}
+              />
+            )}
             <div className="rounded-lg border border-border bg-muted/50 p-4 space-y-4">
               {/* Created By */}
               <div className="space-y-2">
@@ -180,7 +184,10 @@ export const TaskDetails = ({
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Created</span>
                   <span className="font-medium">
-                    {format(new Date(task.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                    {format(
+                      new Date(task.createdAt),
+                      "MMM d, yyyy 'at' h:mm a"
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
