@@ -10,11 +10,14 @@ export interface checkoutCreationResponse {
 
 export interface Subscription {
   planName: string;
-  currentPeriodEnd: Date | null;
+  currentPeriodEnd: string | null;
+  createdAt: string | null;
   limits: {
     workspaces: number | string;
     members: number | string;
     projects: number | string;
     tasks: number | string;
   };
+  price: number;
+  billingCycle: "yearly" | "monthly";
 }

@@ -12,6 +12,7 @@ import {
 } from "../api/subscription/subscription.types";
 import {
   createCheckout,
+  createCustomerPortal,
   getUserSubscription,
   verifyCheckoutSession,
 } from "../api/subscription";
@@ -54,6 +55,20 @@ export const useGetUserSubscription = (
   return useQuery<ApiResponse<Subscription>, Error>({
     queryKey: ["getUserSubscription"],
     queryFn: getUserSubscription,
+    ...options,
+  });
+};
+
+export const useCreateCustomerPortal = (
+  options?: Omit<
+    UseMutationOptions<ApiResponse<checkoutCreationResponse>, Error>,
+    "mutationKey" | "mutationFn"
+  >
+) => {
+
+  return useMutation<ApiResponse, Error>({
+    mutationKey: ["createPortal"],
+    mutationFn: createCustomerPortal,
     ...options,
   });
 };

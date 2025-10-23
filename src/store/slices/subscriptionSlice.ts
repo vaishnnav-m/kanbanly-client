@@ -1,22 +1,28 @@
 import { Subscription } from "@/lib/api/subscription/subscription.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: Subscription = {
-  planName: "",
-  currentPeriodEnd: null,
-  limits: {
-    members: "",
-    projects: "",
-    tasks: "",
-    workspaces: "",
-  },
-};
+const initialState: Omit<Subscription, "createdAt" | "price" | "billingCycle"> =
+  {
+    planName: "",
+    currentPeriodEnd: null,
+    limits: {
+      members: "",
+      projects: "",
+      tasks: "",
+      workspaces: "",
+    },
+  };
 
 const subscriptionSlice = createSlice({
   name: "subscription",
   initialState,
   reducers: {
-    setSubscription: (state, action: PayloadAction<Subscription>) => {
+    setSubscription: (
+      state,
+      action: PayloadAction<
+        Omit<Subscription, "createdAt" | "price" | "billingCycle">
+      >
+    ) => {
       state.planName = action.payload.planName;
       state.currentPeriodEnd = action.payload.currentPeriodEnd;
       state.limits = action.payload.limits;

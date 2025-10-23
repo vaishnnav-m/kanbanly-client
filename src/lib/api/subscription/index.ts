@@ -23,3 +23,8 @@ export const getUserSubscription = async () => {
   const result = await api.get("/subscriptions/me");
   return result.data;
 };
+
+export const createCustomerPortal = async () => {
+  const result = await api.post("/subscriptions/create-portal");
+  return result.data;
+};
