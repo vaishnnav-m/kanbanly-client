@@ -19,9 +19,15 @@ interface TaskTabsProps {
   createTask: (data: TaskCreationPayload) => void;
   taskId: string;
   subTasks?: ITask[];
+  workItemType: WorkItemType;
 }
 
-export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
+export const TaskTabs = ({
+  createTask,
+  taskId,
+  subTasks,
+  workItemType,
+}: TaskTabsProps) => {
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
   const { handleStatusChange, setSelectedTask } = useTaskPageContext();
 
@@ -65,43 +71,45 @@ export const TaskTabs = ({ createTask, taskId, subTasks }: TaskTabsProps) => {
         <TabsTrigger value="activities">Activities</TabsTrigger>
       </TabsList>
 
-      <TabsContent
-        value="subtasks"
-        className={`w-full mt-4 flex flex-col ${
-          subTasks?.length ? "" : "items-center"
-        } gap-4`}
-      >
-        {subTasks?.length ? (
-          <div className="w-full rounded-md border">
-            <CustomTable
-              columns={columns}
-              data={subTasks || []}
-              emptyMessage="No children"
+      {workItemType !== WorkItemType.Subtask && (
+        <TabsContent
+          value="subtasks"
+          className={`w-full mt-4 flex flex-col ${
+            subTasks?.length ? "" : "items-center"
+          } gap-4`}
+        >
+          {subTasks?.length ? (
+            <div className="w-full rounded-md border">
+              <CustomTable
+                columns={columns}
+                data={subTasks || []}
+                emptyMessage="No children"
+              />
+            </div>
+          ) : (
+            ""
+          )}
+          {isCreatingIssue ? (
+            <WorkItemCreationInput
+              view="detail"
+              handleCancelCreation={handleCancelCreation}
+              handleConfirmCreation={handleConfirmCreation}
             />
-          </div>
-        ) : (
-          ""
-        )}
-        {isCreatingIssue ? (
-          <WorkItemCreationInput
-            view="detail"
-            handleCancelCreation={handleCancelCreation}
-            handleConfirmCreation={handleConfirmCreation}
-          />
-        ) : (
-          <Button
-            variant="outline"
-            className="w-fit px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsCreatingIssue(true);
-            }}
-          >
-            <Plus className="size-3 mr-1" />
-            Add Child
-          </Button>
-        )}
-      </TabsContent>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-fit px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsCreatingIssue(true);
+              }}
+            >
+              <Plus className="size-3 mr-1" />
+              Add Child
+            </Button>
+          )}
+        </TabsContent>
+      )}
 
       <TabsContent value="comments" className="mt-4">
         <div className="text-center py-8 text-muted-foreground rounded-md border">
