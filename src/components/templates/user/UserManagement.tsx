@@ -30,6 +30,7 @@ import {
 import Link from "next/link";
 import { Subscription } from "@/lib/api/subscription/subscription.types";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 interface UserManagementTemplateProps {
   userData: UserProfileData;
@@ -38,6 +39,7 @@ interface UserManagementTemplateProps {
   isEditLoading: boolean;
   isPasswordLoading: boolean;
   subscription?: Subscription;
+  handleCreateCustomerPortal: () => void;
 }
 
 export function UserManagementTemplate({
@@ -47,6 +49,7 @@ export function UserManagementTemplate({
   isPasswordLoading,
   uploadPassword,
   subscription,
+  handleCreateCustomerPortal,
 }: UserManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPasswordEditing, setIsPasswordEditing] = useState(false);
@@ -66,6 +69,8 @@ export function UserManagementTemplate({
   const [errors, setErrors] = useState<
     Partial<Record<keyof PasswordChangeData, string>>
   >({});
+
+  const router = useRouter();
 
   const handleSave = () => {
     if (!editData) {
@@ -120,7 +125,6 @@ export function UserManagementTemplate({
       setErrors(newErros);
       return;
     }
-    console.log("sending..");
 
     uploadPassword({
       newPassword: passwordData.newPassword,
@@ -136,6 +140,14 @@ export function UserManagementTemplate({
       newPassword: "",
       confirmPassword: "",
     });
+  };
+
+  const handleManagePlan = () => {
+    if (subscription?.currentPeriodEnd) {
+      handleCreateCustomerPortal();
+    } else {
+      router.push("/billing/pricing");
+    }
   };
 
   return (
@@ -492,21 +504,18 @@ export function UserManagementTemplate({
                 <p className="text-blue-100 text-sm mb-1">Member Since</p>
                 <p className="text-lg font-semibold">
                   {subscription?.createdAt &&
-                    format(
-                      new Date(subscription.createdAt),
-                      "MMM d, yyyy"
-                    )}
+                    format(new Date(subscription.createdAt), "MMM d, yyyy")}
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition">
-                Upgrade Plan
-              </button>
-              <button className="border border-white/50 backdrop-blur text-white px-6 py-2 rounded-lg font-medium hover:bg-white/20 transition">
-                Cancel Subscription
-              </button>
+            <div className="flex justify-end gap-3">
+              <Button
+                onClick={handleManagePlan}
+                className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition"
+              >
+                Manage Plan
+              </Button>
             </div>
           </div>
         </div>

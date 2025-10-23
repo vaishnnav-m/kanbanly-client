@@ -27,7 +27,10 @@ function UserSidebar() {
     (state: RootState) => state.subscription.planName
   );
 
-  const { data, isPending: isProjectLoading } = useGetAllProjects(workspaceId);
+  const { data, isPending: isProjectLoading } = useGetAllProjects(
+    workspaceId,
+    {}
+  );
 
   const role = useSelector((state: RootState) => state.workspace.memberRole);
 
