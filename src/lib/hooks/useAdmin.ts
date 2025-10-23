@@ -1,5 +1,5 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {User } from "../api/auth/auth.types";
 import { fetchAllUsers, updateUserStatus } from "../api/admin";
 import { useToastMessage } from "./useToastMessage";
