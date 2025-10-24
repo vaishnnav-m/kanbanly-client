@@ -77,7 +77,7 @@ export interface ITaskDetails {
   workItemType: WorkItemType;
   parent?: {
     parentId: string;
-    title: string;
+    name: string;
     type: WorkItemType;
     color?: string;
   };

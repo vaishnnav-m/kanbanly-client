@@ -152,7 +152,7 @@ export const formatDateForInput = (
   }
 };
 
-export function useDebounce(value: string, delay: number): string {
+export function useDebounce(value: string, delay = 300): string {
   const [debouncedValue, setDebouncedValue] = useState<string>(value);
   useEffect(() => {
     const handler = setTimeout(() => {

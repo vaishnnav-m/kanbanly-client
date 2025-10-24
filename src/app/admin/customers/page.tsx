@@ -2,11 +2,19 @@
 import AdminCustomers from "@/components/templates/admin/AdminCustomers";
 import { User } from "@/lib/api/auth/auth.types";
 import { useGetUsers, useUpdateUserStatus } from "@/lib/hooks/useAdmin";
+import { useDebounce } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 
 export default function AdminCustomersPage() {
   const [page, setPage] = useState(1);
-  const { data, isPending } = useGetUsers(page);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  const filters = {
+    search: debouncedSearchQuery,
+  };
+
+  const { data, isPending } = useGetUsers(page, filters);
   const { mutate: updateStatus } = useUpdateUserStatus();
 
   const usersData = useMemo(() => data?.data?.users ?? [], [data?.data?.users]);
@@ -41,6 +49,8 @@ export default function AdminCustomersPage() {
       page={page}
       onPageChange={onPageChange}
       totalPages={totalPages}
+      setSearchQuery={setSearchQuery}
+      searchQuery={searchQuery}
     />
   );
 }

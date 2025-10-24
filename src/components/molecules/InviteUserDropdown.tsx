@@ -1,6 +1,10 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { UserPlus, X, Search } from "lucide-react";
+import { useDebounce } from "@/lib/utils";
+import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 interface InviteUserDropdownProps {
   isOpen: boolean;
@@ -13,7 +17,6 @@ interface InviteUserDropdownProps {
   }) => void;
   isLoading: boolean;
   buttonRef: React.RefObject<HTMLButtonElement | null>;
-  suggestions?: { id: string; name: string; email: string; avatar?: string }[];
 }
 
 export const InviteUserDropdown = ({
@@ -23,17 +26,36 @@ export const InviteUserDropdown = ({
   onInvite,
   isLoading,
   buttonRef,
-  suggestions,
 }: InviteUserDropdownProps) => {
   const [email, setEmail] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState<number>(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // members fetching
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+  const debouncedSearch = useDebounce(searchQuery);
+
+  const { data: membersData } = useWorkspaceMembers(
+    workspaceId,
+    1,
+    debouncedSearch
+  );
+  const members = membersData?.data ? membersData.data.data : [];
 
   // Source suggestions (prefer real suggestions if provided)
-  const sourceSuggestions =
-    suggestions && suggestions.length > 0 ? suggestions : [];
+  const sourceSuggestions: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  }[] = members.map((member) => ({
+    email: member.email,
+    id: member._id,
+    name: member.name,
+  }));
 
   // Filter suggestions based on search query
   const filteredSuggestions = sourceSuggestions.filter(
@@ -240,7 +262,7 @@ export const InviteUserDropdown = ({
                   }`}
                 >
                   <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-xs font-medium text-purple-700 dark:text-purple-300">
-                    {suggestion.avatar || suggestion.name?.[0]?.toUpperCase()}
+                    {suggestion?.avatar || suggestion.name?.[0]?.toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900 dark:text-white truncate">

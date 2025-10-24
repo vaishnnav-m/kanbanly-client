@@ -112,12 +112,12 @@ export const TaskInfo = ({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm text-muted-foreground flex items-center gap-2">
+        <label className="text-sm text-muted-foreground flex items-center gap-2 group">
           Description
           {canEdit && (
             <PenBox
               onClick={() => setEditingDescription(description || "")}
-              className="size-4 cursor-pointer text-muted-foreground hover:text-foreground"
+              className="size-4 cursor-pointer text-muted-foreground hidden group-hover:block group-hover:text-foreground"
             />
           )}
         </label>

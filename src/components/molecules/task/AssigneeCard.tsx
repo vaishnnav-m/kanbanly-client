@@ -24,7 +24,7 @@ interface AssigneeProps {
 export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
   const [isInvitingUser, setIsInvitingUser] = useState(false);
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
-  const { members, onInvite } = useTaskPageContext();
+  const { onInvite } = useTaskPageContext();
 
   const handleInvite = (data: {
     invitedEmail?: string;
@@ -83,11 +83,6 @@ export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
         isOpen={isInvitingUser}
         onClose={() => setIsInvitingUser(false)}
         onInvite={handleInvite}
-        suggestions={members?.map((m) => ({
-          id: m._id,
-          name: m.name,
-          email: m.email,
-        }))}
       />
     </>
   );

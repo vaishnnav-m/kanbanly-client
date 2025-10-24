@@ -23,13 +23,12 @@ import { epicColors } from "@/lib/constants/color.constants";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 
 interface IWorkItemParentProps {
-  workItemType: WorkItemType;
   memberRole: workspaceRoles;
   taskId: string;
   // objects and arrays
   parent?: {
     parentId: string;
-    title: string;
+    name: string;
     type: WorkItemType;
     color?: string;
   };
@@ -37,7 +36,6 @@ interface IWorkItemParentProps {
 
 export const WorkItemParent = ({
   taskId,
-  // workItemType,
   parent,
   memberRole,
 }: IWorkItemParentProps) => {
@@ -51,25 +49,23 @@ export const WorkItemParent = ({
       <label className="text-sm text-muted-foreground flex items-center gap-2">
         Parent
         {canEdit && parent && (
-          <PenBox
-            // onClick={() => {}}
-            className="size-4 cursor-pointer text-muted-foreground hover:text-foreground"
-          />
+          <PenBox className="size-4 cursor-pointer text-muted-foreground hover:text-foreground" />
         )}
       </label>
       {parent ? (
-        <div className="flex items-center gap-1">
+        <div
+          className={`flex items-center gap-1 w-fit py-1 px-2 rounded-full ${
+            parent.color
+              ? epicColors[parent.color as keyof typeof epicColors]
+              : "bg-neutral-500/40"
+          }`}
+        >
           <WorkItemTypeIcon
             type={parent.type}
             className="size-4 text-muted-foreground"
           />
-          <p
-            className={`py-1 px-2 rounded-full text-xs ${
-              parent.color &&
-              epicColors[parent.color as keyof typeof epicColors]
-            } text-white/70 font-mono w-fit max-w-40 truncate`}
-          >
-            {parent.title}
+          <p className="text-xs mt-1 text-white/70 font-mono w-fit max-w-40 truncate">
+            {parent.name}
           </p>
         </div>
       ) : (

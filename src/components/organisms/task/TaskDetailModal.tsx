@@ -145,14 +145,11 @@ export const TaskDetails = ({
                 </Button>
               </div>
             )}
-            {task.workItemType !== WorkItemType.Subtask && (
               <WorkItemParent
                 taskId={task.taskId}
                 memberRole={role}
-                workItemType={task.workItemType}
                 parent={task.parent}
               />
-            )}
             {/* Tabs */}
             {task.workItemType !== WorkItemType.Subtask && (
               <TaskTabs
@@ -208,11 +205,6 @@ export const TaskDetails = ({
             isOpen={isInvitingUser}
             onClose={() => setIsInvitingUser(false)}
             onInvite={handleInvite}
-            suggestions={taskContext.members?.map((m) => ({
-              id: m._id,
-              name: m.name,
-              email: m.email,
-            }))}
           />
           <ConfirmationModal
             isOpen={isConfirmationOpen}
