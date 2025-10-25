@@ -189,7 +189,7 @@ export const createTaskColumns = ({
       label: "Created By",
       type: "custom",
       render: (row, value) => (
-        <div className="space-x-2">
+        <div className="space-x-2 flex items-center">
           <AssigneeCard assignedTo={value} taskId={row.taskId} />
           <span className="opacity-0 xl:opacity-100">{value?.name}</span>
         </div>

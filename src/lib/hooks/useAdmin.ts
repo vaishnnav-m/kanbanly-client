@@ -1,12 +1,15 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {User } from "../api/auth/auth.types";
+import { User } from "../api/auth/auth.types";
 import { fetchAllUsers, updateUserStatus } from "../api/admin";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 
 export const useGetUsers = (
   page: number,
+  filters: {
+    search: string;
+  },
   options?: {
     onSuccess?: (
       response: ApiResponse<{ users: User[]; totalPages: number }>
@@ -15,8 +18,8 @@ export const useGetUsers = (
   }
 ) => {
   return useQuery<ApiResponse<{ users: User[]; totalPages: number }>, Error>({
-    queryKey: ["fetchAllUsers", page],
-    queryFn: () => fetchAllUsers(page),
+    queryKey: ["fetchAllUsers", page,filters],
+    queryFn: () => fetchAllUsers(page,filters),
     ...options,
   });
 };

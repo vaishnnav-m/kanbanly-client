@@ -48,8 +48,6 @@ export function ProjectManagementTemplate({
 ProjectManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProjectEditingPayload | null>(null);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   // member removal

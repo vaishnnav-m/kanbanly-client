@@ -2,10 +2,9 @@ import { Input } from "@/components/atoms/input";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import DataTable from "@/components/organisms/DataTable";
 import { User } from "@/lib/api/auth/auth.types";
-import { useDebounce } from "@/lib/utils";
 import { ButtonConfig } from "@/types/table.types";
 import { Search, ToggleLeft, ToggleRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface IAdminCustomersProps {
   data: User[];
@@ -14,6 +13,8 @@ interface IAdminCustomersProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  setSearchQuery: Dispatch<SetStateAction<string>>;
+  searchQuery: string;
 }
 
 function AdminCustomers({
@@ -23,10 +24,11 @@ function AdminCustomers({
   onPageChange,
   page,
   totalPages,
+  searchQuery,
+  setSearchQuery,
 }: IAdminCustomersProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
-  const [searchQuery, setSearchQuery] = useState("");
 
   const headings = ["Id", "First Name", "Last Name", "Email", "isActive"];
   const cols: (keyof User)[] = ["userId", "firstName", "lastName", "email"];
@@ -47,31 +49,16 @@ function AdminCustomers({
     },
   ];
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
-
-  const filteredData = useMemo(() => {
-    if (!debouncedSearchQuery.trim()) return data;
-
-    const query = debouncedSearchQuery.toLowerCase();
-    return data.filter(
-      (user) =>
-        user.userId?.toString().toLowerCase().includes(query) ||
-        user.firstName?.toLowerCase().includes(query) ||
-        user.lastName?.toLowerCase().includes(query) ||
-        user.email?.toLowerCase().includes(query)
-    );
-  }, [data, debouncedSearchQuery]);
-
   return (
     <>
       {/* Header with Theme Toggle */}
       <div className="w-full flex justify-between py-5">
         <h1 className="text-xl font-bold">Customers</h1>
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             type="text"
-            placeholder="Search by name, email, or ID..."
+            placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -91,7 +78,7 @@ function AdminCustomers({
       <div className="space-y-8 animate-fade-in">
         <DataTable<User>
           headings={headings}
-          data={filteredData}
+          data={data}
           columns={cols}
           buttonConfigs={buttonConfigs}
           isLoading={isLoading}

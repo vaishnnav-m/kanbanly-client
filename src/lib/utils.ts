@@ -116,7 +116,6 @@ const rolePermissions = new Map<workspaceRoles, Set<Permission>>([
       PERMISSIONS.CREATE_TASK,
       PERMISSIONS.EDIT_TASK,
       PERMISSIONS.DELETE_TASK,
-      PERMISSIONS.MANAGE_MEMBERS,
       PERMISSIONS.VIEW_REPORTS,
       PERMISSIONS.MEMBER_ASSIGN_TASK,
       PERMISSIONS.CREATE_EPIC,
@@ -152,7 +151,7 @@ export const formatDateForInput = (
   }
 };
 
-export function useDebounce(value: string, delay: number): string {
+export function useDebounce(value: string, delay = 300): string {
   const [debouncedValue, setDebouncedValue] = useState<string>(value);
   useEffect(() => {
     const handler = setTimeout(() => {

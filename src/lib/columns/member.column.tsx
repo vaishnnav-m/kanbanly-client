@@ -4,6 +4,9 @@ import { WorkspaceMember } from "../api/workspace/workspace.types";
 import { ToggleLeft, ToggleRight, Trash } from "lucide-react";
 import { workspaceRoles } from "@/types/roles.enum";
 import { hasPermission, PERMISSIONS } from "../utils";
+import { Avatar } from "@/components/atoms/avatar";
+import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { getAssignedTo } from "../task-utils";
 
 export const createMemberColumns = (
   onRoleChange: (memberId: string, role: workspaceRoles) => void,
@@ -15,7 +18,18 @@ export const createMemberColumns = (
     {
       key: "name",
       label: "Name",
-      type: "text",
+      type: "custom",
+      render: (row, value) => (
+        <div className="flex gap-5 items-center">
+          <Avatar className="size-6">
+            <AvatarImage src={row.profile} />
+            <AvatarFallback className="w-full h-full flex items-center justify-center bg-primary text-primary-foreground text-sm font-bold rounded-full">
+              {getAssignedTo({ email: row.email, name: row.name })}
+            </AvatarFallback>
+          </Avatar>
+          <span>{value}</span>
+        </div>
+      ),
     },
     {
       key: "email",

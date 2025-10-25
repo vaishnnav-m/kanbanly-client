@@ -4,7 +4,7 @@ import React, { useState } from "react"; // useMemo is no longer needed
 import { Folder, Users, Plus, Calendar, Activity, Search } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { IProject } from "@/lib/api/project/project.types";
-import { getDate } from "@/lib/utils";
+import { getDate, hasPermission, PERMISSIONS } from "@/lib/utils";
 import ProjectListSkeleton from "@/components/organisms/project/ProjectListSkeleton";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
+import { workspaceRoles } from "@/types/roles.enum";
 
 interface ProjectListingPageTemplateProps {
   projects: IProject[];
@@ -48,7 +49,11 @@ function ProjectListingPageTemplate({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const params = useParams();
   const slug = params.slug as string;
-  const role = useSelector((state: RootState) => state.workspace.memberRole);
+  const role = useSelector(
+    (state: RootState) => state.workspace.memberRole
+  ) as workspaceRoles;
+
+  const canCreateProject = hasPermission(role, PERMISSIONS.CREATE_PROJECT);
 
   // --- Client-side filtering logic has been removed ---
 
@@ -72,7 +77,7 @@ function ProjectListingPageTemplate({
                   </p>
                 </div>
                 <div className="mt-4 md:mt-0">
-                  {role === "owner" && (
+                  {canCreateProject && (
                     <Button
                       onClick={() => setIsModalOpen(true)}
                       className="hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl group w-full md:w-auto"
@@ -179,7 +184,7 @@ function ProjectListingPageTemplate({
                 <div className="col-span-full text-center py-12">
                   <h3 className="text-xl font-semibold">No Projects Yet</h3>
                   <p className="text-muted-foreground mt-2 max-w-md mx-auto">
-                    {role === "owner"
+                    {canCreateProject
                       ? 'Click "Create New Project" to get your first project started.'
                       : "The workspace owner has not created any projects yet."}
                   </p>

@@ -29,6 +29,7 @@ export interface LoginResponseData {
   firstName: string;
   lastName: string;
   email: string;
+  profile?: string;
   role: string;
   isEmailVerified: boolean;
 }

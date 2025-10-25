@@ -31,6 +31,8 @@ import Link from "next/link";
 import { Subscription } from "@/lib/api/subscription/subscription.types";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback } from "@/components/atoms/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface UserManagementTemplateProps {
   userData: UserProfileData;
@@ -186,11 +188,16 @@ export function UserManagementTemplate({
           <Card className="bg-card border border-border">
             <CardContent className="p-8">
               <div className="flex items-start gap-8">
-                <div className="flex-shrink-0">
-                  <div className="w-24 h-24 gradient-bg rounded-full flex items-center justify-center">
-                    <User className="w-12 h-12 text-white" />
-                  </div>
-                </div>
+                <Avatar className="size-24">
+                  <AvatarImage src={userData?.profile} />
+                  <AvatarFallback className="m-auto bg-primary text-primary-foreground text-sm font-bold rounded-full">
+                    <div className="flex-shrink-0">
+                      <div className="size-24 gradient-bg rounded-full flex items-center justify-center">
+                        <User className="w-12 h-12 text-white" />
+                      </div>
+                    </div>
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1 space-y-6">
                   {isEditing ? (
                     <>

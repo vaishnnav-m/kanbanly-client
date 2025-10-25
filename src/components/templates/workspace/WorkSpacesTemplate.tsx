@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { getWorkspaceIcon } from "@/lib/utils";
 import WorkspaceIconDisplay from "@/components/atoms/WorkspaceIconDisplay";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { setWorkspaceData } from "@/store/slices/workSpaceSlice";
 import Logo from "@/components/atoms/logo";
 import {
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
 import { Button } from "@/components/atoms/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 
 interface WorkSpacesTemplateProps {
   handleLogout: () => void;
@@ -30,6 +31,7 @@ const WorkSpacesTemplate = ({
 }: WorkSpacesTemplateProps) => {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const profile = useSelector((state: RootState) => state.auth.profile);
 
   function handleWorkspaceClick(workspaceId: string) {
     dispatch(setWorkspaceData({ workspaceId }));
@@ -60,7 +62,12 @@ const WorkSpacesTemplate = ({
           <ThemeToggleButton />
           <DropdownMenu>
             <DropdownMenuTrigger className="py-0 flex items-start" asChild>
-              <User className="w-5 h-5 transition-transform duration-500 ease-in hover:scale-x-[-1] cursor-pointer" />
+              <Avatar className="size-6">
+                <AvatarImage src={profile} />
+                <AvatarFallback className="bg-transparent text-primary-foreground text-sm font-bold rounded-full">
+                  <User className="w-5 h-5 transition-transform duration-500 ease-in hover:scale-x-[-1] cursor-pointer" />
+                </AvatarFallback>
+              </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="bg-sidebar p-3 mt-2 mr-9 rounded-xl border flex flex-col gap-2 text-sm items-start text-start"

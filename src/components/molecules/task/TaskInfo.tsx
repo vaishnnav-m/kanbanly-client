@@ -12,6 +12,7 @@ import { Button } from "@/components/atoms/button";
 interface TaskInfoProps {
   taskId: string;
   dueDate: Date;
+  storyPoint?: number;
   priority: TaskPriority;
   description?: string;
   assignedTo: { email: string; name: string } | null;
@@ -20,6 +21,8 @@ interface TaskInfoProps {
   setEditingDueDate: Dispatch<SetStateAction<string | null>>;
   editingDescription: string | null;
   setEditingDescription: Dispatch<SetStateAction<string | null>>;
+  setEditingStoryPoint: Dispatch<SetStateAction<string | null>>;
+  editingStoryPoint: string | null;
 }
 
 export const TaskInfo = ({
@@ -27,12 +30,15 @@ export const TaskInfo = ({
   dueDate,
   priority,
   description,
+  storyPoint,
   assignedTo,
   memberRole,
   editingDueDate,
   setEditingDueDate,
   editingDescription,
   setEditingDescription,
+  editingStoryPoint,
+  setEditingStoryPoint,
 }: TaskInfoProps) => {
   const canEdit = hasPermission(memberRole, PERMISSIONS.EDIT_TASK);
 
@@ -97,10 +103,7 @@ export const TaskInfo = ({
         <div className="space-y-2">
           <label className="text-muted-foreground">Assignee</label>
           <div className="flex items-center font-medium text-foreground">
-            <AssigneeCard
-              taskId={taskId}
-              assignedTo={assignedTo}
-            />
+            <AssigneeCard taskId={taskId} assignedTo={assignedTo} />
           </div>
         </div>
 
@@ -112,12 +115,12 @@ export const TaskInfo = ({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm text-muted-foreground flex items-center gap-2">
+        <label className="text-sm text-muted-foreground flex items-center gap-2 group">
           Description
           {canEdit && (
             <PenBox
               onClick={() => setEditingDescription(description || "")}
-              className="size-4 cursor-pointer text-muted-foreground hover:text-foreground"
+              className="size-4 cursor-pointer text-muted-foreground hidden group-hover:block group-hover:text-foreground"
             />
           )}
         </label>
@@ -135,6 +138,34 @@ export const TaskInfo = ({
         ) : (
           <p className="text-sm text-foreground italic">
             No description provided.
+          </p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm text-muted-foreground flex items-center gap-2 group">
+          Story Point
+          {canEdit && (
+            <PenBox
+              onClick={() => setEditingStoryPoint(editingStoryPoint || "")}
+              className="size-4 cursor-pointer text-muted-foreground hidden group-hover:block group-hover:text-foreground"
+            />
+          )}
+        </label>
+        {editingStoryPoint !== null ? (
+          <Input
+            min={1}
+            type="number"
+            value={editingStoryPoint || ""}
+            onChange={(e) => setEditingStoryPoint(e.target.value)}
+            placeholder="Add story points..."
+          />
+        ) : storyPoint ? (
+          <p className="text-sm text-foreground font-bold leading-relaxed bg-white/40 w-fit px-3 rounded-sm">
+            {storyPoint}
+          </p>
+        ) : (
+          <p className="text-sm text-foreground italic">
+            No story points assigned.
           </p>
         )}
       </div>

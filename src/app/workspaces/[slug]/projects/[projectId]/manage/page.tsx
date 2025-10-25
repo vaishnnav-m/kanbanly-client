@@ -78,6 +78,16 @@ export default function ProjectManageMentPage() {
         queryClient.invalidateQueries({ queryKey: ["getProjects"] });
         queryClient.invalidateQueries({ queryKey: ["getProjectMembers"] });
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (error: any) => {
+        const errorMessage =
+          error?.response?.data?.message || "Unexpected Error";
+        toast.showError({
+          title: "Member removing failed!",
+          description: errorMessage,
+          duration: 6000,
+        });
+      },
     });
 
   function handleMemberRemoving(userId: string) {

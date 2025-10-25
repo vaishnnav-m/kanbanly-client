@@ -18,7 +18,7 @@ interface TaskCardProps {
 }
 
 export const TaskCard = ({ taskData, handleDragStart }: TaskCardProps) => {
-  const { setSelectedTask, setIsTaskModalOpen, members, onInvite } =
+  const { setSelectedTask, setIsTaskModalOpen, onInvite } =
     useTaskPageContext();
   const [isInvitingUser, setIsInvitingUser] = useState(false);
 
@@ -79,7 +79,6 @@ export const TaskCard = ({ taskData, handleDragStart }: TaskCardProps) => {
             </div>
             {/* Assignee */}
             <AssigneeCard
-              onInvite={onInvite}
               taskId={taskData.taskId}
               assignedTo={taskData.assignedTo || null}
             />
@@ -92,11 +91,6 @@ export const TaskCard = ({ taskData, handleDragStart }: TaskCardProps) => {
         isOpen={isInvitingUser}
         onClose={() => setIsInvitingUser(false)}
         onInvite={handleInvite}
-        suggestions={members?.map((m) => ({
-          id: m._id,
-          name: m.name,
-          email: m.email,
-        }))}
       />
     </>
   );
