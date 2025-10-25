@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   LoginPayload,
   LoginResponseData,
@@ -66,7 +66,7 @@ export const useLogin = () => {
   return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
     mutationKey: ["login"],
     mutationFn: userLogin,
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast.showSuccess({
         title: "Welcome back, Commander!",
         description:
@@ -75,8 +75,12 @@ export const useLogin = () => {
       });
 
       setStorageItem("isAuthenticated", "true");
+      if (response.data?.profile) {
+        setStorageItem("profile", response.data?.profile);
+      }
       dispatch(
         setCredentials({
+          profile: response.data?.profile,
           isAuthenticated: true,
         })
       );
@@ -103,7 +107,7 @@ export const useGoogleAuth = () => {
   return useMutation<ApiResponse<LoginResponseData>, Error, { token: string }>({
     mutationKey: ["googleAuth"],
     mutationFn: googleAuth,
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast.showSuccess({
         title: "Welcome aboard!",
         description:
@@ -112,8 +116,12 @@ export const useGoogleAuth = () => {
       });
 
       setStorageItem("isAuthenticated", "true");
+      if (response.data?.profile) {
+        setStorageItem("profile", response.data?.profile);
+      }
       dispatch(
         setCredentials({
+          profile: response.data?.profile,
           isAuthenticated: true,
         })
       );
@@ -148,8 +156,12 @@ export const useVerifyEmail = () => {
       });
 
       setStorageItem("isAuthenticated", "true");
+      if (response.data?.profile) {
+        setStorageItem("profile", response.data?.profile);
+      }
       dispatch(
         setCredentials({
+          profile: response.data?.profile,
           isAuthenticated: true,
         })
       );
@@ -271,7 +283,7 @@ export const useAdminLogin = () => {
   return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
     mutationKey: ["adminLogin"],
     mutationFn: adminLogin,
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast.showSuccess({
         title: "Welcome back",
         description: "You've successfully logged in.",
@@ -279,9 +291,12 @@ export const useAdminLogin = () => {
       });
 
       setStorageItem("isAdminAuthenticated", "true");
-
+      if (response.data?.profile) {
+        setStorageItem("profile", response.data?.profile);
+      }
       dispatch(
         setCredentials({
+          profile: response.data?.profile,
           isAdminAuthenticated: true,
         })
       );

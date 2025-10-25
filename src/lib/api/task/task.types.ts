@@ -10,6 +10,7 @@ export interface TaskCreationPayload {
   status?: TaskStatus;
   assignedTo?: string;
   dueDate?: Date | string;
+  storyPoint?: number;
   sprintId?: string;
   parentId?: string;
 }
@@ -72,6 +73,7 @@ export interface ITaskDetails {
   assignedTo: {
     email: string;
     name: string;
+    profile?: string;
   } | null;
   priority: TaskPriority;
   workItemType: WorkItemType;
@@ -85,7 +87,9 @@ export interface ITaskDetails {
   createdBy: {
     email: string;
     name: string;
+    profile?: string;
   };
+  storyPoint?: number;
   createdAt: string;
   updatedAt: string;
 }

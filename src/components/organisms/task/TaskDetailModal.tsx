@@ -50,6 +50,9 @@ export const TaskDetails = ({
     null
   );
   const [editingDueDate, setEditingDueDate] = useState<string | null>(null);
+  const [editingStoryPoint, setEditingStoryPoint] = useState<string | null>(
+    null
+  );
   const [editingName, setEditingName] = useState<string | null>(null);
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -66,6 +69,7 @@ export const TaskDetails = ({
       ...(editingDescription && { editingDescription }),
       ...(editingName && { task: editingName }),
       ...(editingDueDate && { dueDate: editingDueDate }),
+      ...(editingStoryPoint && { storyPoint: Number(editingStoryPoint) }),
     };
 
     handleEditTask(task?.taskId as string, data);
@@ -73,6 +77,7 @@ export const TaskDetails = ({
     setEditingName(null);
     setEditingDescription(null);
     setEditingDueDate(null);
+    setEditingStoryPoint(null);
   }
 
   // handle invitation of user
@@ -124,10 +129,14 @@ export const TaskDetails = ({
               setEditingDueDate={setEditingDueDate}
               editingDescription={editingDescription}
               setEditingDescription={setEditingDescription}
+              storyPoint={task.storyPoint}
+              editingStoryPoint={editingStoryPoint}
+              setEditingStoryPoint={setEditingStoryPoint}
             />
             {(editingDescription !== null ||
               editingDueDate !== null ||
-              editingName !== null) && (
+              editingName !== null ||
+              editingStoryPoint !== null) && (
               <div className="w-full flex gap-5">
                 <Button onClick={handleSubmit} className="w-full">
                   Save Changes
@@ -137,6 +146,7 @@ export const TaskDetails = ({
                     setEditingDescription(null);
                     setEditingDueDate(null);
                     setEditingName(null);
+                    setEditingStoryPoint(null);
                   }}
                   variant="outline"
                   className="w-full hover:bg-transparent"
@@ -145,11 +155,11 @@ export const TaskDetails = ({
                 </Button>
               </div>
             )}
-              <WorkItemParent
-                taskId={task.taskId}
-                memberRole={role}
-                parent={task.parent}
-              />
+            <WorkItemParent
+              taskId={task.taskId}
+              memberRole={role}
+              parent={task.parent}
+            />
             {/* Tabs */}
             {task.workItemType !== WorkItemType.Subtask && (
               <TaskTabs

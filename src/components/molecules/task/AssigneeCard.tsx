@@ -15,10 +15,11 @@ import { RootState } from "@/store";
 import { hasPermission, PERMISSIONS } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface AssigneeProps {
   taskId: string;
-  assignedTo: { email: string; name: string } | null;
+  assignedTo: { email: string; name: string; profile?: string } | null;
 }
 
 export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
@@ -52,6 +53,7 @@ export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
         <TooltipTrigger>
           {assignedTo ? (
             <Avatar className="size-6">
+              <AvatarImage src={assignedTo?.profile} />
               <AvatarFallback className="m-auto bg-primary text-primary-foreground text-sm font-bold rounded-full">
                 {getAssignedTo(assignedTo)}
               </AvatarFallback>

@@ -4,11 +4,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AuthState {
   isAuthenticated: boolean;
   isAdminAuthenticated: boolean;
+  profile?: string;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   isAdminAuthenticated: false,
+  profile: "",
 };
 
 const authSlice = createSlice({
@@ -22,12 +24,17 @@ const authSlice = createSlice({
       if (action.payload.isAuthenticated) {
         state.isAuthenticated = true;
       }
+      if (action.payload.profile) {
+        state.profile = action.payload.profile;
+      }
     },
     logoutUser: (state) => {
       state.isAuthenticated = false;
+      state.profile = "";
     },
     logoutAdmin: (state) => {
       state.isAdminAuthenticated = false;
+      state.profile = "";
     },
   },
 });
