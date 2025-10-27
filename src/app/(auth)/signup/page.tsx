@@ -16,7 +16,6 @@ export default function SignupPage() {
     (state: RootState) => state.auth.isAuthenticated
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  // const [secureUrl, setSecureUrl] = useState("");
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -113,7 +112,7 @@ export default function SignupPage() {
         formData.append("folder", "avatars");
 
         const response = await uploadPicture({ cloudName, data: formData });
-        if (response?.data) secureUrl = response.data.secure_url;
+        if (response.secure_url) secureUrl = response.secure_url;
       }
 
       const dataToSend: SignupPayload = {

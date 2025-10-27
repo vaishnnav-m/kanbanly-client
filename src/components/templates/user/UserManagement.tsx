@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import {
   Edit3,
   Save,
@@ -11,6 +11,8 @@ import {
   Shield,
   EyeOff,
   Eye,
+  Camera,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import {
@@ -40,8 +42,10 @@ interface UserManagementTemplateProps {
   uploadPassword: (data: UpdateUserPasswordPayload) => void;
   isEditLoading: boolean;
   isPasswordLoading: boolean;
+  isUploading: boolean;
   subscription?: Subscription;
   handleCreateCustomerPortal: () => void;
+  handleImageUpload: (file: File) => void;
 }
 
 export function UserManagementTemplate({
@@ -49,9 +53,11 @@ export function UserManagementTemplate({
   uploadEdited,
   isEditLoading,
   isPasswordLoading,
+  isUploading,
   uploadPassword,
   subscription,
   handleCreateCustomerPortal,
+  handleImageUpload,
 }: UserManagementTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPasswordEditing, setIsPasswordEditing] = useState(false);
@@ -66,6 +72,8 @@ export function UserManagementTemplate({
     new: false,
     confirm: false,
   });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   // erors
   const [errors, setErrors] = useState<
@@ -152,6 +160,22 @@ export function UserManagementTemplate({
     }
   };
 
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // preview image
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
+
+    // notify parent
+    handleImageUpload(file);
+  };
+
   return (
     <main className="flex-1 p-8 pt-20 bg-background min-h-screen">
       <div className="w-full h-[75px] bg-background fixed z-50 top-0 py-5 px-10 flex justify-between">
@@ -188,16 +212,45 @@ export function UserManagementTemplate({
           <Card className="bg-card border border-border">
             <CardContent className="p-8">
               <div className="flex items-start gap-8">
-                <Avatar className="size-24">
-                  <AvatarImage src={userData?.profile} />
-                  <AvatarFallback className="m-auto bg-primary text-primary-foreground text-sm font-bold rounded-full">
-                    <div className="flex-shrink-0">
-                      <div className="size-24 gradient-bg rounded-full flex items-center justify-center">
-                        <User className="w-12 h-12 text-white" />
+                <div className="relative group w-fit">
+                  <Avatar className="size-24">
+                    <AvatarImage
+                      src={preview || userData.profile || ""}
+                      className="object-cover object-center w-full h-full"
+                    />
+                    <AvatarFallback className="m-auto bg-primary text-primary-foreground text-sm font-bold rounded-full">
+                      <div className="flex-shrink-0">
+                        <div className="size-24 gradient-bg rounded-full flex items-center justify-center">
+                          <User className="w-12 h-12 text-white" />
+                        </div>
                       </div>
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+                      <Loader2 className="w-8 h-8 text-white animate-spin" />
                     </div>
-                  </AvatarFallback>
-                </Avatar>
+                  )}
+
+                  {/* Camera Button Overlay */}
+                  <Button
+                    type="button"
+                    onClick={handleClick}
+                    disabled={isUploading}
+                    className="p-2 absolute bottom-1 right-1 bg-muted rounded-full shadow-md hover:bg-accent transition-opacity opacity-0 group-hover:opacity-100"
+                  >
+                    <Camera className="w-4 h-4 text-foreground" />
+                  </Button>
+
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
                 <div className="flex-1 space-y-6">
                   {isEditing ? (
                     <>

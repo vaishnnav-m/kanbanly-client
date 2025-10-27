@@ -21,11 +21,7 @@ export const useGetSignature = () => {
 export const useUploadPicture = () => {
   const toast = useToastMessage();
 
-  return useMutation<
-    ApiResponse<{ secure_url: string }>,
-    Error,
-    CloudinaryUploadArgs
-  >({
+  return useMutation<{ secure_url: string }, Error, CloudinaryUploadArgs>({
     mutationKey: ["uploadPicture"],
     mutationFn: uploadPicture,
     onError: (error: any) => {

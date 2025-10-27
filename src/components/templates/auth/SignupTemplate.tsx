@@ -98,11 +98,6 @@ const SignupTemplate = ({
     };
   }, [avatarPreview]);
 
-  // const handleSubmit = () => {
-  //   setIsLoading(true);
-  //   setTimeout(() => setIsLoading(false), 2000);
-  // };
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {/* Background decorative elements */}
