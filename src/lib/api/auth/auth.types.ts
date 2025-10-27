@@ -18,6 +18,7 @@ export interface SignupPayload {
   phone?: string;
   password: string;
   confirmPass?: string;
+  profile?: string;
 }
 
 export interface LoginPayload {

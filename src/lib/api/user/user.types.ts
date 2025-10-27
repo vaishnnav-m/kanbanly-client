@@ -8,6 +8,7 @@ export type UserProfileData = Pick<
 export interface UpdateUserProfilePayload {
   firstName?: string;
   lastName?: string;
+  profile?: string;
 }
 
 export interface UpdateUserPasswordPayload {
