@@ -2,6 +2,8 @@
 import SignupTemplate from "@/components/templates/auth/SignupTemplate";
 import { SignupPayload } from "@/lib/api/auth/auth.types";
 import { useGoogleAuth, useSignup } from "@/lib/hooks/useAuth";
+import { useGetSignature, useUploadPicture } from "@/lib/hooks/useCloudinary";
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { RootState } from "@/store";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
@@ -13,6 +15,8 @@ export default function SignupPage() {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // const [secureUrl, setSecureUrl] = useState("");
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -31,6 +35,11 @@ export default function SignupPage() {
 
   const { mutate: signupUser, isPending } = useSignup();
   const { mutate: googleAuth } = useGoogleAuth();
+  const { data: cloudinaryResponse } = useGetSignature();
+  const cloudinarySignature = cloudinaryResponse?.data;
+  const { mutateAsync: uploadPicture } = useUploadPicture();
+
+  const toast = useToastMessage();
 
   // google login logic
   const googleLogin = useGoogleLogin({
@@ -78,14 +87,44 @@ export default function SignupPage() {
   };
 
   // signup logic
-  const handleSignup = (values: SignupPayload) => {
+  const handleSignup = async (values: SignupPayload) => {
     const validationErrors = validate(values);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
+      let secureUrl = "";
       setErrors({});
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { confirmPass, ...dataToSend } = values;
+      if (selectedFile) {
+        if (!cloudinarySignature) {
+          toast.showError({
+            title: "Uploading failed!",
+            description:
+              "Failed to fetch signature try again or contact support",
+            duration: 6000,
+          });
+          return;
+        }
+        const { timeStamp, signature, apiKey, cloudName } = cloudinarySignature;
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("api_key", apiKey);
+        formData.append("timestamp", String(timeStamp));
+        formData.append("signature", signature);
+        formData.append("folder", "avatars");
+
+        const response = await uploadPicture({ cloudName, data: formData });
+        if (response?.data) secureUrl = response.data.secure_url;
+      }
+
+      const dataToSend: SignupPayload = {
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.firstName,
+        password: values.password,
+        phone: values.phone,
+        profile: secureUrl,
+      };
+
       signupUser(dataToSend);
     }
   };
@@ -97,7 +136,8 @@ export default function SignupPage() {
         handleSignup={handleSignup}
         isLoading={isPending}
         errorMessages={errors}
+        setSelectedFile={setSelectedFile}
       />
     </main>
   );
-};
+}
