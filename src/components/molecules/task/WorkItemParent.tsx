@@ -45,26 +45,29 @@ export const WorkItemParent = ({
   const { epics, handleParentAttach, isAttaching } = useTaskPageContext();
 
   return (
-    <div className="space-y-2">
-      <label className="text-sm text-muted-foreground flex items-center gap-2">
+    <div className="space-y-3">
+      <label className="text-sm font-semibold text-foreground flex items-center gap-2">
         Parent
         {canEdit && parent && (
-          <PenBox className="size-4 cursor-pointer text-muted-foreground hover:text-foreground" />
+          <PenBox 
+            className="w-3.5 h-3.5 cursor-pointer text-muted-foreground hover:text-foreground transition-colors" 
+            onClick={() => setIsEpicSelectorOpen(true)}
+          />
         )}
       </label>
       {parent ? (
         <div
-          className={`flex items-center gap-1 w-fit py-1 px-2 rounded-full ${
+          className={`flex items-center gap-2 w-fit py-2 px-3 rounded-full border ${
             parent.color
-              ? epicColors[parent.color as keyof typeof epicColors]
-              : "bg-neutral-500/40"
+              ? `${epicColors[parent.color as keyof typeof epicColors]} border-${parent.color}-500/30`
+              : "bg-neutral-500/20 border-neutral-500/30"
           }`}
         >
           <WorkItemTypeIcon
             type={parent.type}
-            className="size-4 text-muted-foreground"
+            className="w-4 h-4 text-white/70"
           />
-          <p className="text-xs mt-1 text-white/70 font-mono w-fit max-w-40 truncate">
+          <p className="text-xs text-white/90 font-medium max-w-40 truncate">
             {parent.name}
           </p>
         </div>
@@ -73,21 +76,21 @@ export const WorkItemParent = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
+              className="px-3 py-2 h-auto rounded-full text-xs font-medium flex items-center gap-2 border-dashed hover:border-primary hover:bg-primary/5 transition-colors"
               disabled={isAttaching}
               onClick={(e) => e.stopPropagation()}
             >
-              <Plus className="size-3 mr-1" />
+              <Plus className="w-3.5 h-3.5" />
               {isAttaching ? "Attaching..." : "Add Parent"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="p-0 w-64" align="end">
+          <PopoverContent className="p-0 w-64" align="start">
             <Command>
               <CommandInput placeholder="Search epics..." />
               <CommandList>
                 <CommandEmpty>No epics found.</CommandEmpty>
                 <CommandGroup>
-                  {epics.map((epicOption) => (
+                  {epics?.map((epicOption) => (
                     <CommandItem
                       key={epicOption.epicId}
                       value={epicOption.title}
@@ -98,7 +101,7 @@ export const WorkItemParent = ({
                       className="flex items-center gap-2 cursor-pointer"
                     >
                       <span
-                        className={`w-2 h-2 rounded-full bg-${epicOption.color}-500`}
+                        className={`w-3 h-3 rounded-full bg-${epicOption.color}-500`}
                         aria-hidden="true"
                       />
                       <span>{epicOption.title}</span>

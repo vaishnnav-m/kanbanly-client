@@ -1,5 +1,5 @@
 import { Input } from "@/components/atoms/input";
-import { PenBox, PlusCircle } from "lucide-react";
+import { CalendarIcon, PenBox, PlusCircle } from "lucide-react";
 import React, { Dispatch, SetStateAction } from "react";
 import { AssigneeCard } from "./AssigneeCard";
 import { getDate, hasPermission, PERMISSIONS } from "@/lib/utils";
@@ -48,46 +48,52 @@ export const TaskInfo = ({
   };
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-5 text-sm">
-        {/* Due Date */}
-        <div className="space-y-2">
-          <div className="flex gap-2 items-center group">
-            <label className="text-muted-foreground">Due date</label>
-            {canEdit && (
-              <PenBox
+    <div className="space-y-6">
+      {/* Properties Grid */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Due Date Card */}
+        <div className="rounded-lg border border-border bg-card p-4 space-y-2 hover:border-primary/50 transition-colors">
+          <div className="flex items-center justify-between group">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+              <CalendarIcon className="w-3.5 h-3.5" />
+              Due Date
+            </label>
+            {canEdit && !editingDueDate && (
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={handleOpenDatePicker}
-                className="size-4 opacity-0 group-hover:opacity-100 cursor-pointer text-muted-foreground hover:text-foreground"
-              />
+                className="h-6 w-6 p-0 hover:bg-primary/10"
+              >
+                <PenBox className="w-3 h-3" />
+              </Button>
             )}
           </div>
           <div className="flex items-center gap-2">
             {editingDueDate !== null ? (
-              // --- EDITING STATE ---
               <Input
                 type="date"
                 min={new Date().toISOString().split("T")[0]}
                 value={editingDueDate}
                 onChange={(e) => setEditingDueDate(e.target.value)}
                 autoFocus
+                className="h-9"
               />
             ) : dueDate ? (
-              // --- DISPLAY STATE (Date exists) ---
-              <span className="font-medium text-sm text-foreground">
+              <span className="font-semibold text-sm text-foreground">
                 {getDate(dueDate)}
               </span>
             ) : (
-              // --- DISPLAY STATE (No date exists) ---
               <>
                 {canEdit ? (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-muted-foreground -ml-2 h-auto p-1"
+                    className="text-muted-foreground h-auto p-0 hover:text-primary"
                     onClick={handleOpenDatePicker}
                   >
-                    <PlusCircle className="mr-2 size-4" />
-                    Add due date
+                    <PlusCircle className="mr-1.5 w-3.5 h-3.5" />
+                    Set date
                   </Button>
                 ) : (
                   <span className="text-sm text-muted-foreground italic">
@@ -99,76 +105,137 @@ export const TaskInfo = ({
           </div>
         </div>
 
-        {/* Assignee */}
-        <div className="space-y-2">
-          <label className="text-muted-foreground">Assignee</label>
-          <div className="flex items-center font-medium text-foreground">
+        {/* Assignee Card */}
+        <div className="rounded-lg border border-border bg-card p-4 space-y-2 hover:border-primary/50 transition-colors">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Assignee
+          </label>
+          <div className="flex items-center gap-2 font-medium text-foreground">
             <AssigneeCard taskId={taskId} assignedTo={assignedTo} />
+            {assignedTo && (
+              <span className="text-sm truncate">{assignedTo.name}</span>
+            )}
           </div>
         </div>
 
-        {/* Priority */}
-        <div className="space-y-2">
-          <label className="text-muted-foreground">Priority</label>
+        {/* Priority Card */}
+        <div className="rounded-lg border border-border bg-card p-4 space-y-2 hover:border-primary/50 transition-colors">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Priority
+          </label>
           <PriorityBadge priority={priority} />
+        </div>
+
+        {/* Story Point Card */}
+        <div className="rounded-lg border border-border bg-card p-4 space-y-2 hover:border-primary/50 transition-colors">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Story Points
+            </label>
+            {canEdit && !editingStoryPoint && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setEditingStoryPoint(String(storyPoint || ""))}
+                className="h-6 w-6 p-0 hover:bg-primary/10"
+              >
+                <PenBox className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+          {editingStoryPoint !== null ? (
+            <Input
+              min={1}
+              type="number"
+              value={editingStoryPoint || ""}
+              onChange={(e) => setEditingStoryPoint(e.target.value)}
+              placeholder="Enter points..."
+              autoFocus
+              className="h-9"
+            />
+          ) : storyPoint ? (
+            <div className="inline-flex items-center justify-center rounded-md bg-primary/10 px-3 py-1 text-base font-bold text-primary">
+              {storyPoint}
+            </div>
+          ) : (
+            <>
+              {canEdit ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground h-auto p-0 hover:text-primary"
+                  onClick={() => setEditingStoryPoint("")}
+                >
+                  <PlusCircle className="mr-1.5 w-3.5 h-3.5" />
+                  Add points
+                </Button>
+              ) : (
+                <span className="text-sm text-muted-foreground italic">
+                  No points
+                </span>
+              )}
+            </>
+          )}
         </div>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm text-muted-foreground flex items-center gap-2 group">
-          Description
-          {canEdit && (
-            <PenBox
+      {/* Description Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-semibold text-foreground">
+            Description
+          </label>
+          {canEdit && !editingDescription && description && (
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setEditingDescription(description || "")}
-              className="size-4 cursor-pointer text-muted-foreground hidden group-hover:block group-hover:text-foreground"
-            />
+              className="h-7 px-2 hover:bg-primary/10"
+            >
+              <PenBox className="w-3.5 h-3.5 mr-1.5" />
+              Edit
+            </Button>
           )}
-        </label>
+        </div>
         {editingDescription !== null ? (
           <Textarea
             value={editingDescription || ""}
             onChange={(e) => setEditingDescription(e.target.value)}
-            placeholder="Add a more detailed description..."
-            className="min-h-[120px] text-sm"
+            placeholder="Add a detailed description..."
+            className="min-h-[140px] resize-none text-sm"
+            autoFocus
           />
         ) : description ? (
-          <p className="text-sm text-foreground leading-relaxed">
-            {description}
-          </p>
+          <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+              {description}
+            </p>
+          </div>
         ) : (
-          <p className="text-sm text-foreground italic">
-            No description provided.
-          </p>
+          <>
+            {canEdit ? (
+              <Button
+                variant="outline"
+                onClick={() => setEditingDescription("")}
+                className="w-full h-24 border-dashed hover:border-primary hover:bg-primary/5 transition-colors"
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <PlusCircle className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    Add description
+                  </span>
+                </div>
+              </Button>
+            ) : (
+              <div className="rounded-lg border border-dashed border-border bg-muted/10 p-4">
+                <p className="text-sm text-muted-foreground italic text-center">
+                  No description provided
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
-      <div className="space-y-2">
-        <label className="text-sm text-muted-foreground flex items-center gap-2 group">
-          Story Point
-          {canEdit && (
-            <PenBox
-              onClick={() => setEditingStoryPoint(editingStoryPoint || "")}
-              className="size-4 cursor-pointer text-muted-foreground hidden group-hover:block group-hover:text-foreground"
-            />
-          )}
-        </label>
-        {editingStoryPoint !== null ? (
-          <Input
-            min={1}
-            type="number"
-            value={editingStoryPoint || ""}
-            onChange={(e) => setEditingStoryPoint(e.target.value)}
-            placeholder="Add story points..."
-          />
-        ) : storyPoint ? (
-          <p className="text-sm text-foreground font-bold leading-relaxed bg-white/40 w-fit px-3 rounded-sm">
-            {storyPoint}
-          </p>
-        ) : (
-          <p className="text-sm text-foreground italic">
-            No story points assigned.
-          </p>
-        )}
-      </div>
-    </>
+    </div>
   );
 };

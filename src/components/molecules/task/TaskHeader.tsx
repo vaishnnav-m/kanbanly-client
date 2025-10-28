@@ -1,8 +1,4 @@
 "use client";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { CardHeader } from "@/components/atoms/card";
-import { Input } from "@/components/atoms/input";
 import { workItemStatusColors } from "@/lib/constants/color.constants";
 import { hasPermission, PERMISSIONS } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
@@ -35,54 +31,48 @@ export const TaskHeader = ({
   const statusColors = workItemStatusColors[taskStatus];
 
   return (
-    <CardHeader className="flex-shrink-0 pb-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Badge
-            variant="secondary"
-            className={`${statusColors.bg} ${statusColors.text} hover:${statusColors.bg} font-medium`}
-          >
-            {taskStatus.toUpperCase()}
-          </Badge>
+    <div className="flex-shrink-0 p-6 border-b border-slate-700">
+      <div className="flex items-center justify-between mb-4">
+        <div
+          className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors.bg} ${statusColors.text}`}
+        >
+          {taskStatus}
         </div>
         <div className="flex items-center gap-1">
           {canDelete && (
-            <Button
+            <button
               onClick={() => setIsConfirmationOpen(true)}
-              className="hover:bg-muted-foreground/20"
-              variant="ghost"
-              size="sm"
+              className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
             >
-              <Trash className="h-4 w-4" />
-            </Button>
+              <Trash className="h-4 w-4 text-slate-400" />
+            </button>
           )}
-          <Button
-            className="hover:bg-muted-foreground/20"
-            variant="ghost"
-            size="sm"
+          <button
             onClick={close}
+            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
           >
-            <X className="h-4 w-4" />
-          </Button>
+            <X className="h-4 w-4 text-slate-400" />
+          </button>
         </div>
       </div>
 
       {editingName !== null ? (
-        <Input
-          value={editingName}
+        <input
+          value={editingName || name}
           onChange={(e) => setEditingName(e.target.value)}
+          className="w-full text-2xl font-bold bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-600 focus:outline-none focus:border-blue-500"
         />
       ) : (
-        <h2 className="text-2xl font-bold tracking-tight text-foreground mt-2 group">
+        <h2 className="text-2xl font-bold text-white group flex items-center gap-2">
           {name}
           {canEdit && (
             <PenBox
-              onClick={() => setEditingName(name || "")}
-              className="size-3 cursor-pointer group-hover:inline ml-2 hidden"
+              onClick={() => setEditingName(name)}
+              className="w-4 h-4 cursor-pointer opacity-0 group-hover:opacity-100 text-slate-400 hover:text-white transition-opacity"
             />
           )}
         </h2>
       )}
-    </CardHeader>
+    </div>
   );
 };
