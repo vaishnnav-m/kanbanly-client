@@ -7,7 +7,7 @@ import {
   TabsTrigger,
 } from "@/components/atoms/tabs";
 import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
-import { Plus } from "lucide-react";
+import { Activity, MessageSquare, Plus } from "lucide-react";
 import { WorkItemCreationInput } from "./WorkItemCreationInput";
 import { useState } from "react";
 import { ITask, TaskCreationPayload } from "@/lib/api/task/task.types";
@@ -60,35 +60,60 @@ export const TaskTabs = ({
 
   return (
     <Tabs defaultValue="subtasks" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 bg-transparent">
-        <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
-        <TabsTrigger value="comments">
-          Comments{" "}
-          <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-xs">
+      <TabsList className="grid w-full grid-cols-3 bg-muted/50 p-1">
+        <TabsTrigger
+          value="subtasks"
+          className="text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+        >
+          Subtasks
+          {subTasks && subTasks.length > 0 && (
+            <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs">
+              {subTasks.length}
+            </Badge>
+          )}
+        </TabsTrigger>
+        <TabsTrigger
+          value="comments"
+          className="text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+        >
+          <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
+          Comments
+          <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs">
             3
           </Badge>
         </TabsTrigger>
-        <TabsTrigger value="activities">Activities</TabsTrigger>
+        <TabsTrigger
+          value="activities"
+          className="text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+        >
+          <Activity className="w-3.5 h-3.5 mr-1.5" />
+          Activity
+        </TabsTrigger>
       </TabsList>
 
       {workItemType !== WorkItemType.Subtask && (
         <TabsContent
           value="subtasks"
-          className={`w-full mt-4 flex flex-col ${
-            subTasks?.length ? "" : "items-center"
-          } gap-4`}
+          className="w-full mt-6 flex flex-col gap-4"
         >
-          {subTasks?.length ? (
-            <div className="w-full rounded-md border">
+          {subTasks && subTasks.length > 0 ? (
+            <div className="w-full rounded-lg border border-border overflow-hidden">
               <CustomTable
                 columns={columns}
-                data={subTasks || []}
+                data={subTasks}
                 emptyMessage="No children"
               />
             </div>
           ) : (
-            ""
+            !isCreatingIssue && (
+              <div className="text-center py-12 rounded-lg border border-dashed border-border bg-muted/20">
+                <p className="text-sm text-muted-foreground mb-4">
+                  No subtasks yet
+                </p>
+              </div>
+            )
           )}
+
           {isCreatingIssue ? (
             <WorkItemCreationInput
               view="detail"
@@ -98,28 +123,40 @@ export const TaskTabs = ({
           ) : (
             <Button
               variant="outline"
-              className="w-fit px-2 py-1 h-fit rounded-full text-xs font-mono flex items-center bg-inherit text-white/70"
+              className="w-full py-6 h-auto rounded-lg border-dashed hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsCreatingIssue(true);
               }}
             >
-              <Plus className="size-3 mr-1" />
-              Add Child
+              <Plus className="w-4 h-4" />
+              <span className="text-sm font-medium">Add Child Item</span>
             </Button>
           )}
         </TabsContent>
       )}
 
-      <TabsContent value="comments" className="mt-4">
-        <div className="text-center py-8 text-muted-foreground rounded-md border">
-          <span className="text-sm">No comments yet</span>
+      <TabsContent value="comments" className="mt-6">
+        <div className="text-center py-12 rounded-lg border border-border bg-muted/20">
+          <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+          <p className="text-sm font-medium text-foreground mb-1">
+            No comments yet
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Start a conversation about this task
+          </p>
         </div>
       </TabsContent>
 
-      <TabsContent value="activities" className="mt-4">
-        <div className="text-center py-8 text-muted-foreground rounded-md border">
-          <span className="text-sm">No recent activities</span>
+      <TabsContent value="activities" className="mt-6">
+        <div className="text-center py-12 rounded-lg border border-border bg-muted/20">
+          <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+          <p className="text-sm font-medium text-foreground mb-1">
+            No recent activity
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Activity will appear here as changes are made
+          </p>
         </div>
       </TabsContent>
     </Tabs>

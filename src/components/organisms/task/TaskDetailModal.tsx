@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import { Resizable } from "re-resizable";
-import { format, formatDistanceToNow } from "date-fns";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import {
@@ -19,13 +18,14 @@ import { TaskInfo } from "@/components/molecules/task/TaskInfo";
 import { TaskTabs } from "@/components/molecules/task/TaskTabs";
 import { WorkItemParent } from "@/components/molecules/task/WorkItemParent";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
-import { AssigneeCard } from "@/components/molecules/task/AssigneeCard";
 import { WorkItemType } from "@/types/task.enum";
+import { Separator } from "@/components/atoms/separator";
+import { TaskFooter } from "@/components/molecules/task/TaskFooter";
 
 interface TaskDetailsProps {
   isVisible: boolean;
   close: () => void;
-  task: ITaskDetails | undefined;
+  task?: ITaskDetails;
   createTask: (data: TaskCreationPayload) => void;
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
@@ -63,6 +63,13 @@ export const TaskDetails = ({
   ) as workspaceRoles;
   if (!isVisible || !task) return null;
 
+  // variable to know if editing
+  const hasUnsavedChanges =
+    editingDescription !== null ||
+    editingName !== null ||
+    editingDueDate !== null ||
+    editingStoryPoint !== null;
+
   // funtion to handle the submit of editing
   function handleSubmit() {
     const data: Partial<TaskCreationPayload> = {
@@ -92,18 +99,28 @@ export const TaskDetails = ({
   };
 
   return (
-    <div className="fixed top-4 right-4 h-[calc(100vh-2rem)] z-50">
+    <div className="py-3 fixed top-0 right-0 h-screen z-50 animate-in slide-in-from-right duration-300">
       <Resizable
         defaultSize={{ width }}
         size={{ width: width, height: "100%" }}
         onResizeStop={(e, direction, ref, d) => {
           setWidth(width + d.width);
         }}
-        maxWidth={800}
-        minWidth={448}
+        maxWidth={900}
+        minWidth={480}
         enable={{ left: true }}
+        handleStyles={{
+          left: {
+            width: "4px",
+            left: 0,
+            cursor: "col-resize",
+          },
+        }}
+        handleClasses={{
+          left: "hover:bg-primary/50 transition-colors",
+        }}
       >
-        <Card className="relative h-full flex flex-col shadow-xl border-border bg-card">
+        <Card className="relative h-full flex flex-col shadow-2xl border-l-2 border-border bg-background/95 backdrop-blur">
           {/* Header */}
           <TaskHeader
             memberRole={role as workspaceRoles}
@@ -115,98 +132,89 @@ export const TaskDetails = ({
             close={close}
           />
 
-          {/* Content */}
-          <CardContent className="flex-1 overflow-y-auto p-6 space-y-8">
-            {/* Task Info */}
-            <TaskInfo
-              taskId={task.taskId}
-              dueDate={task.dueDate}
-              priority={task.priority}
-              description={task.description}
-              assignedTo={task.assignedTo}
-              memberRole={role}
-              editingDueDate={editingDueDate}
-              setEditingDueDate={setEditingDueDate}
-              editingDescription={editingDescription}
-              setEditingDescription={setEditingDescription}
-              storyPoint={task.storyPoint}
-              editingStoryPoint={editingStoryPoint}
-              setEditingStoryPoint={setEditingStoryPoint}
-            />
-            {(editingDescription !== null ||
-              editingDueDate !== null ||
-              editingName !== null ||
-              editingStoryPoint !== null) && (
-              <div className="w-full flex gap-5">
-                <Button onClick={handleSubmit} className="w-full">
-                  Save Changes
-                </Button>
-                <Button
-                  onClick={() => {
-                    setEditingDescription(null);
-                    setEditingDueDate(null);
-                    setEditingName(null);
-                    setEditingStoryPoint(null);
-                  }}
-                  variant="outline"
-                  className="w-full hover:bg-transparent"
-                >
-                  Cancel
-                </Button>
-              </div>
-            )}
-            <WorkItemParent
-              taskId={task.taskId}
-              memberRole={role}
-              parent={task.parent}
-            />
-            {/* Tabs */}
-            {task.workItemType !== WorkItemType.Subtask && (
-              <TaskTabs
-                createTask={createTask}
-                taskId={task.taskId}
-                workItemType={task.workItemType}
-                subTasks={subTasks}
-              />
-            )}
-            <div className="rounded-lg border border-border bg-muted/50 p-4 space-y-4">
-              {/* Created By */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Created By
-                </label>
-                <div className="flex items-center gap-2">
-                  <AssigneeCard
-                    taskId={task.taskId}
-                    assignedTo={task.createdBy}
-                  />
-                  <span className="text-sm font-medium">
-                    {task.createdBy.name}
-                  </span>
-                </div>
-              </div>
-              <div className="h-px bg-border" /> {/* Divider */}
-              {/* Timestamps */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Created</span>
-                  <span className="font-medium">
-                    {format(
-                      new Date(task.createdAt),
-                      "MMM d, yyyy 'at' h:mm a"
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Updated</span>
-                  <span className="font-medium">
-                    {formatDistanceToNow(new Date(task.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </span>
+          {/* Unsaved Changes */}
+          {hasUnsavedChanges && (
+            <div className="sticky top-0 z-10 px-6 py-3 bg-blue-500/10 border-b border-blue-500/20 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm text-slate-300">
+                  You have unsaved changes
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingDescription(null);
+                      setEditingName(null);
+                      setEditingDueDate(null);
+                      setEditingStoryPoint(null);
+                    }}
+                    className="px-3 py-1.5 text-sm rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-800 transition-colors"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSubmit}
+                    className="px-3 py-1.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  >
+                    Save Changes
+                  </Button>
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Content */}
+          <CardContent className="flex-1 overflow-y-auto p-0">
+            <div className="px-6 py-6 space-y-6">
+              {/* Parent Section */}
+              {task.workItemType !== WorkItemType.Subtask && (
+                <>
+                  <WorkItemParent
+                    taskId={task.taskId}
+                    memberRole={role}
+                    parent={task.parent}
+                  />
+                  <Separator />
+                </>
+              )}
+
+              {/* Task Info Grid */}
+              <TaskInfo
+                taskId={task.taskId}
+                dueDate={task.dueDate}
+                priority={task.priority}
+                description={task.description}
+                assignedTo={task.assignedTo}
+                memberRole={role}
+                editingDueDate={editingDueDate}
+                setEditingDueDate={setEditingDueDate}
+                editingDescription={editingDescription}
+                setEditingDescription={setEditingDescription}
+                storyPoint={task.storyPoint}
+                editingStoryPoint={editingStoryPoint}
+                setEditingStoryPoint={setEditingStoryPoint}
+              />
+
+              <Separator />
+
+              {/* Tabs Section */}
+              {task.workItemType !== WorkItemType.Subtask && (
+                <TaskTabs
+                  createTask={createTask}
+                  taskId={task.taskId}
+                  workItemType={task.workItemType}
+                  subTasks={subTasks}
+                />
+              )}
+            </div>
+
+            {/* Footer - Created By & Timestamps */}
+            <TaskFooter
+              taskId={task.taskId}
+              createdBy={task.createdBy}
+              createdAt={task.createdAt}
+              updatedAt={task.updatedAt}
+            />
           </CardContent>
 
           <InviteUserDropdown
@@ -216,6 +224,7 @@ export const TaskDetails = ({
             onClose={() => setIsInvitingUser(false)}
             onInvite={handleInvite}
           />
+
           <ConfirmationModal
             isOpen={isConfirmationOpen}
             onClose={() => setIsConfirmationOpen(false)}
@@ -224,7 +233,7 @@ export const TaskDetails = ({
               setIsConfirmationOpen(false);
               close();
             }}
-            title="Are you sure you want to remove this task?"
+            title="Delete Task?"
             description="This action cannot be undone. The task will be permanently deleted from the project."
             cancelText="Cancel"
             confirmText="Delete Task"
