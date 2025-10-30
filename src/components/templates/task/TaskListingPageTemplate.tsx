@@ -24,6 +24,7 @@ import { IEpic } from "@/lib/api/epic/epic.types";
 import { formatDataIntoSections } from "@/lib/task-utils";
 import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
+import { Archive, GanttChart, LayoutGrid, List } from "lucide-react";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -186,12 +187,16 @@ function TaskListingPageTemplate({
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                    className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
                       activeTab === tab
                         ? "border-primary text-primary"
                         : "border-transparent text-muted-foreground hover:text-foreground"
                     }`}
                   >
+                    {tab === "Board" && <LayoutGrid size={16} />}
+                    {tab === "List" && <List size={16} />}
+                    {tab === "Backlog" && <Archive size={16} />}
+                    {tab === "Timeline" && <GanttChart size={16} />}
                     {tab}
                   </button>
                 );

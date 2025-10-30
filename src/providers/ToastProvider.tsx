@@ -183,10 +183,11 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 
   // Cleanup timers on unmount
   useEffect(() => {
+    const timers = toastTimers.current;
     return () => {
-      for (const id in toastTimers.current) {
-        if (toastTimers.current[id]) {
-          clearTimeout(toastTimers.current[id] as NodeJS.Timeout);
+      for (const id in timers) {
+        if (timers[id]) {
+          clearTimeout(timers[id] as NodeJS.Timeout);
         }
       }
     };

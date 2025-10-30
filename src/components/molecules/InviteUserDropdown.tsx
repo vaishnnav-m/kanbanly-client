@@ -5,6 +5,8 @@ import { useDebounce } from "@/lib/utils";
 import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { Avatar, AvatarImage } from "../atoms/avatar";
+import { AvatarFallback } from "@radix-ui/react-avatar";
 
 interface InviteUserDropdownProps {
   isOpen: boolean;
@@ -55,6 +57,7 @@ export const InviteUserDropdown = ({
     email: member.email,
     id: member._id,
     name: member.name,
+    avatar: member.profile,
   }));
 
   // Filter suggestions based on search query
@@ -261,9 +264,15 @@ export const InviteUserDropdown = ({
                       : ""
                   }`}
                 >
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-xs font-medium text-purple-700 dark:text-purple-300">
-                    {suggestion?.avatar || suggestion.name?.[0]?.toUpperCase()}
-                  </div>
+                  <Avatar>
+                    <AvatarImage src={suggestion?.avatar} />
+                    <AvatarFallback>
+                      <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-xs font-medium text-purple-700 dark:text-purple-300">
+                        {suggestion.name?.[0]?.toUpperCase()}
+                      </div>
+                    </AvatarFallback>
+                  </Avatar>
+
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                       {suggestion.name}

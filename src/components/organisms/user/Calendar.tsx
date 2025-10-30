@@ -45,7 +45,7 @@ const activities = [
 export function Calendar() {
   return (
     <Card className="p-6 animate-fade-in">
-      <h3 className="text-lg font-semibold mb-6">What's on the road?</h3>
+      <h3 className="text-lg font-semibold mb-6">What&#39;s on the road?</h3>
       
       {/* Calendar */}
       <div className="mb-6">
