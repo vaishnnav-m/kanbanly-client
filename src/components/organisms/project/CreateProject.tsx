@@ -20,6 +20,7 @@ export const CreateProjectModal = ({
   const [key, setKey] = useState("");
   const [keyEdited, setKeyEdited] = useState(false);
   const [template, setTemplate] = useState<projectTemplate>(projectTemplate.kanban);
+  const [nameError, setNameError] = useState("");
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
@@ -52,6 +53,17 @@ export const CreateProjectModal = ({
     onClose();
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    if (newName.length <= 50) {
+      setName(newName);
+      setNameError("");
+    } else {
+      setNameError("Name cannot exceed 50 characters.");
+    }
+    setKeyEdited(false);
+  };
+
   return (
     <BaseModal
       isOpen={isOpen}
@@ -69,7 +81,7 @@ export const CreateProjectModal = ({
           <button
             className="px-10 py-2 bg-primary text-white rounded cursor-pointer hover:bg-purple-400 transition"
             onClick={handleInvite}
-            disabled={!name.trim() || !key.trim() || isLoading}
+            disabled={!name.trim() || !key.trim() || isLoading || !!nameError}
           >
             {isLoading ? "Creating..." : "Create"}
           </button>
@@ -89,12 +101,10 @@ export const CreateProjectModal = ({
             type="text"
             placeholder="Enter project name"
             value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setKeyEdited(false);
-            }}
+            onChange={handleNameChange}
             className="p-3 border border-border rounded-lg bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition"
           />
+          {nameError && <p className="text-red-500 text-xs">{nameError}</p>}
         </div>
         <div className="flex flex-col gap-2">
           <label

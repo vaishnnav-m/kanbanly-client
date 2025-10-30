@@ -78,7 +78,7 @@ function ForgotPasswordTemplate({
               Reset Password
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              We'll send you a link to reset your password.
+              We&#39;ll send you a link to reset your password.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 bg-log">

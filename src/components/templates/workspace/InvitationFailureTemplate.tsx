@@ -4,7 +4,6 @@ import { XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,

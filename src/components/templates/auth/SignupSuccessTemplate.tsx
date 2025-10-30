@@ -41,7 +41,7 @@ const SignupSuccessTemplate = () => {
               Please Verify Your Email
             </CardTitle>
             <CardDescription className="text-muted-foreground mt-2">
-              We've sent a verification link to your email
+              We&#39;ve sent a verification link to your email
               <br />
               Please click the link in the email to activate your account.
             </CardDescription>
@@ -51,7 +51,7 @@ const SignupSuccessTemplate = () => {
           {/* Removed the email input and resend button/timer */}
           <div className="text-center pt-4 border-t border-border">
             <p className="text-xs text-muted-foreground">
-              Didn't receive the email? Check your spam folder or
+              Didn&#39;t receive the email? Check your spam folder or
               <br />
               <Button
                 variant="link"
