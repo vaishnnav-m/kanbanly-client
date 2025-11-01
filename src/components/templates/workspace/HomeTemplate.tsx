@@ -1,48 +1,33 @@
 "use client";
-import { Calendar } from "@/components/organisms/user/Calendar";
-import { Goals } from "@/components/organisms/user/Goals";
-import { TaskList } from "@/components/organisms/user/TaskList";
-import React from "react";
+import DashboardFilters from "@/components/organisms/workspace/DashboardFilters";
+import { SummaryCards } from "@/components/organisms/workspace/SummaryCard";
+import { TaskAnalytics } from "@/components/organisms/workspace/TaskAnalytics";
+import { TeamPerformance } from "@/components/organisms/workspace/TeamPerformance";
+import { IProject } from "@/lib/api/project/project.types";
 
-function HomeTemplate() {
+interface HomeTemplateProps {
+  projects: IProject[];
+}
+
+function HomeTemplate({}: HomeTemplateProps) {
   return (
-    <main className="flex-1 overflow-auto">
-      <div className="p-6 md:p-8 h-full">
-        <div className="h-full space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-1 animate-fade-in">
-              Dashboard
-            </h1>
-            <p
-              className="text-muted-foreground animate-fade-in"
-              style={{ animationDelay: "0.1s" }}
-            >
-              Welcome back! Here&#39;s what&#39;s happening with your projects
-              today.
-            </p>
-          </div>
+    <main className="flex-1 overflow-y-auto">
+      <div className="p-6 lg:p-8 space-y-8">
+        <DashboardFilters />
 
-          {/* My Tasks */}
-          <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
-            <TaskList />
-          </div>
+        <section>
+          <SummaryCards />
+        </section>
 
-          {/* Calendar and Goals */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div
-              className="animate-slide-up"
-              style={{ animationDelay: "0.3s" }}
-            >
-              <Calendar />
-            </div>
-            <div
-              className="animate-slide-up"
-              style={{ animationDelay: "0.4s" }}
-            >
-              <Goals />
-            </div>
-          </div>
-        </div>
+        <section>
+          <h2 className="text-2xl font-bold mb-6">Task Analytics</h2>
+          <TaskAnalytics />
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold mb-6">Team Performance</h2>
+          <TeamPerformance />
+        </section>
       </div>
     </main>
   );

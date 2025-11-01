@@ -53,11 +53,14 @@ export const useGetAllProjects = (
   sorting?: {
     sortBy?: string;
     order?: string;
-  }
+  },
+  limit?: number,
+  skip?: number
 ) => {
   return useQuery<ApiResponse<IProject[]>, Error>({
-    queryKey: ["getProjects", workspaceId, filters, sorting],
-    queryFn: () => getAllProjects({ workspaceId, filters, sorting }),
+    queryKey: ["getProjects", workspaceId, filters, sorting, limit, skip],
+    queryFn: () =>
+      getAllProjects({ workspaceId, filters, sorting, limit, skip }),
     enabled: !!workspaceId,
   });
 };
