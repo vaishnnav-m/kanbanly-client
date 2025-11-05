@@ -2,7 +2,6 @@
 import HomeTemplate from "@/components/templates/workspace/HomeTemplate";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { RootState } from "@/store";
-import React from "react";
 import { useSelector } from "react-redux";
 
 export default function WorkspaceDashboardPage() {

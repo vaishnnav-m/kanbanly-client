@@ -17,7 +17,7 @@ function Header() {
 
   return (
     <header
-      className={`h-[75px] bg-background fixed right-0 z-50 top-0 py-5 px-10 flex justify-between transition-all duration-300 ease-in-out ${
+      className={`h-[75px] bg-sidebar fixed right-0 z-50 top-0 py-5 px-10 flex justify-between transition-all duration-300 ease-in-out ${
         state === "collapsed" ? "left-16" : "left-64"
       }`}
     >

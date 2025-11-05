@@ -10,6 +10,7 @@ import {
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NavChats } from "./NavChats";
 
 interface NavLinksProps {
   links: {
@@ -31,7 +32,10 @@ function NavLinks({ links }: NavLinksProps) {
               pathname === item.url || pathname.endsWith(item.url);
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton className={`${isActive && "bg-gray-500/15"}`} asChild>
+                <SidebarMenuButton
+                  className={`${isActive && "bg-gray-500/15"}`}
+                  asChild
+                >
                   <Link href={item.url}>
                     <item.icon className="mr-3 size-5 transition-transform duration-200 group-hover:scale-110" />
                     {item.title}
@@ -40,6 +44,9 @@ function NavLinks({ links }: NavLinksProps) {
               </SidebarMenuItem>
             );
           })}
+          <SidebarMenuItem>
+            <NavChats />
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

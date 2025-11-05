@@ -13,7 +13,7 @@ import NavWorkspace from "@/components/molecules/user-sidebar/NavWorkspace";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
-import { Gem, HelpCircle, Home, MessageSquare, Users } from "lucide-react";
+import { Gem, HelpCircle, Home, Users } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -36,11 +36,6 @@ function UserSidebar() {
 
   const navigation = [
     { title: "Home", url: `/workspaces/${params.slug}`, icon: Home },
-    {
-      title: "Chats",
-      url: `/workspaces/${params.slug}/chats`,
-      icon: MessageSquare,
-    },
     {
       title: "Members",
       url: `/workspaces/${params.slug}/members`,
