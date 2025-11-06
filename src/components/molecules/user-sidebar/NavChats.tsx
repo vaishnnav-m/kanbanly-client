@@ -15,13 +15,12 @@ export const NavChats = () => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
-  
+
   const isActive = pathname === "/chats" || pathname.includes("chats");
 
   const conversations = [
     { id: "team-alpha", name: "Team Alpha", unread: 3 },
-    { id: "project-updates", name: "Project Updates", unread: 0 },
-    { id: "design-team", name: "Design Team", unread: 7 },
+    { id: "dm-sarah", name: "Sarah Chen", unread: 0 },
   ];
 
   const handleChatSelect = (chatId?: string) => {

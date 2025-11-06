@@ -8,6 +8,7 @@ interface ChatAreaProps {
 }
 
 function ChatPageTemplate({ chatId }: ChatAreaProps) {
+  console.log("chatId", chatId);
   const chatInfo: Record<
     string,
     { name: string; status: string; typing?: boolean }
@@ -16,26 +17,10 @@ function ChatPageTemplate({ chatId }: ChatAreaProps) {
       name: "Team Alpha",
       status: "12 members",
     },
-    "project-phoenix": {
-      name: "Project Phoenix",
-      status: "8 members",
-    },
     "dm-sarah": {
       name: "Sarah Chen",
       status: "online",
       typing: true,
-    },
-    "dm-mike": {
-      name: "Mike Johnson",
-      status: "away - back in 30 min",
-    },
-    "project-launch": {
-      name: "Launch Planning",
-      status: "5 members",
-    },
-    "dm-emma": {
-      name: "Emma Wilson",
-      status: "last seen 2h ago",
     },
   };
 

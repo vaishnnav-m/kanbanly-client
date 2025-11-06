@@ -23,29 +23,23 @@ export const MessageBubble = ({ message, showSender }: MessageBubbleProps) => {
 
   return (
     <div
-      className={`flex gap-2 items-end animate-fade-in ${
+      className={`flex gap-2 items-center animate-fade-in ${
         message.isSent ? "flex-row-reverse" : "flex-row"
       }`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
       <div
-        className={`flex flex-col max-w-[70%] ${
+        className={`flex flex-col max-w-[50%] ${
           message.isSent ? "items-end" : "items-start"
         }`}
       >
-        {showSender && !message.isSent && (
-          <span className="text-xs text-muted-foreground mb-1 ml-3">
-            {message.sender}
-          </span>
-        )}
-
         <div
           className={`relative rounded-lg ${
             message.isSent
-              ? "bg-primary/50 rounded-tr-none ml-auto"
-              : "bg-[#20253d] rounded-tl-none"
-          } px-3 py-2 max-w-[80%]`}
+              ? "bg-primary/50 rounded-tr-none"
+              : "bg-[#20253d] rounded-tl-none pt-0"
+          } px-3 py-2`}
         >
           {/* Message tail */}
           <div
@@ -57,6 +51,11 @@ export const MessageBubble = ({ message, showSender }: MessageBubbleProps) => {
             style={{ width: 0, height: 0 }}
           />
 
+          {showSender && !message.isSent && (
+            <span className="text-xs text-muted-foreground mb-1">
+              {message.sender}
+            </span>
+          )}
           <p className="text-sm leading-relaxed">{message.content}</p>
 
           <div
