@@ -10,6 +10,8 @@ import {
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NavChats } from "./NavChats";
+import { IChatListing } from "@/lib/api/chat/chat.types";
 
 interface NavLinksProps {
   links: {
@@ -17,9 +19,11 @@ interface NavLinksProps {
     url: string;
     icon: LucideIcon;
   }[];
+  chats: IChatListing[];
+  isChatLoading: boolean;
 }
 
-function NavLinks({ links }: NavLinksProps) {
+function NavLinks({ links, chats, isChatLoading }: NavLinksProps) {
   const pathname = usePathname();
   return (
     <SidebarGroup>
@@ -31,7 +35,10 @@ function NavLinks({ links }: NavLinksProps) {
               pathname === item.url || pathname.endsWith(item.url);
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton className={`${isActive && "bg-gray-500/15"}`} asChild>
+                <SidebarMenuButton
+                  className={`${isActive && "bg-gray-500/15"}`}
+                  asChild
+                >
                   <Link href={item.url}>
                     <item.icon className="mr-3 size-5 transition-transform duration-200 group-hover:scale-110" />
                     {item.title}
@@ -40,6 +47,9 @@ function NavLinks({ links }: NavLinksProps) {
               </SidebarMenuItem>
             );
           })}
+          <SidebarMenuItem>
+            <NavChats chats={chats} isLoading={isChatLoading} />
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

@@ -1,7 +1,7 @@
 "use client";
 import { TableColumn } from "@/types/table.types";
 import { WorkspaceMember } from "../api/workspace/workspace.types";
-import { ToggleLeft, ToggleRight, Trash } from "lucide-react";
+import { MessageCircle, ToggleLeft, ToggleRight, Trash } from "lucide-react";
 import { workspaceRoles } from "@/types/roles.enum";
 import { hasPermission, PERMISSIONS } from "../utils";
 import { Avatar } from "@/components/atoms/avatar";
@@ -12,7 +12,9 @@ export const createMemberColumns = (
   onRoleChange: (memberId: string, role: workspaceRoles) => void,
   onStatusChange: (id: string, newStatus: boolean) => void,
   onRemove: (id: string) => void,
-  userRole: workspaceRoles
+  onChat: (memberId: string) => void,
+  userRole: workspaceRoles,
+  userId: string
 ): TableColumn<WorkspaceMember>[] => {
   const columns: TableColumn<WorkspaceMember>[] = [
     {
@@ -79,6 +81,7 @@ export const createMemberColumns = (
           />
         ),
     });
+
     columns.push({
       key: "delete",
       label: "Manage",
@@ -89,6 +92,16 @@ export const createMemberColumns = (
       onClick: (row) => onRemove(row._id),
     });
   }
+
+  columns.push({
+    key: "chat",
+    label: "Message",
+    type: "button",
+    cellClassName: "hover:bg-transperant",
+    variant: "ghost",
+    icon: (row) => row._id !== userId && <MessageCircle />,
+    onClick: (row) => onChat(row._id),
+  });
 
   return columns;
 };

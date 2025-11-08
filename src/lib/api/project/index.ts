@@ -19,10 +19,14 @@ export const getAllProjects = async (data: {
     sortBy?: string;
     order?: string;
   };
+  limit?: number;
+  skip?: number;
 }) => {
   const params = {
     ...data.filters,
     ...data.sorting,
+    limit: data.limit,
+    skip: data.skip,
   };
   const response = await api.get(`/workspace/${data.workspaceId}/projects`, {
     params,

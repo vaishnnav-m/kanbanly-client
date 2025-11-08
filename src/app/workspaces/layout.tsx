@@ -11,8 +11,7 @@ import { RootState } from "@/store";
 import { setWorkspaceData } from "@/store/slices/workSpaceSlice";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -49,16 +48,20 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 function WorkspaceLayout({ children }: { children: ReactNode }) {
   const { state } = useSidebar();
+  const pathname = usePathname();
+  const isChatPage = pathname.includes("chats");
+
+  const sidebarPadding =
+    state === "collapsed"
+      ? `pl-16 ${isChatPage ? "px-0" : "px-10"}`
+      : `pl-64 ${isChatPage ? "px-0" : "px-10"}`;
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300">
       <UserSidebar />
       <SidebarInset>
         <Header />
-        <div
-          className={`pt-[75px] px-10 ${state === "collapsed" ? "pl-16 " : "pl-[18.5rem]"}`}
-        >
-          {children}
-        </div>
+        <div className={`pt-[75px] ${sidebarPadding}`}>{children}</div>
       </SidebarInset>
     </div>
   );
