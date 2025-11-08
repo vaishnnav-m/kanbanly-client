@@ -31,6 +31,7 @@ interface IWorkspaceMembersTemplateProps {
   handleRoleChange: (memberId: string, role: workspaceRoles) => void;
   handleStatusUpdate: (memberId: string, isActive: boolean) => void;
   handleRemoveMember: (memberId: string) => void;
+  handleChat: (memberId: string) => void;
   handleRemoveInvitation: (memberEmail: string) => void;
   handleResend: (data: WorkspaceInvitationPayload) => void;
 }
@@ -46,6 +47,7 @@ function WorkspaceMembersTemplates({
   handleRoleChange,
   handleStatusUpdate,
   handleRemoveMember,
+  handleChat,
   handleRemoveInvitation,
   handleResend,
 }: IWorkspaceMembersTemplateProps) {
@@ -79,6 +81,9 @@ function WorkspaceMembersTemplates({
   const userRole = useSelector(
     (state: RootState) => state.workspace.memberRole
   );
+  //  const userId = useSelector(
+  //   (state: RootState) => state.workspace.memberRole
+  // );
 
   // table customization
   const handleRemove = (id: string) => {
@@ -90,7 +95,9 @@ function WorkspaceMembersTemplates({
     handleRoleChange,
     handleStatusUpdate,
     handleRemove,
-    role as workspaceRoles
+    handleChat,
+    role as workspaceRoles,
+    ""
   );
 
   const invitationColumns = createInvitationColumns(

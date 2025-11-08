@@ -92,7 +92,7 @@ const messages: Record<string, Message[]> = {
       id: "3",
       sender: "You",
       content:
-        "Just left some comments. Overall looks good, just a few minor suggestions. ",
+        "Just left some comments. Overall looks good, just a few minor suggestions.",
       timestamp: "2:25 PM",
       isSent: true,
       status: "delivered",

@@ -11,6 +11,7 @@ import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavChats } from "./NavChats";
+import { IChatListing } from "@/lib/api/chat/chat.types";
 
 interface NavLinksProps {
   links: {
@@ -18,9 +19,11 @@ interface NavLinksProps {
     url: string;
     icon: LucideIcon;
   }[];
+  chats: IChatListing[];
+  isChatLoading: boolean;
 }
 
-function NavLinks({ links }: NavLinksProps) {
+function NavLinks({ links, chats, isChatLoading }: NavLinksProps) {
   const pathname = usePathname();
   return (
     <SidebarGroup>
@@ -45,7 +48,7 @@ function NavLinks({ links }: NavLinksProps) {
             );
           })}
           <SidebarMenuItem>
-            <NavChats />
+            <NavChats chats={chats} isLoading={isChatLoading} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>

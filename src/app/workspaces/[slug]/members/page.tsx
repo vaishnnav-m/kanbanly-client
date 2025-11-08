@@ -1,6 +1,7 @@
 "use client";
 import WorkspaceMembersTemplates from "@/components/templates/workspace/WorkspaceMembersTemplate";
 import { WorkspaceInvitationPayload } from "@/lib/api/workspace/workspace.types";
+import { useCreateChat } from "@/lib/hooks/useChat";
 import {
   useEditWorkspaceMember,
   useRemoveInvitation,
@@ -34,6 +35,9 @@ export default function WorkspaceMemberPage() {
   // member deletion hook
   const { mutate: removeMember } = useRemoveWorkspaceMember();
 
+  // chat creation hook
+  const { mutate: createChat } = useCreateChat();
+
   // invitations hook
   const { data: invitationsData, isFetching: isInvitationsLoading } =
     useWorkspaceInvitations(workspaceId);
@@ -60,11 +64,15 @@ export default function WorkspaceMemberPage() {
     removeMember({ workspaceId, memberId });
   }
 
+  function handleCreateChat(memberId: string) {
+    createChat({ workspaceId, memberId });
+  }
+
   function handleRemoveInvitation(memberEmail: string) {
     removeInvitation({ workspaceId, userEmail: memberEmail });
   }
 
-  function handleResend(data:WorkspaceInvitationPayload){
+  function handleResend(data: WorkspaceInvitationPayload) {
     SendInvitation({ workspaceId, data });
   }
 
@@ -79,6 +87,7 @@ export default function WorkspaceMemberPage() {
       handleRoleChange={handleRoleChange}
       handleStatusUpdate={handleStatusUpdate}
       handleRemoveMember={handleRemoveMember}
+      handleChat={handleCreateChat}
       isInvitationsLoading={isInvitationsLoading}
       handleRemoveInvitation={handleRemoveInvitation}
       handleResend={handleResend}

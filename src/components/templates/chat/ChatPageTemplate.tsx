@@ -8,11 +8,7 @@ interface ChatAreaProps {
 }
 
 function ChatPageTemplate({ chatId }: ChatAreaProps) {
-  console.log("chatId", chatId);
-  const chatInfo: Record<
-    string,
-    { name: string; status: string; typing?: boolean }
-  > = {
+  const chatInfo = {
     "team-alpha": {
       name: "Team Alpha",
       status: "12 members",
