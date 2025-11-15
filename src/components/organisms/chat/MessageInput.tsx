@@ -4,12 +4,15 @@ import { Button } from "@/components/atoms/button";
 import { Textarea } from "@/components/atoms/textarea";
 import { ChatEmojiPicker } from "@/components/molecules/chat/ChatEmojiPicker";
 
-export const MessageInput = () => {
+interface MessageInputProps {
+  handleSendMessage: (text: string) => void;
+}
+export const MessageInput = ({ handleSendMessage }: MessageInputProps) => {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
     if (message.trim()) {
-      console.log("Sending message:", message);
+      handleSendMessage(message);
       setMessage("");
     }
   };

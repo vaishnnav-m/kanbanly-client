@@ -1,20 +1,10 @@
 import { Check, CheckCheck, Reply, Smile, MoreVertical } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { useState } from "react";
-
-interface Message {
-  id: string;
-  sender: string;
-  content: string;
-  timestamp: string;
-  isSent: boolean;
-  status: "sent" | "delivered" | "read";
-  type: "text" | "image";
-  imageUrl?: string;
-}
+import { MessageResponse } from "@/lib/api/chat/chat.types";
 
 interface MessageBubbleProps {
-  message: Message;
+  message: MessageResponse;
   showSender: boolean;
 }
 
