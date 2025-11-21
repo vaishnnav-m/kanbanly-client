@@ -81,9 +81,7 @@ function WorkspaceMembersTemplates({
   const userRole = useSelector(
     (state: RootState) => state.workspace.memberRole
   );
-  //  const userId = useSelector(
-  //   (state: RootState) => state.workspace.memberRole
-  // );
+  const userId = useSelector((state: RootState) => state.auth.userId);
 
   // table customization
   const handleRemove = (id: string) => {
@@ -97,7 +95,7 @@ function WorkspaceMembersTemplates({
     handleRemove,
     handleChat,
     role as workspaceRoles,
-    ""
+    userId
   );
 
   const invitationColumns = createInvitationColumns(

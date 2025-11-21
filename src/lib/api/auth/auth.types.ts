@@ -27,6 +27,7 @@ export interface LoginPayload {
 }
 
 export interface LoginResponseData {
+  userId: string;
   firstName: string;
   lastName: string;
   email: string;

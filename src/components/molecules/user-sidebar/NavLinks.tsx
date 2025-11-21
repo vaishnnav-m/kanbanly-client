@@ -11,7 +11,7 @@ import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavChats } from "./NavChats";
-import { IChatListing } from "@/lib/api/chat/chat.types";
+import { ChatListingItem } from "@/lib/api/chat/chat.types";
 
 interface NavLinksProps {
   links: {
@@ -19,7 +19,7 @@ interface NavLinksProps {
     url: string;
     icon: LucideIcon;
   }[];
-  chats: IChatListing[];
+  chats: ChatListingItem[];
   isChatLoading: boolean;
 }
 

@@ -10,6 +10,7 @@ function InitApp() {
   const dispatch = useDispatch();
   const isAuthenticated = getStorageItem("isAuthenticated") === "true";
   const profile = getStorageItem("profile");
+  const userId = getStorageItem("userId");
   const { data: subscription } = useGetUserSubscription({
     enabled: isAuthenticated,
   });
@@ -18,7 +19,11 @@ function InitApp() {
     if (isAuthenticated) {
       try {
         dispatch(
-          setCredentials({ isAuthenticated, ...(profile && { profile }) })
+          setCredentials({
+            isAuthenticated,
+            ...(profile && { profile }),
+            ...(userId && { userId }),
+          })
         );
         if (subscription?.data) {
           const subscriptionData = {
@@ -33,7 +38,7 @@ function InitApp() {
         console.log("failed to parse userData", error);
       }
     }
-  }, [subscription, isAuthenticated, dispatch, profile]);
+  }, [subscription, isAuthenticated, dispatch, profile, userId]);
 
   return null;
 }

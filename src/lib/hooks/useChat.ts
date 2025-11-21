@@ -1,19 +1,24 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
-import { ChatCreationPayload, IChatListing } from "../api/chat/chat.types";
-import { createChat, getChats } from "../api/chat";
+import {
+  ChatCreationPayload,
+  ChatListingItem,
+  ChatResponse,
+} from "../api/chat/chat.types";
+import { createChat, getChats, getOneChat } from "../api/chat";
 
-export const useCreateChat = () => {
+export const useCreateChat = (options?: {
+  onSuccess?: (
+    response: ApiResponse<{ chatId: string }>,
+    variables: ChatCreationPayload
+  ) => void;
+}) => {
   const toast = useToastMessage();
-  const queryClient = useQueryClient();
 
   return useMutation<ApiResponse, Error, ChatCreationPayload>({
     mutationFn: createChat,
     mutationKey: ["createChat"],
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getChats"] });
-    },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -22,13 +27,22 @@ export const useCreateChat = () => {
         duration: 6000,
       });
     },
+    ...options,
   });
 };
 
 export const useGetChats = (workspaceId: string) => {
-  return useQuery<ApiResponse<IChatListing[]>, Error>({
+  return useQuery<ApiResponse<ChatListingItem[]>, Error>({
     queryKey: ["getChats"],
     queryFn: () => getChats(workspaceId),
     enabled: !!workspaceId,
+  });
+};
+
+export const useGetOneChat = (workspaceId: string, chatId: string) => {
+  return useQuery<ApiResponse<ChatResponse>, Error>({
+    queryKey: ["getOneChat"],
+    queryFn: () => getOneChat(workspaceId, chatId),
+    enabled: !!workspaceId && !!chatId,
   });
 };
