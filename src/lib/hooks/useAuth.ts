@@ -78,8 +78,13 @@ export const useLogin = () => {
       if (response.data?.profile) {
         setStorageItem("profile", response.data?.profile);
       }
+      if (response.data?.userId) {
+        setStorageItem("userId", response.data?.userId);
+      }
+
       dispatch(
         setCredentials({
+          userId: response.data?.userId,
           profile: response.data?.profile,
           isAuthenticated: true,
         })
@@ -119,8 +124,13 @@ export const useGoogleAuth = () => {
       if (response.data?.profile) {
         setStorageItem("profile", response.data?.profile);
       }
+      if (response.data?.userId) {
+        setStorageItem("userId", response.data?.userId);
+      }
+
       dispatch(
         setCredentials({
+          userId: response.data?.userId,
           profile: response.data?.profile,
           isAuthenticated: true,
         })
@@ -159,8 +169,13 @@ export const useVerifyEmail = () => {
       if (response.data?.profile) {
         setStorageItem("profile", response.data?.profile);
       }
+      if (response.data?.userId) {
+        setStorageItem("userId", response.data?.userId);
+      }
+      
       dispatch(
         setCredentials({
+          userId: response.data?.userId,
           profile: response.data?.profile,
           isAuthenticated: true,
         })
@@ -294,8 +309,13 @@ export const useAdminLogin = () => {
       if (response.data?.profile) {
         setStorageItem("profile", response.data?.profile);
       }
+      if (response.data?.userId) {
+        setStorageItem("userId", response.data?.userId);
+      }
+
       dispatch(
         setCredentials({
+          userId: response.data?.userId,
           profile: response.data?.profile,
           isAdminAuthenticated: true,
         })

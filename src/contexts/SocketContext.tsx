@@ -1,7 +1,4 @@
 "use client";
-import { MessageResponse } from "@/lib/api/chat/chat.types";
-import { apiConfig } from "@/lib/config";
-import { RootState } from "@/store";
 import {
   createContext,
   useContext,
@@ -12,6 +9,10 @@ import {
 } from "react";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
+import { RootState } from "@/store";
+import { apiConfig } from "@/lib/config";
+import { MessageResponse } from "@/lib/api/message/message.types";
+import { getStorageItem, setStorageItem } from "@/lib/utils";
 
 interface ISocketContext {
   socket: Socket | null;
@@ -38,11 +39,14 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  const sender = useSelector((state: RootState) => state.auth.userId);
 
   const joinRooms = useCallback(
     (workSpaceId: string, chatId: string) => {
+      const rooms = { workSpaceId, chatId };
+      setStorageItem("joinedRooms", JSON.stringify(rooms));
       if (socket) {
-        socket.emit("joinRooms", { workSpaceId, chatId });
+        socket.emit("joinRooms", rooms);
       }
     },
     [socket]
@@ -51,28 +55,37 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const sendMessage = useCallback(
     (chatId: string, text: string) => {
       if (socket) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: text,
+            createdAt: new Date(),
+            sender,
+          },
+        ]);
+        console.log("sending message...", text);
         socket.emit("sendMessage", { chatId, text });
       } else {
         console.warn("Socket is not connected, Can't send message");
       }
     },
-    [socket]
+    [socket, sender]
   );
 
-  const recieveMessage = useCallback((message: { text: string }) => {
-    console.log("message recieved", message);
-    setMessages((prev) => [
-      ...prev,
-      {
-        content: message.text,
-        timestamp: "10:30 AM",
-        isSent: false,
-        status: "read",
-        type: "text",
-        sender: "",
-      },
-    ]);
-  }, []);
+  const recieveMessage = useCallback(
+    (message: { chatId: string; senderId: string; text: string }) => {
+      console.log("message recieved", message);
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: message.text,
+          createdAt: new Date(),
+          sender: message.senderId,
+        },
+      ]);
+    },
+    []
+  );
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -83,6 +96,12 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
       newSocket.on("connect", () => {
         console.log("Socket connected");
+
+        const savedRooms = getStorageItem("joinedRooms");
+        if (savedRooms) {
+          const rooms = JSON.parse(savedRooms);
+          newSocket.emit("joinRooms", rooms);
+        }
       });
 
       newSocket.on("disconnect", () => {

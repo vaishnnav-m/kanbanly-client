@@ -41,7 +41,7 @@ export const InviteUserDropdown = ({
   const debouncedSearch = useDebounce(searchQuery);
 
   const { data: membersData } = useWorkspaceMembers(
-    workspaceId,
+    workspaceId, 
     1,
     debouncedSearch
   );

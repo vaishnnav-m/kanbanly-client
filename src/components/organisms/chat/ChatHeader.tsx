@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/atoms/avatar";
 import { Button } from "@/components/atoms/button";
 import { ChatResponse } from "@/lib/api/chat/chat.types";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import { MoreVertical, Phone, Search, User, Users2, Video } from "lucide-react";
+import { MoreVertical, User, Users2 } from "lucide-react";
 
 interface ChatHeaderProps {
   chatInfo: ChatResponse;
@@ -14,7 +14,6 @@ export const ChatHeader = ({ chatInfo }: ChatHeaderProps) => {
     status: "offline",
   };
 
-  console.log("chat",chat)
   return (
     <div className="flex items-center gap-3 px-6 py-4 border-b border-border bg-sidebar border-t">
       <Avatar className="h-10 w-10">
@@ -36,15 +35,6 @@ export const ChatHeader = ({ chatInfo }: ChatHeaderProps) => {
       </div>
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon">
-          <Search className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <Phone className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <Video className="h-5 w-5" />
-        </Button>
         <Button variant="ghost" size="icon">
           <MoreVertical className="h-5 w-5" />
         </Button>

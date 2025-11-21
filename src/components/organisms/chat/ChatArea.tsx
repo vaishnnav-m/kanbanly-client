@@ -1,7 +1,6 @@
-import { DateSeparator } from "@/components/molecules/chat/DateSeparator";
-import { MessageBubble } from "@/components/molecules/chat/MessageBubble";
-import { MessageResponse } from "@/lib/api/chat/chat.types";
 import { useEffect, useRef } from "react";
+import { MessageBubble } from "@/components/molecules/chat/MessageBubble";
+import { MessageResponse } from "@/lib/api/message/message.types";
 
 interface MessageAreaProps {
   chatId: string;
@@ -16,8 +15,8 @@ export const MessageArea = ({ chatId, messages }: MessageAreaProps) => {
   }, [chatId]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-      <DateSeparator date="Today" />
+    <div className="flex flex-col justify-end flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      {/* <DateSeparator date="Today" /> */}
 
       {messages.map((message, index) => (
         <MessageBubble

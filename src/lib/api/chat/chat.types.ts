@@ -1,13 +1,3 @@
-export interface MessageResponse {
-  sender: string;
-  content: string;
-  timestamp: string;
-  isSent: boolean;
-  status: "sent" | "delivered" | "read";
-  type: "text" | "image";
-  imageUrl?: string;
-}
-
 export interface ChatCreationPayload {
   workspaceId: string;
   memberId: string;

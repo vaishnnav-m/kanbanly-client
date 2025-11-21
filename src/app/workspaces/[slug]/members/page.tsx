@@ -12,12 +12,17 @@ import {
 } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { workspaceRoles } from "@/types/roles.enum";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function WorkspaceMemberPage() {
   const { mutate: SendInvitation, isPending: isLoading } = useSendInvitation();
   const [pageno] = useState(1);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const params = useParams();
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
@@ -36,7 +41,12 @@ export default function WorkspaceMemberPage() {
   const { mutate: removeMember } = useRemoveWorkspaceMember();
 
   // chat creation hook
-  const { mutate: createChat } = useCreateChat();
+  const { mutate: createChat } = useCreateChat({
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["getChats"] });
+      router.push(`/workspaces/${params.slug}/chats/${response.data?.chatId}`);
+    },
+  });
 
   // invitations hook
   const { data: invitationsData, isFetching: isInvitationsLoading } =
