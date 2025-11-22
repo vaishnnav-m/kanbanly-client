@@ -2,13 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 import {
+  PreferenceResponse,
+  UpdatePreferencesPayload,
   UpdateUserPasswordPayload,
   UpdateUserProfilePayload,
   UserProfileData,
 } from "../api/user/user.types";
 import {
+  getUserPreferences,
   getUserProfile,
   updateUserPassword,
+  updateUserPreferences,
   updateUserProfile,
 } from "../api/user";
 
@@ -59,6 +63,34 @@ export const useUpdateUserPassword = () => {
         duration: 6000,
       });
       queryClient.invalidateQueries({ queryKey: ["getUserProfile"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Password Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useGetUserPreferences = () => {
+  return useQuery<ApiResponse<PreferenceResponse>, Error>({
+    queryKey: ["getUserPreferences"],
+    queryFn: getUserPreferences,
+  });
+};
+
+export const useUpdateUserPreferences = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, UpdatePreferencesPayload>({
+    mutationKey: ["updateUserPreferences"],
+    mutationFn: updateUserPreferences,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getUserPreferences"] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";

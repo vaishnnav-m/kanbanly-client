@@ -1,5 +1,6 @@
 import api from "../axios";
 import {
+  UpdatePreferencesPayload,
   UpdateUserPasswordPayload,
   UpdateUserProfilePayload,
 } from "./user.types";
@@ -18,5 +19,17 @@ export const updateUserPassword = async (
   payload: UpdateUserPasswordPayload
 ) => {
   const response = await api.patch("/user/me/password", payload);
+  return response.data;
+};
+
+export const getUserPreferences = async () => {
+  const response = await api.get("/user/me/preferences");
+  return response.data;
+};
+
+export const updateUserPreferences = async (
+  payload: UpdatePreferencesPayload
+) => {
+  const response = await api.put("/user/me/preferences", payload);
   return response.data;
 };

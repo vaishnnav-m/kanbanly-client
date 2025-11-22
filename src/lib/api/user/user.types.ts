@@ -21,3 +21,28 @@ export interface PasswordChangeData {
   newPassword: string;
   confirmPassword: string;
 }
+
+interface INotificationPreference {
+  email: boolean;
+  app: boolean;
+}
+
+export interface PreferenceResponse {
+  preferenceId: string;
+  userId: string;
+  taskAssigned: INotificationPreference;
+  taskCompleted: INotificationPreference;
+  dueDateReminder: INotificationPreference;
+  mention: INotificationPreference;
+  sprint: INotificationPreference;
+  invitation: INotificationPreference;
+}
+
+export interface UpdatePreferencesPayload {
+  taskAssigned?: Partial<INotificationPreference>;
+  taskCompleted?: Partial<INotificationPreference>;
+  dueDateReminder?: Partial<INotificationPreference>;
+  mention?: Partial<INotificationPreference>;
+  sprint?: Partial<INotificationPreference>;
+  invitation?: Partial<INotificationPreference>;
+}
