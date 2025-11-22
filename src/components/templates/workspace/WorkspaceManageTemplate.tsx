@@ -66,7 +66,7 @@ export function WorkspaceManageTemplate({
 
   return (
     <main className="flex-1 p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-2">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -179,7 +179,11 @@ export function WorkspaceManageTemplate({
                         Description
                       </label>
                       <Textarea
-                        value={ editData?.description ? editData.description : workspaceData.description}
+                        value={
+                          editData?.description
+                            ? editData.description
+                            : workspaceData.description
+                        }
                         onChange={(e) =>
                           setEditData({
                             ...editData,
