@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   createWorkspace,
   editWorkspace,
@@ -95,21 +100,16 @@ export const useEditWorkspace = () => {
   });
 };
 
-export const useRemoveWorkspace = () => {
-  const toast = useToastMessage();
-  const router = useRouter();
-
+export const useRemoveWorkspace = (
+  options?: Omit<
+    UseMutationOptions<ApiResponse, Error, { workspaceId: string }>,
+    "mutationKey" | "mutationFn"
+  >
+) => {
   return useMutation<ApiResponse, Error, { workspaceId: string }>({
     mutationKey: ["removeWorkspace"],
     mutationFn: removeWorkspace,
-    onSuccess: (response) => {
-      toast.showSuccess({
-        title: "Successfully Deleted",
-        description: response.message,
-        duration: 6000,
-      });
-      router.replace("/workspaces");
-    },
+    ...options,
   });
 };
 
