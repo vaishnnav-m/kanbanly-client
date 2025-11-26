@@ -1,8 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
-import { CommentCreationPayload } from "../api/comment/comment.types";
-import { postComment } from "../api/comment";
+import {
+  CommentCreationPayload,
+  CommentFetchingPayload,
+  CommentResponse,
+} from "../api/comment/comment.types";
+import { getComments, postComment } from "../api/comment";
 
 export const usePostComment = () => {
   const toast = useToastMessage();
@@ -22,5 +26,18 @@ export const usePostComment = () => {
         duration: 6000,
       });
     },
+  });
+};
+
+export const useGetComments = (payload: CommentFetchingPayload) => {
+  return useQuery<ApiResponse<CommentResponse[]>, Error>({
+    queryKey: [
+      "getComments",
+      payload.page,
+      payload.taskId,
+      payload.projectId,
+      payload.workspaceId,
+    ],
+    queryFn: () => getComments(payload),
   });
 };

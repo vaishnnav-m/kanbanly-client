@@ -58,7 +58,7 @@ interface TaskListingPageTemplateProps {
   >;
   sprints: ISprintResponse[];
   activeSprint?: ISprint;
-  handlePostComment: (content: JSONContent,taskId:string) => void;
+  handlePostComment: (content: JSONContent, taskId: string) => void;
 }
 
 function TaskListingPageTemplate({
@@ -243,17 +243,19 @@ function TaskListingPageTemplate({
           )}
         </div>
 
-        <TaskDetails
-          handleEditTask={handleEditTask}
-          createTask={createTask}
-          removeTask={removeTask}
-          isVisible={isTaskModalOpen}
-          close={() => setIsTaskModalOpen(false)}
-          task={taskData && taskData.data}
-          isEditing={isEditing}
-          subTasks={subTasks?.data}
-          handlePostComment={handlePostComment}
-        />
+        {taskData?.data && (
+          <TaskDetails
+            handleEditTask={handleEditTask}
+            createTask={createTask}
+            removeTask={removeTask}
+            isVisible={isTaskModalOpen}
+            close={() => setIsTaskModalOpen(false)}
+            task={taskData.data}
+            isEditing={isEditing}
+            subTasks={subTasks?.data}
+            handlePostComment={handlePostComment}
+          />
+        )}
       </div>
     </TaskPageContext.Provider>
   );

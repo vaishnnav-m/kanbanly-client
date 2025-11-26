@@ -1,10 +1,20 @@
 import api from "../axios";
-import { CommentCreationPayload } from "./comment.types";
+import {
+  CommentCreationPayload,
+  CommentFetchingPayload,
+} from "./comment.types";
 
-export const postComment = async (data: CommentCreationPayload) => {
+export const postComment = async (payload: CommentCreationPayload) => {
   const result = await api.post(
-    `/workspace/${data.workspaceId}/projects/${data.projectId}/tasks/${data.taskId}/comments`,
-    { content: data.content }
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/tasks/${payload.taskId}/comments`,
+    { content: payload.content }
+  );
+  return result.data;
+};
+
+export const getComments = async (payload: CommentFetchingPayload) => {
+  const result = await api.get(
+    `/workspace/${payload.workspaceId}/projects/${payload.projectId}/tasks/${payload.taskId}/comments?page=${payload.page}`
   );
   return result.data;
 };

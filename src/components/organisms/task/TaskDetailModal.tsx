@@ -23,11 +23,13 @@ import { WorkItemType } from "@/types/task.enum";
 import { Separator } from "@/components/atoms/separator";
 import { TaskMetaData } from "@/components/molecules/task/TaskMetaData";
 import { TaskComments } from "@/components/molecules/task/TaskComments";
+import { useGetComments } from "@/lib/hooks/useComment";
+import { useParams } from "next/navigation";
 
 interface TaskDetailsProps {
   isVisible: boolean;
   close: () => void;
-  task?: ITaskDetails;
+  task: ITaskDetails;
   createTask: (data: TaskCreationPayload) => void;
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
@@ -61,6 +63,19 @@ export const TaskDetails = ({
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const taskContext = useTaskPageContext();
+  const params = useParams();
+  const projectId = params.projectId as string;
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const { data: commentsData } = useGetComments({
+    workspaceId,
+    projectId,
+    taskId: task.taskId,
+    page: 1,
+  });
+  const comments = commentsData?.data ? commentsData.data : [];
 
   const role = useSelector(
     (state: RootState) => state.workspace.memberRole
@@ -219,15 +234,7 @@ export const TaskDetails = ({
             />
 
             <TaskComments
-              comments={[
-                {
-                  commentId: "1",
-                  content: "<p>This is a <strong>great</strong> task!</p>",
-                  author: "f1949a19-396f-4220-b294-02d64ed2206b",
-                  createdAt: "2024-01-15T10:30:00Z",
-                  updatedAt: "2024-01-15T11:00:00Z",
-                },
-              ]}
+              comments={comments}
               taskId={task.taskId}
               onSubmit={handlePostComment}
             />
