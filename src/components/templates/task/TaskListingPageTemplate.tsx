@@ -25,6 +25,7 @@ import { formatDataIntoSections } from "@/lib/task-utils";
 import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
 import { Archive, GanttChart, LayoutGrid, List } from "lucide-react";
+import { JSONContent } from "@tiptap/react";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -57,6 +58,13 @@ interface TaskListingPageTemplateProps {
   >;
   sprints: ISprintResponse[];
   activeSprint?: ISprint;
+  handlePostComment: (content: JSONContent, taskId: string) => void;
+  handleUpdateComment: (
+    content: JSONContent,
+    taskId: string,
+    commentId: string
+  ) => void;
+  handleDeleteComment: (taskId: string, commentId: string) => void;
 }
 
 function TaskListingPageTemplate({
@@ -79,6 +87,9 @@ function TaskListingPageTemplate({
   sprints,
   handleSprintAttach,
   activeSprint,
+  handlePostComment,
+  handleDeleteComment,
+  handleUpdateComment,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -162,7 +173,7 @@ function TaskListingPageTemplate({
     <TaskPageContext.Provider value={contextValue}>
       <div className="bg-background">
         {/* Header */}
-        <div className="border-b border-border">
+        <div className="border-b border-border sticky top-[75px] z-10 bg-background">
           <div className="flex items-center justify-between px-6 py-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -240,16 +251,21 @@ function TaskListingPageTemplate({
           )}
         </div>
 
-        <TaskDetails
-          handleEditTask={handleEditTask}
-          createTask={createTask}
-          removeTask={removeTask}
-          isVisible={isTaskModalOpen}
-          close={() => setIsTaskModalOpen(false)}
-          task={taskData && taskData.data}
-          isEditing={isEditing}
-          subTasks={subTasks?.data}
-        />
+        {taskData?.data && (
+          <TaskDetails
+            handleEditTask={handleEditTask}
+            createTask={createTask}
+            removeTask={removeTask}
+            isVisible={isTaskModalOpen}
+            close={() => setIsTaskModalOpen(false)}
+            task={taskData.data}
+            isEditing={isEditing}
+            subTasks={subTasks?.data}
+            handlePostComment={handlePostComment}
+            handleUpdateComment={handleUpdateComment}
+            handleDeleteComment={handleDeleteComment}
+          />
+        )}
       </div>
     </TaskPageContext.Provider>
   );

@@ -138,7 +138,8 @@ export function BacklogView({
       const target = event.target as HTMLElement;
       if (
         target.tagName.toLowerCase() === "input" ||
-        target.tagName.toLowerCase() === "textarea"
+        target.tagName.toLowerCase() === "textarea" ||
+        target.isContentEditable
       ) {
         return;
       }

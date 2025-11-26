@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Resizable } from "re-resizable";
+import { JSONContent } from "@tiptap/react";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import {
@@ -15,22 +16,32 @@ import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
 import { TaskHeader } from "@/components/molecules/task/TaskHeader";
 import { workspaceRoles } from "@/types/roles.enum";
 import { TaskInfo } from "@/components/molecules/task/TaskInfo";
-import { TaskTabs } from "@/components/molecules/task/TaskTabs";
+import { SubTasks } from "@/components/molecules/task/SubTasks";
 import { WorkItemParent } from "@/components/molecules/task/WorkItemParent";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 import { WorkItemType } from "@/types/task.enum";
 import { Separator } from "@/components/atoms/separator";
-import { TaskFooter } from "@/components/molecules/task/TaskFooter";
+import { TaskMetaData } from "@/components/molecules/task/TaskMetaData";
+import { TaskComments } from "@/components/molecules/task/TaskComments";
+import { useGetComments } from "@/lib/hooks/useComment";
+import { useParams } from "next/navigation";
 
 interface TaskDetailsProps {
   isVisible: boolean;
   close: () => void;
-  task?: ITaskDetails;
+  task: ITaskDetails;
   createTask: (data: TaskCreationPayload) => void;
   removeTask: (taskId: string) => void;
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
   subTasks?: ITask[];
+  handlePostComment: (content: JSONContent, taskId: string) => void;
+  handleUpdateComment: (
+    content: JSONContent,
+    taskId: string,
+    commentId: string
+  ) => void;
+  handleDeleteComment: (taskId: string, commentId: string) => void;
 }
 
 export const TaskDetails = ({
@@ -42,6 +53,9 @@ export const TaskDetails = ({
   handleEditTask,
   isEditing,
   subTasks,
+  handlePostComment,
+  handleDeleteComment,
+  handleUpdateComment,
 }: TaskDetailsProps) => {
   const [width, setWidth] = useState(448);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -57,6 +71,19 @@ export const TaskDetails = ({
   const inviteButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const taskContext = useTaskPageContext();
+  const params = useParams();
+  const projectId = params.projectId as string;
+  const workspaceId = useSelector(
+    (state: RootState) => state.workspace.workspaceId
+  );
+
+  const { data: commentsData } = useGetComments({
+    workspaceId,
+    projectId,
+    taskId: task.taskId,
+    page: 1,
+  });
+  const comments = commentsData?.data ? commentsData.data : [];
 
   const role = useSelector(
     (state: RootState) => state.workspace.memberRole
@@ -73,7 +100,7 @@ export const TaskDetails = ({
   // funtion to handle the submit of editing
   function handleSubmit() {
     const data: Partial<TaskCreationPayload> = {
-      ...(editingDescription && { editingDescription }),
+      ...(editingDescription && { description: editingDescription }),
       ...(editingName && { task: editingName }),
       ...(editingDueDate && { dueDate: editingDueDate }),
       ...(editingStoryPoint && { storyPoint: Number(editingStoryPoint) }),
@@ -195,11 +222,9 @@ export const TaskDetails = ({
                 setEditingStoryPoint={setEditingStoryPoint}
               />
 
-              <Separator />
-
               {/* Tabs Section */}
               {task.workItemType !== WorkItemType.Subtask && (
-                <TaskTabs
+                <SubTasks
                   createTask={createTask}
                   taskId={task.taskId}
                   workItemType={task.workItemType}
@@ -209,11 +234,19 @@ export const TaskDetails = ({
             </div>
 
             {/* Footer - Created By & Timestamps */}
-            <TaskFooter
+            <TaskMetaData
               taskId={task.taskId}
               createdBy={task.createdBy}
               createdAt={task.createdAt}
               updatedAt={task.updatedAt}
+            />
+
+            <TaskComments
+              comments={comments}
+              taskId={task.taskId}
+              onSubmit={handlePostComment}
+              onUpdate={handleUpdateComment}
+              onDelete={handleDeleteComment}
             />
           </CardContent>
 

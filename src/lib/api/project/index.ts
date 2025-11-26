@@ -74,9 +74,16 @@ export const addMember = async (data: {
   return response.data;
 };
 
-export const getMembers = async (workspaceId: string, projectId: string) => {
+export const getMembers = async (
+  workspaceId: string,
+  projectId: string,
+  search?: string
+) => {
   const response = await api.get(
-    `/workspace/${workspaceId}/projects/${projectId}/members`
+    `/workspace/${workspaceId}/projects/${projectId}/members`,
+    {
+      params: { search },
+    }
   );
   return response.data;
 };
