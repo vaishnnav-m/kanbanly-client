@@ -59,6 +59,12 @@ interface TaskListingPageTemplateProps {
   sprints: ISprintResponse[];
   activeSprint?: ISprint;
   handlePostComment: (content: JSONContent, taskId: string) => void;
+  handleUpdateComment: (
+    content: JSONContent,
+    taskId: string,
+    commentId: string
+  ) => void;
+  handleDeleteComment: (taskId: string, commentId: string) => void;
 }
 
 function TaskListingPageTemplate({
@@ -82,6 +88,8 @@ function TaskListingPageTemplate({
   handleSprintAttach,
   activeSprint,
   handlePostComment,
+  handleDeleteComment,
+  handleUpdateComment,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -165,7 +173,7 @@ function TaskListingPageTemplate({
     <TaskPageContext.Provider value={contextValue}>
       <div className="bg-background">
         {/* Header */}
-        <div className="border-b border-border">
+        <div className="border-b border-border sticky top-[75px] z-10 bg-background">
           <div className="flex items-center justify-between px-6 py-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -254,6 +262,8 @@ function TaskListingPageTemplate({
             isEditing={isEditing}
             subTasks={subTasks?.data}
             handlePostComment={handlePostComment}
+            handleUpdateComment={handleUpdateComment}
+            handleDeleteComment={handleDeleteComment}
           />
         )}
       </div>

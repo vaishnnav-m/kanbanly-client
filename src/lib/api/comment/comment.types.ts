@@ -13,7 +13,7 @@ export interface CommentResponse {
   taskId: string;
   content: JSONContent;
   createdAt: string;
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export type CommentCreationPayload = Omit<BaseApiParams, "filters"> & {
@@ -24,4 +24,15 @@ export type CommentCreationPayload = Omit<BaseApiParams, "filters"> & {
 export type CommentFetchingPayload = Omit<BaseApiParams, "filters"> & {
   taskId: string;
   page?: number;
+};
+
+export type CommentUpdationPayload = Omit<BaseApiParams, "filters"> & {
+  taskId: string;
+  commentId: string;
+  content: JSONContent;
+};
+
+export type CommentDeletionPayload = Omit<BaseApiParams, "filters"> & {
+  taskId: string;
+  commentId: string;
 };

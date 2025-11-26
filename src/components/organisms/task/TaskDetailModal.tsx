@@ -36,6 +36,12 @@ interface TaskDetailsProps {
   isEditing: boolean;
   subTasks?: ITask[];
   handlePostComment: (content: JSONContent, taskId: string) => void;
+  handleUpdateComment: (
+    content: JSONContent,
+    taskId: string,
+    commentId: string
+  ) => void;
+  handleDeleteComment: (taskId: string, commentId: string) => void;
 }
 
 export const TaskDetails = ({
@@ -48,6 +54,8 @@ export const TaskDetails = ({
   isEditing,
   subTasks,
   handlePostComment,
+  handleDeleteComment,
+  handleUpdateComment,
 }: TaskDetailsProps) => {
   const [width, setWidth] = useState(448);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -92,7 +100,7 @@ export const TaskDetails = ({
   // funtion to handle the submit of editing
   function handleSubmit() {
     const data: Partial<TaskCreationPayload> = {
-      ...(editingDescription && { editingDescription }),
+      ...(editingDescription && { description: editingDescription }),
       ...(editingName && { task: editingName }),
       ...(editingDueDate && { dueDate: editingDueDate }),
       ...(editingStoryPoint && { storyPoint: Number(editingStoryPoint) }),
@@ -237,6 +245,8 @@ export const TaskDetails = ({
               comments={comments}
               taskId={task.taskId}
               onSubmit={handlePostComment}
+              onUpdate={handleUpdateComment}
+              onDelete={handleDeleteComment}
             />
           </CardContent>
 

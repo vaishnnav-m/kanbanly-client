@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEditor, EditorContent, JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Placeholder } from "@tiptap/extensions";
@@ -28,6 +28,8 @@ import { RootState } from "@/store";
 import { suggestion } from "@/lib/suggestion";
 import { CommentToolBarButtons } from "./CommentToolBarButtons";
 import { CommentResponse } from "@/lib/api/comment/comment.types";
+import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
+import React from "react";
 
 const CommentViewer = ({ content }: { content: JSONContent }) => {
   const editor = useEditor({
@@ -46,11 +48,21 @@ const CommentViewer = ({ content }: { content: JSONContent }) => {
     editable: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm max-w-none text-sm text-foreground/90 leading-relaxed break-words focus:outline-none",
+        class:
+          "prose prose-sm max-w-none text-sm text-foreground/90 leading-relaxed break-words focus:outline-none",
       },
     },
     immediatelyRender: false,
   });
+
+  useEffect(() => {
+    if (editor && content) {
+      // Check if content has actually changed to avoid unnecessary updates
+      if (JSON.stringify(editor.getJSON()) !== JSON.stringify(content)) {
+        editor.commands.setContent(content);
+      }
+    }
+  }, [content, editor]);
 
   if (!editor) return null;
 
@@ -61,8 +73,8 @@ interface TaskCommentsProps {
   taskId: string;
   comments: CommentResponse[];
   onSubmit: (content: JSONContent, taskId: string) => void;
-  onDelete?: (commentId: string) => void;
-  onEdit?: (commentId: string, newContent: string) => void;
+  onUpdate: (content: JSONContent, taskId: string, commentId: string) => void;
+  onDelete: (taskId: string, commentId: string) => void;
   placeholder?: string;
 }
 
@@ -71,14 +83,16 @@ export const TaskComments = ({
   comments,
   onSubmit,
   onDelete,
-  onEdit,
+  onUpdate,
   placeholder = "Add a comment...",
 }: TaskCommentsProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [hasContent, setHasContent] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [deletingComment, setDeletingComment] = useState("");
   const userProfile = useSelector((state: RootState) => state.auth.profile);
   const currentUserId = useSelector((state: RootState) => state.auth.userId);
-  const [hasContent, setHasContent] = useState(false);
 
   console.log(currentUserId, comments);
 
@@ -86,7 +100,7 @@ export const TaskComments = ({
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: placeholder,
+        placeholder,
       }),
       Link.configure({
         openOnClick: false,
@@ -95,7 +109,7 @@ export const TaskComments = ({
         HTMLAttributes: {
           class: "mention",
         },
-        suggestion: suggestion,
+        suggestion,
       }),
     ],
     content: "",
@@ -123,6 +137,7 @@ export const TaskComments = ({
         HTMLAttributes: {
           class: "mention",
         },
+        suggestion: suggestion,
       }),
     ],
     editorProps: {
@@ -132,6 +147,7 @@ export const TaskComments = ({
     },
     immediatelyRender: false,
   });
+
   const handleSubmit = async () => {
     if (!editor || editor.isEmpty) return;
 
@@ -160,15 +176,11 @@ export const TaskComments = ({
   const handleEditSave = async (commentId: string) => {
     if (!editEditor || editEditor.isEmpty) return;
 
-    const htmlContent = editEditor.getHTML();
+    const jsonContent = editEditor.getJSON();
 
-    try {
-      await onEdit?.(commentId, htmlContent);
-      setEditingCommentId(null);
-      editEditor.commands.clearContent();
-    } catch (error) {
-      console.error("Failed to update comment:", error);
-    }
+    onUpdate(jsonContent, taskId, commentId);
+    setEditingCommentId(null);
+    editEditor.commands.clearContent();
   };
 
   const handleEditCancel = () => {
@@ -219,7 +231,7 @@ export const TaskComments = ({
                         <div className="border border-border rounded-lg overflow-hidden bg-background ring-2 ring-ring/10 shadow-inner">
                           <div className="flex items-center gap-1 p-2 border-b border-border bg-muted/30">
                             <CommentToolBarButtons
-                              editorInstance={editor}
+                              editorInstance={editEditor}
                               disabled={isSubmitting}
                               setLink={setLink}
                             />
@@ -256,18 +268,21 @@ export const TaskComments = ({
                             </span>
                             <span className="text-xs text-muted-foreground/80">
                               {formatDistanceToNow(
-                                new Date(comment.createdAt),
+                                new Date(
+                                  comment?.updatedAt !== comment.createdAt
+                                    ? comment.updatedAt
+                                    : comment.createdAt
+                                ),
                                 {
                                   addSuffix: true,
                                 }
                               )}
                             </span>
-                            {comment.updatedAt &&
-                              comment.updatedAt !== comment.createdAt && (
-                                <span className="text-xs text-muted-foreground/60 italic">
-                                  (edited)
-                                </span>
-                              )}
+                            {comment?.updatedAt !== comment.createdAt && (
+                              <span className="text-xs text-muted-foreground/60 italic">
+                                (edited)
+                              </span>
+                            )}
                           </div>
 
                           {comment.author.userId === currentUserId && (
@@ -290,7 +305,10 @@ export const TaskComments = ({
                                   Edit
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={() => onDelete?.(comment.commentId)}
+                                  onClick={() => {
+                                    setDeletingComment(comment.commentId);
+                                    setIsConfirmationOpen(true);
+                                  }}
                                   className="gap-2 text-xs text-destructive focus:text-destructive"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -371,6 +389,23 @@ export const TaskComments = ({
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isConfirmationOpen}
+        onClose={() => setIsConfirmationOpen(false)}
+        onConfirm={() => {
+          if (deletingComment) {
+            onDelete(taskId, deletingComment);
+          }
+          setDeletingComment("");
+          setIsConfirmationOpen(false);
+          close();
+        }}
+        title="Are you sure you want to remove this epic ?"
+        description="This action cannot be undone. The epic will be permanently deleted from the project."
+        cancelText="Cancel"
+        confirmText="Delete Epic"
+      />
     </div>
   );
 };
