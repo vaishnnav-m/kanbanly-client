@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
+import { JSONContent } from "@tiptap/react";
 import TaskListingPageTemplate from "@/components/templates/task/TaskListingPageTemplate";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useAddEpic, useGetAllEpics } from "@/lib/hooks/useEpic";
@@ -18,9 +19,10 @@ import { useWorkspaceMembers } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
 import { TaskStatus } from "@/types/task.enum";
 import { useGetActiveSprint, useGetAllSprints } from "@/lib/hooks/useSprint";
+import { usePostComment } from "@/lib/hooks/useComment";
 
 export default function TasksListingPage() {
-const [filters, setFilters] = useState<{
+  const [filters, setFilters] = useState<{
     status?: string;
     priority?: string;
     search?: string;
@@ -69,6 +71,12 @@ const [filters, setFilters] = useState<{
   const sprints = sprintsData?.data ? sprintsData.data : [];
   // hook to get active sprint
   const { data: activeSprintData } = useGetActiveSprint(workspaceId, projectId);
+
+  // comment
+  const { mutate: postComment } = usePostComment();
+  function handlePostComment(content: JSONContent, taskId: string) {
+    postComment({ workspaceId, projectId, taskId, content });
+  }
 
   // function to handle task creation
   function handleCreateTask(data: TaskCreationPayload) {
@@ -146,6 +154,7 @@ const [filters, setFilters] = useState<{
       sprints={sprints}
       activeSprint={activeSprintData?.data}
       handleSprintAttach={handleSprintAttach}
+      handlePostComment={handlePostComment}
     />
   );
 }

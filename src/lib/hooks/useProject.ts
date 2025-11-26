@@ -150,11 +150,12 @@ export const useAddMember = () => {
 
 export const useGetProjectMembers = (
   workspaceId: string,
-  projectId: string
+  projectId: string,
+  search?: string
 ) => {
   return useQuery<ApiResponse<WorkspaceMember[]>, Error>({
-    queryKey: ["getProjectMembers", workspaceId],
-    queryFn: () => getMembers(workspaceId, projectId),
+    queryKey: ["getProjectMembers", workspaceId, projectId, search],
+    queryFn: () => getMembers(workspaceId, projectId, search),
     enabled: !!workspaceId,
   });
 };

@@ -25,6 +25,7 @@ import { formatDataIntoSections } from "@/lib/task-utils";
 import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
 import { Archive, GanttChart, LayoutGrid, List } from "lucide-react";
+import { JSONContent } from "@tiptap/react";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -57,6 +58,7 @@ interface TaskListingPageTemplateProps {
   >;
   sprints: ISprintResponse[];
   activeSprint?: ISprint;
+  handlePostComment: (content: JSONContent,taskId:string) => void;
 }
 
 function TaskListingPageTemplate({
@@ -79,6 +81,7 @@ function TaskListingPageTemplate({
   sprints,
   handleSprintAttach,
   activeSprint,
+  handlePostComment,
 }: TaskListingPageTemplateProps) {
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -249,6 +252,7 @@ function TaskListingPageTemplate({
           task={taskData && taskData.data}
           isEditing={isEditing}
           subTasks={subTasks?.data}
+          handlePostComment={handlePostComment}
         />
       </div>
     </TaskPageContext.Provider>

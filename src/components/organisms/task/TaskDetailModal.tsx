@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Resizable } from "re-resizable";
+import { JSONContent } from "@tiptap/react";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import {
@@ -15,12 +16,13 @@ import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
 import { TaskHeader } from "@/components/molecules/task/TaskHeader";
 import { workspaceRoles } from "@/types/roles.enum";
 import { TaskInfo } from "@/components/molecules/task/TaskInfo";
-import { TaskTabs } from "@/components/molecules/task/TaskTabs";
+import { SubTasks } from "@/components/molecules/task/SubTasks";
 import { WorkItemParent } from "@/components/molecules/task/WorkItemParent";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 import { WorkItemType } from "@/types/task.enum";
 import { Separator } from "@/components/atoms/separator";
-import { TaskFooter } from "@/components/molecules/task/TaskFooter";
+import { TaskMetaData } from "@/components/molecules/task/TaskMetaData";
+import { TaskComments } from "@/components/molecules/task/TaskComments";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -31,6 +33,7 @@ interface TaskDetailsProps {
   handleEditTask: (taskId: string, data: Partial<TaskCreationPayload>) => void;
   isEditing: boolean;
   subTasks?: ITask[];
+  handlePostComment: (content: JSONContent, taskId: string) => void;
 }
 
 export const TaskDetails = ({
@@ -42,6 +45,7 @@ export const TaskDetails = ({
   handleEditTask,
   isEditing,
   subTasks,
+  handlePostComment,
 }: TaskDetailsProps) => {
   const [width, setWidth] = useState(448);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -195,11 +199,9 @@ export const TaskDetails = ({
                 setEditingStoryPoint={setEditingStoryPoint}
               />
 
-              <Separator />
-
               {/* Tabs Section */}
               {task.workItemType !== WorkItemType.Subtask && (
-                <TaskTabs
+                <SubTasks
                   createTask={createTask}
                   taskId={task.taskId}
                   workItemType={task.workItemType}
@@ -209,11 +211,25 @@ export const TaskDetails = ({
             </div>
 
             {/* Footer - Created By & Timestamps */}
-            <TaskFooter
+            <TaskMetaData
               taskId={task.taskId}
               createdBy={task.createdBy}
               createdAt={task.createdAt}
               updatedAt={task.updatedAt}
+            />
+
+            <TaskComments
+              comments={[
+                {
+                  commentId: "1",
+                  content: "<p>This is a <strong>great</strong> task!</p>",
+                  author: "f1949a19-396f-4220-b294-02d64ed2206b",
+                  createdAt: "2024-01-15T10:30:00Z",
+                  updatedAt: "2024-01-15T11:00:00Z",
+                },
+              ]}
+              taskId={task.taskId}
+              onSubmit={handlePostComment}
             />
           </CardContent>
 

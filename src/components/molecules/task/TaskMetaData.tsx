@@ -11,7 +11,7 @@ interface TaskFooterProps {
   updatedAt: string;
 }
 
-export const TaskFooter = ({
+export const TaskMetaData = ({
   taskId,
   createdBy,
   createdAt,
