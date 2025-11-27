@@ -14,10 +14,10 @@ import {
 } from "@/lib/api/project/project.types";
 import { getDate } from "@/lib/utils";
 import { workspaceRoles } from "@/types/roles.enum";
-import DataTable from "@/components/organisms/DataTable";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
-import { ButtonConfig } from "@/types/table.types";
 import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
+import { createProjectMemberColumns } from "@/lib/columns/project-member.column";
+import CustomTable from "@/components/organisms/CustomTable";
 
 interface ProjectManagementTemplateProps {
   projectData: Omit<IProject, "workspaceId" | "slug" | "createdBy">;
@@ -92,19 +92,10 @@ ProjectManagementTemplateProps) {
     headings.push("Action");
   }
 
-  const cols: (keyof WorkspaceMember)[] = ["name", "role", "email"];
-  const buttonConfigs: ButtonConfig<WorkspaceMember>[] = [
-    {
-      action: (data) => {
-        setModalType("member");
-        setSelectedMember(data._id);
-      },
-      styles: "bg-none",
-      icon: (member) =>
-        havePermission &&
-        member.role !== "owner" && <Trash className="text-red-500 size-4" />,
-    },
-  ];
+  const cols = createProjectMemberColumns((id: string) => {
+    setModalType("member");
+    setSelectedMember(id);
+  }, role as workspaceRoles);
 
   // for confirmation modal
   const modalContentMap = {
@@ -279,14 +270,11 @@ ProjectManagementTemplateProps) {
                 </div>
               )}
               <div className="flex items-start gap-8">
-                <DataTable
-                  headings={headings}
+                <CustomTable
                   columns={cols}
-                  data={members}
+                  data={members ? members : []}
+                  emptyMessage="No Members"
                   isLoading={isProjectMembersFetching}
-                  buttonConfigs={
-                    !isEditing && havePermission ? buttonConfigs : undefined
-                  }
                 />
               </div>
             </CardContent>
