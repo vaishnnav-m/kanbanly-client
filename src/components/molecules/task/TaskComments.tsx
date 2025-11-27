@@ -5,6 +5,8 @@ import StarterKit from "@tiptap/starter-kit";
 import { Placeholder } from "@tiptap/extensions";
 import Link from "@tiptap/extension-link";
 import Mention from "@tiptap/extension-mention";
+import { useSelector } from "react-redux";
+import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/atoms/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import {
@@ -16,20 +18,17 @@ import {
   MessageSquare,
   User,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { suggestion } from "@/lib/suggestion";
 import { CommentToolBarButtons } from "./CommentToolBarButtons";
 import { CommentResponse } from "@/lib/api/comment/comment.types";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
-import React from "react";
 
 const CommentViewer = ({ content }: { content: JSONContent }) => {
   const editor = useEditor({
@@ -93,8 +92,6 @@ export const TaskComments = ({
   const [deletingComment, setDeletingComment] = useState("");
   const userProfile = useSelector((state: RootState) => state.auth.profile);
   const currentUserId = useSelector((state: RootState) => state.auth.userId);
-
-  console.log(currentUserId, comments);
 
   const editor = useEditor({
     extensions: [
