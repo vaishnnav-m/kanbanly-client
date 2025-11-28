@@ -13,12 +13,14 @@ import { RootState } from "@/store";
 import { apiConfig } from "@/lib/config";
 import { MessageResponse } from "@/lib/api/message/message.types";
 import { getStorageItem, setStorageItem } from "@/lib/utils";
+import { NotificationResponse } from "@/lib/api/user/user.types";
 
 interface ISocketContext {
   socket: Socket | null;
   joinRooms: (workSpaceId: string, chatId: string) => void;
   sendMessage: (chatId: string, text: string) => void;
   messages: MessageResponse[];
+  notifications: NotificationResponse[];
 }
 
 const SocketContext = createContext<ISocketContext>({
@@ -26,6 +28,7 @@ const SocketContext = createContext<ISocketContext>({
   joinRooms: () => {},
   sendMessage: () => {},
   messages: [],
+  notifications: [],
 });
 
 export const useSocket = () => {
@@ -35,6 +38,7 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<MessageResponse[]>([]);
+  const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
 
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -87,6 +91,14 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
+  const handleNotification = useCallback(
+    (notification: NotificationResponse) => {
+      console.log("notification received", notification);
+      setNotifications((prev) => [...prev, notification]);
+    },
+    []
+  );
+
   useEffect(() => {
     if (isAuthenticated) {
       const newSocket = io(apiConfig.socketUrl, {
@@ -113,19 +125,22 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       });
 
       newSocket.on("messageReceived", recieveMessage);
+      newSocket.on("notification", handleNotification);
 
       newSocket.connect();
       setSocket(newSocket);
 
       return () => {
+        newSocket.off("messageReceived", recieveMessage);
+        newSocket.off("notification", handleNotification);
         newSocket.disconnect();
       };
     }
-  }, [isAuthenticated, recieveMessage]);
+  }, [isAuthenticated, recieveMessage, handleNotification]);
 
   return (
     <SocketContext.Provider
-      value={{ socket, joinRooms, sendMessage, messages }}
+      value={{ socket, joinRooms, sendMessage, messages, notifications }}
     >
       {children}
     </SocketContext.Provider>

@@ -17,8 +17,6 @@ function ChatPageTemplate({ chatId, chatInfo, messageHistory }: ChatAreaProps) {
   const { sendMessage, messages: socketMessages } = useSocket();
   const [messages, setMessages] = useState<MessageResponse[]>([]);
 
-  console.log("messages", messageHistory);
-
   useEffect(() => {
     const combinedMessages = [...messageHistory];
 
