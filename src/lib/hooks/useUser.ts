@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToastMessage } from "./useToastMessage";
 import { ApiResponse } from "../api/common.types";
 import {
+  NotificationResponse,
   PreferenceResponse,
   UpdatePreferencesPayload,
   UpdateUserPasswordPayload,
@@ -9,8 +10,10 @@ import {
   UserProfileData,
 } from "../api/user/user.types";
 import {
+  getUserNotifications,
   getUserPreferences,
   getUserProfile,
+  markAsRead,
   updateUserPassword,
   updateUserPreferences,
   updateUserProfile,
@@ -96,6 +99,34 @@ export const useUpdateUserPreferences = () => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Password Updation Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useGetUserNotifications = () => {
+  return useQuery<ApiResponse<NotificationResponse[]>, Error>({
+    queryKey: ["getUserNotifications"],
+    queryFn: getUserNotifications,
+  });
+};
+
+export const useMarkAsRead = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, string[]>({
+    mutationKey: ["markAsRead"],
+    mutationFn: markAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getUserNotifications"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Notification Updation Failed",
         description: errorMessage,
         duration: 6000,
       });

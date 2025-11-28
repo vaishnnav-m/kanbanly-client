@@ -33,3 +33,13 @@ export const updateUserPreferences = async (
   const response = await api.put("/user/me/preferences", payload);
   return response.data;
 };
+
+export const getUserNotifications = async () => {
+  const response = await api.get("/user/me/notifications");
+  return response.data;
+};
+
+export const markAsRead = async (data: string[]) => {
+  const response = await api.patch("/user/me/notifications", data);
+  return response.data;
+};

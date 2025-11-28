@@ -233,7 +233,6 @@ export const TaskDetails = ({
               )}
             </div>
 
-            {/* Footer - Created By & Timestamps */}
             <TaskMetaData
               taskId={task.taskId}
               createdBy={task.createdBy}

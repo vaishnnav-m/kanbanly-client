@@ -46,3 +46,11 @@ export interface UpdatePreferencesPayload {
   sprint?: Partial<INotificationPreference>;
   invitation?: Partial<INotificationPreference>;
 }
+
+export interface NotificationResponse {
+  notificationId: string;
+  userId: string;
+  title: string;
+  message: string;
+  createdAt: Date;
+}
