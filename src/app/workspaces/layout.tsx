@@ -53,7 +53,7 @@ function WorkspaceLayout({ children }: { children: ReactNode }) {
 
   const sidebarPadding =
     state === "collapsed"
-      ? `pl-16 ${isChatPage ? "px-0" : "px-10"}`
+      ? `pl-12 ${isChatPage ? "px-0" : "px-10"}`
       : `pl-64 ${isChatPage ? "px-0" : "px-10"}`;
 
   return (

@@ -18,22 +18,16 @@ function ChatPage() {
 
   const { data: messageHistoryData } = useGetChatMessages(workspaceId, chatId);
 
-  const { joinRooms } = useSocket();
+  const { joinChatRoom, isConnected } = useSocket();
 
   useEffect(() => {
-    if (workspaceId && params.chatId) {
-      joinRooms(workspaceId, params.chatId as string);
+    if (params.chatId && isConnected) {
+      joinChatRoom(params.chatId as string);
     }
-  }, [workspaceId, joinRooms, params.chatId]);
+  }, [joinChatRoom, params.chatId, isConnected]);
 
   return (
-    <main
-      style={{
-        minHeight: "calc(100vh - 75px)",
-        maxHeight: "calc(100vh - 75px)",
-      }}
-      className="flex flex-col"
-    >
+    <main className="flex flex-col h-[calc(100svh-75px)] overflow-hidden">
       <ChatPageTemplate
         chatId={params.chatId as string}
         chatInfo={chatData?.data}

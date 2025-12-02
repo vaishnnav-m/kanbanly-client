@@ -15,20 +15,22 @@ export const MessageArea = ({ chatId, messages }: MessageAreaProps) => {
   }, [chatId]);
 
   return (
-    <div className="flex flex-col justify-end flex-1 overflow-y-auto px-6 py-4 space-y-4">
-      {/* <DateSeparator date="Today" /> */}
+    <div className="flex-1 overflow-y-auto min-h-0">
+      <div className="flex flex-col justify-end min-h-full px-6 py-4 space-y-4">
+        {/* <DateSeparator date="Today" /> */}
 
-      {messages.map((message, index) => (
-        <MessageBubble
-          key={index}
-          message={message}
-          showSender={
-            index === 0 || messages[index - 1].sender !== message.sender
-          }
-        />
-      ))}
+        {messages.map((message, index) => (
+          <MessageBubble
+            key={index}
+            message={message}
+            showSender={
+              index === 0 || messages[index - 1].sender !== message.sender
+            }
+          />
+        ))}
 
-      <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} />
+      </div>
     </div>
   );
 };

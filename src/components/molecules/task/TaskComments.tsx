@@ -198,15 +198,6 @@ export const TaskComments = ({
     <div className="w-full relative flex flex-col">
       {/* Comments List */}
       <div className="flex-1 space-y-6 px-6 pb-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            Comments
-            <span className="text-muted-foreground text-sm font-normal">
-              ({comments.length})
-            </span>
-          </h3>
-        </div>
-
         {comments.length > 0 ? (
           <div className="space-y-6">
             {comments.map((comment) => (

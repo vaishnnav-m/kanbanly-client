@@ -25,6 +25,14 @@ import { TaskMetaData } from "@/components/molecules/task/TaskMetaData";
 import { TaskComments } from "@/components/molecules/task/TaskComments";
 import { useGetComments } from "@/lib/hooks/useComment";
 import { useParams } from "next/navigation";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/atoms/tabs";
+import { TaskActivities } from "@/components/molecules/task/TaskActivities";
+import { ActivityTypeEnum } from "@/types/activity.types";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -240,13 +248,84 @@ export const TaskDetails = ({
               updatedAt={task.updatedAt}
             />
 
-            <TaskComments
-              comments={comments}
-              taskId={task.taskId}
-              onSubmit={handlePostComment}
-              onUpdate={handleUpdateComment}
-              onDelete={handleDeleteComment}
-            />
+            <div className="mt-2">
+              <Tabs defaultValue="comments" className="w-full">
+                <div className="px-6">
+                  <TabsList className="flex w-full justify-start gap-8 bg-transparent p-0 h-auto border-b border-border/40 rounded-none">
+                    <TabsTrigger
+                      value="comments"
+                      className="rounded-none border-b-2 border-transparent bg-transparent px-0 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all"
+                    >
+                      Comments
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="activities"
+                      className="rounded-none border-b-2 border-transparent bg-transparent px-0 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all"
+                    >
+                      Activities
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+                <TabsContent value="comments" className="mt-0 pt-4">
+                  <TaskComments
+                    comments={comments}
+                    taskId={task.taskId}
+                    onSubmit={handlePostComment}
+                    onUpdate={handleUpdateComment}
+                    onDelete={handleDeleteComment}
+                  />
+                </TabsContent>
+                <TabsContent value="activities" className="mt-0 pt-4">
+                  <TaskActivities
+                    activities={[
+                      {
+                        activityId: "a1b2c3d4",
+                        workspaceId: "ws_001",
+                        projectId: "proj_045",
+                        taskId: "task_1001",
+                        entityId: "task_1001",
+                        entityType: ActivityTypeEnum.TASK,
+                        action: "task_updated",
+                        oldValue: {
+                          priority: "low",
+                          status: "todo",
+                        },
+                        newValue: {
+                          priority: "high",
+                          status: "in_progress",
+                        },
+                        member: {
+                          userId: "user_457",
+                          name: "Vaishnav",
+                          email: "vaishnav@example.com",
+                        },
+                        description:
+                          "Vaishnav updated priority from low to high and moved task to in-progress.",
+                        createdAt: new Date("2025-02-01T12:15:00Z"),
+                        updatedAt: new Date("2025-02-01T12:15:00Z"),
+                      },
+                      {
+                        activityId: "e5f6g7h8",
+                        workspaceId: "ws_001",
+                        projectId: "proj_045",
+                        taskId: "task_1001",
+                        entityId: "task_1001",
+                        entityType: ActivityTypeEnum.TASK,
+                        action: "assignee_changed",
+                        member: {
+                          userId: "user_456",
+                          name: "Priya",
+                          email: "priya@example.com",
+                        },
+                        description: "Task created",
+                        createdAt: new Date("2025-02-01T14:20:00Z"),
+                        updatedAt: new Date("2025-02-01T14:20:00Z"),
+                      },
+                    ]}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
           </CardContent>
 
           <InviteUserDropdown

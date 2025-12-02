@@ -27,6 +27,9 @@ function ToastSetupWrapper({ children }: IProps) {
   return <>{children}</>;
 }
 
+import { NotificationProvider } from "./NotificationProvider";
+import { NotificationContainer } from "@/components/molecules/NotificationContainer";
+
 export function Providers({ children }: IProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
@@ -38,7 +41,10 @@ export function Providers({ children }: IProps) {
             <ToastSetupWrapper>
               <ReduxProvider store={store}>
                 <InitApp />
-                <SocketProvider>{children}</SocketProvider>
+                <NotificationProvider>
+                  <NotificationContainer />
+                  <SocketProvider>{children}</SocketProvider>
+                </NotificationProvider>
               </ReduxProvider>
             </ToastSetupWrapper>
           </ToastProvider>
