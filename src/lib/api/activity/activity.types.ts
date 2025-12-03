@@ -7,14 +7,26 @@ export enum ActivityTypeEnum {
   SPRINT = "SPRINT",
 }
 
-export interface IActivity {
+export enum TaskActivityActionEnum {
+  TaskCreated = "task_created",
+  TaskUpdated = "task_updated",
+  StatusChanged = "status_changed",
+  Commented = "commented",
+  SprintAttached = "sprint_attached",
+  TaskAssigned = "task_assigned",
+  CommentEdited = "comment_edited",
+  CommentDeleted = "comment_deleted",
+  SprintDetached = "sprint_detached",
+}
+
+export interface ActivityResponse {
   activityId: string;
   workspaceId: string;
   projectId?: string;
   taskId?: string;
   entityId: string;
   entityType: ActivityTypeEnum;
-  action: string;
+  action: TaskActivityActionEnum;
   oldValue?: Record<string, string | boolean>;
   newValue?: Record<string, string | boolean>;
   member: {

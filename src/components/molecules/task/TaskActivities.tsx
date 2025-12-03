@@ -1,38 +1,17 @@
 "use client";
-import { IActivity, ActivityTypeEnum } from "@/types/activity.types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import { formatDistanceToNow } from "date-fns";
-import {
-  Activity,
-  CheckCircle2,
-  MessageSquare,
-  FileEdit,
-  Layout,
-  Layers,
-  GitCommit,
-} from "lucide-react";
+import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  ActivityResponse,
+  ActivityTypeEnum,
+} from "@/lib/api/activity/activity.types";
+import { ActivityActionIcon } from "./ActivityIActionIcon";
 
 interface TaskActivitiesProps {
-  activities: IActivity[];
+  activities: ActivityResponse[];
 }
-
-const ActivityIcon = ({ type }: { type: ActivityTypeEnum }) => {
-  switch (type) {
-    case ActivityTypeEnum.TASK:
-      return <CheckCircle2 className="w-3 h-3" />;
-    case ActivityTypeEnum.COMMENT:
-      return <MessageSquare className="w-3 h-3" />;
-    case ActivityTypeEnum.EPIC:
-      return <Layers className="w-3 h-3" />;
-    case ActivityTypeEnum.SPRINT:
-      return <GitCommit className="w-3 h-3" />;
-    case ActivityTypeEnum.PROJECT:
-      return <Layout className="w-3 h-3" />;
-    default:
-      return <FileEdit className="w-3 h-3" />;
-  }
-};
 
 export const TaskActivities = ({ activities }: TaskActivitiesProps) => {
   return (
@@ -68,7 +47,7 @@ export const TaskActivities = ({ activities }: TaskActivitiesProps) => {
                           : "bg-muted text-muted-foreground"
                       )}
                     >
-                      <ActivityIcon type={activity.entityType} />
+                      <ActivityActionIcon action={activity.action} />
                     </div>
                   </div>
                 </div>

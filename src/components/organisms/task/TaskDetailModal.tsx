@@ -32,7 +32,7 @@ import {
   TabsTrigger,
 } from "@/components/atoms/tabs";
 import { TaskActivities } from "@/components/molecules/task/TaskActivities";
-import { ActivityTypeEnum } from "@/types/activity.types";
+import { useGetTaskActivities } from "@/lib/hooks/useActivity";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -85,6 +85,7 @@ export const TaskDetails = ({
     (state: RootState) => state.workspace.workspaceId
   );
 
+  // comments
   const { data: commentsData } = useGetComments({
     workspaceId,
     projectId,
@@ -92,6 +93,14 @@ export const TaskDetails = ({
     page: 1,
   });
   const comments = commentsData?.data ? commentsData.data : [];
+
+  // activities
+  const { data: activityData } = useGetTaskActivities(
+    workspaceId,
+    projectId,
+    task.taskId
+  );
+  const activities = activityData?.data ? activityData.data : [];
 
   const role = useSelector(
     (state: RootState) => state.workspace.memberRole
@@ -276,53 +285,7 @@ export const TaskDetails = ({
                   />
                 </TabsContent>
                 <TabsContent value="activities" className="mt-0 pt-4">
-                  <TaskActivities
-                    activities={[
-                      {
-                        activityId: "a1b2c3d4",
-                        workspaceId: "ws_001",
-                        projectId: "proj_045",
-                        taskId: "task_1001",
-                        entityId: "task_1001",
-                        entityType: ActivityTypeEnum.TASK,
-                        action: "task_updated",
-                        oldValue: {
-                          priority: "low",
-                          status: "todo",
-                        },
-                        newValue: {
-                          priority: "high",
-                          status: "in_progress",
-                        },
-                        member: {
-                          userId: "user_457",
-                          name: "Vaishnav",
-                          email: "vaishnav@example.com",
-                        },
-                        description:
-                          "Vaishnav updated priority from low to high and moved task to in-progress.",
-                        createdAt: new Date("2025-02-01T12:15:00Z"),
-                        updatedAt: new Date("2025-02-01T12:15:00Z"),
-                      },
-                      {
-                        activityId: "e5f6g7h8",
-                        workspaceId: "ws_001",
-                        projectId: "proj_045",
-                        taskId: "task_1001",
-                        entityId: "task_1001",
-                        entityType: ActivityTypeEnum.TASK,
-                        action: "assignee_changed",
-                        member: {
-                          userId: "user_456",
-                          name: "Priya",
-                          email: "priya@example.com",
-                        },
-                        description: "Task created",
-                        createdAt: new Date("2025-02-01T14:20:00Z"),
-                        updatedAt: new Date("2025-02-01T14:20:00Z"),
-                      },
-                    ]}
-                  />
+                  <TaskActivities activities={activities} />
                 </TabsContent>
               </Tabs>
             </div>
