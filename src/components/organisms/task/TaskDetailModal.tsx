@@ -25,6 +25,14 @@ import { TaskMetaData } from "@/components/molecules/task/TaskMetaData";
 import { TaskComments } from "@/components/molecules/task/TaskComments";
 import { useGetComments } from "@/lib/hooks/useComment";
 import { useParams } from "next/navigation";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/atoms/tabs";
+import { TaskActivities } from "@/components/molecules/task/TaskActivities";
+import { useGetTaskActivities } from "@/lib/hooks/useActivity";
 
 interface TaskDetailsProps {
   isVisible: boolean;
@@ -77,6 +85,7 @@ export const TaskDetails = ({
     (state: RootState) => state.workspace.workspaceId
   );
 
+  // comments
   const { data: commentsData } = useGetComments({
     workspaceId,
     projectId,
@@ -84,6 +93,14 @@ export const TaskDetails = ({
     page: 1,
   });
   const comments = commentsData?.data ? commentsData.data : [];
+
+  // activities
+  const { data: activityData } = useGetTaskActivities(
+    workspaceId,
+    projectId,
+    task.taskId
+  );
+  const activities = activityData?.data ? activityData.data : [];
 
   const role = useSelector(
     (state: RootState) => state.workspace.memberRole
@@ -240,13 +257,38 @@ export const TaskDetails = ({
               updatedAt={task.updatedAt}
             />
 
-            <TaskComments
-              comments={comments}
-              taskId={task.taskId}
-              onSubmit={handlePostComment}
-              onUpdate={handleUpdateComment}
-              onDelete={handleDeleteComment}
-            />
+            <div className="mt-2">
+              <Tabs defaultValue="comments" className="w-full">
+                <div className="px-6">
+                  <TabsList className="flex w-full justify-start gap-8 bg-transparent p-0 h-auto border-b border-border/40 rounded-none">
+                    <TabsTrigger
+                      value="comments"
+                      className="rounded-none border-b-2 border-transparent bg-transparent px-0 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all"
+                    >
+                      Comments
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="activities"
+                      className="rounded-none border-b-2 border-transparent bg-transparent px-0 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all"
+                    >
+                      Activities
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+                <TabsContent value="comments" className="mt-0 pt-4">
+                  <TaskComments
+                    comments={comments}
+                    taskId={task.taskId}
+                    onSubmit={handlePostComment}
+                    onUpdate={handleUpdateComment}
+                    onDelete={handleDeleteComment}
+                  />
+                </TabsContent>
+                <TabsContent value="activities" className="mt-0 pt-4">
+                  <TaskActivities activities={activities} />
+                </TabsContent>
+              </Tabs>
+            </div>
           </CardContent>
 
           <InviteUserDropdown

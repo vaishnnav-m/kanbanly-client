@@ -82,7 +82,7 @@ function Header() {
   return (
     <header
       className={`h-[75px] bg-sidebar fixed right-0 z-50 top-0 py-5 px-10 flex justify-between transition-all duration-300 ease-in-out ${
-        state === "collapsed" ? "left-16" : "left-64"
+        state === "collapsed" ? "left-12" : "left-64"
       }`}
     >
       <div className="flex gap-16">
@@ -100,7 +100,7 @@ function Header() {
       <div className="flex gap-5 items-center">
         <Sheet>
           <SheetTrigger className="relative group">
-            <Bell className="w-5 h-5 bell-icon text-muted-foreground hover:text-foreground transition-colors" />
+            <Bell className="w-5 h-5 bell-icon  text-foreground hover:text-foreground transition-colors" />
             {notifications.length > 0 && (
               <Badge
                 variant="destructive"

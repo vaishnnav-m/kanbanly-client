@@ -10,9 +10,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
 } from "@/components/atoms/sidebar";
 import NavLinks from "@/components/molecules/user-sidebar/NavLinks";
 import NavProjects from "@/components/molecules/user-sidebar/NavProjects";

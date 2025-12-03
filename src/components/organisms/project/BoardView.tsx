@@ -1,13 +1,13 @@
 "use client";
+import { useSelector } from "react-redux";
+import { Dispatch, SetStateAction } from "react";
+import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { Button } from "@/components/atoms/button";
 import { BoardColumn } from "@/components/molecules/kanban/BoardColumn";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
-import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { RootState } from "@/store";
 import { BoardTask } from "@/types/board.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
-import { Dispatch, SetStateAction } from "react";
-import { useSelector } from "react-redux";
 
 interface BoardViewProps {
   tasksData: BoardTask[];
@@ -23,6 +23,8 @@ export const BoardView = ({
   createTask,
   setActiveTab,
 }: BoardViewProps) => {
+  const { activeSprint } = useTaskPageContext();
+
   const handleCreateTask = (task: TaskCreationPayload) => {
     const newTask: TaskCreationPayload = {
       task: task.task,
@@ -30,6 +32,7 @@ export const BoardView = ({
       workItemType: task.workItemType,
       priority: TaskPriority.low,
       assignedTo: task.assignedTo,
+      ...(activeSprint && { sprintId: activeSprint.sprintId }),
     };
     createTask(newTask);
   };
@@ -37,8 +40,6 @@ export const BoardView = ({
   const template = useSelector(
     (state: RootState) => state.project.projectTemplate
   );
-
-  const { activeSprint } = useTaskPageContext();
 
   return (
     <div className="w-full h-full flex gap-3">

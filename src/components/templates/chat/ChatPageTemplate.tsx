@@ -1,11 +1,11 @@
 "use client";
+import { useEffect, useState } from "react";
 import { MessageArea } from "@/components/organisms/chat/ChatArea";
 import { ChatHeader } from "@/components/organisms/chat/ChatHeader";
 import { MessageInput } from "@/components/organisms/chat/MessageInput";
 import { useSocket } from "@/contexts/SocketContext";
 import { ChatResponse } from "@/lib/api/chat/chat.types";
 import { MessageResponse } from "@/lib/api/message/message.types";
-import { useEffect, useState } from "react";
 
 interface ChatAreaProps {
   chatId: string;
@@ -41,12 +41,8 @@ function ChatPageTemplate({ chatId, chatInfo, messageHistory }: ChatAreaProps) {
     sendMessage(chatId, text);
   };
 
-  console.log("messages", messages);
-  console.log("socketMessages", socketMessages);
-  console.log("messageHistory", messageHistory);
-
   return (
-    <div className="flex-1 flex flex-col bg-background">
+    <div className="flex-1 flex flex-col bg-background min-h-0">
       <ChatHeader chatInfo={chatInfo} />
       <MessageArea chatId={chatId} messages={messages} />
       <MessageInput handleSendMessage={handleSendMessage} />

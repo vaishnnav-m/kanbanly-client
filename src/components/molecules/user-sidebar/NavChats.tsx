@@ -29,11 +29,12 @@ export const NavChats = ({ chats, isLoading }: NavChatsProps) => {
 
   useEffect(() => {
     setIsActive(pathname === "/chats" || pathname.includes("chats"));
+    setSelectedChat(params.chatId as string);
     return () => {
       setIsActive(false);
       setSelectedChat("");
     };
-  }, [pathname]);
+  }, [pathname, params.chatId]);
 
   const handleChatSelect = (chatId?: string) => {
     const targetChatId = chatId || selectedChat;
@@ -48,7 +49,7 @@ export const NavChats = ({ chats, isLoading }: NavChatsProps) => {
           className={`w-full justify-between gap-3 group ${
             isActive && "bg-gray-500/15"
           }`}
-          onClick={() => handleChatSelect()}
+          // onClick={() => handleChatSelect()}
         >
           <div className="flex items-center gap-4">
             <MessageSquare

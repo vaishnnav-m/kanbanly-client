@@ -6,6 +6,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import { Archive, GanttChart, LayoutGrid, List } from "lucide-react";
+import { JSONContent } from "@tiptap/react";
 import { TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
 import { projectTemplate } from "@/types/project.enum";
@@ -24,8 +26,6 @@ import { IEpic } from "@/lib/api/epic/epic.types";
 import { formatDataIntoSections } from "@/lib/task-utils";
 import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
-import { Archive, GanttChart, LayoutGrid, List } from "lucide-react";
-import { JSONContent } from "@tiptap/react";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -116,18 +116,21 @@ function TaskListingPageTemplate({
     }
   );
 
+  console.log("activeSprint", activeSprint);
   // map tasks to board view format
-  const boardTasks = useMemo(
-    () =>
-      tasks.map((task) => ({
-        taskId: task.taskId,
-        task: task.task,
-        status: task.status,
-        assignedTo: task.assignedTo as WorkspaceMember,
-        workItemType: task.workItemType,
-      })),
-    [tasks]
-  );
+  const boardTasks = useMemo(() => {
+    const filtered = activeSprint
+      ? tasks.filter((t) => t.sprintId === activeSprint.sprintId)
+      : tasks;
+
+    return filtered.map((task) => ({
+      taskId: task.taskId,
+      task: task.task,
+      status: task.status,
+      assignedTo: task.assignedTo as WorkspaceMember,
+      workItemType: task.workItemType,
+    }));
+  }, [tasks, activeSprint]);
 
   const formatedTasks: Section[] = useMemo(
     () => formatDataIntoSections(tasks, members, sprints),
@@ -220,7 +223,7 @@ function TaskListingPageTemplate({
         <div className="p-6">
           {activeTab === "Board" && (
             <BoardView
-              tasksData={boardTasks}
+              tasksData={boardTasks ? boardTasks : []}
               createTask={createTask}
               isCreating={isCreating}
               handleStatusChange={handleStatusChange}

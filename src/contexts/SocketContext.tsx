@@ -6,29 +6,34 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import { RootState } from "@/store";
 import { apiConfig } from "@/lib/config";
 import { MessageResponse } from "@/lib/api/message/message.types";
-import { getStorageItem, setStorageItem } from "@/lib/utils";
 import { NotificationResponse } from "@/lib/api/user/user.types";
+import { useNotification } from "@/lib/hooks/useNotification";
 
 interface ISocketContext {
   socket: Socket | null;
-  joinRooms: (workSpaceId: string, chatId: string) => void;
+  joinChatRoom: (chatId: string) => void;
   sendMessage: (chatId: string, text: string) => void;
   messages: MessageResponse[];
   notifications: NotificationResponse[];
+  joinWorkspaceRoom: (workSpaceId: string) => void;
+  isConnected: boolean;
 }
 
 const SocketContext = createContext<ISocketContext>({
   socket: null,
-  joinRooms: () => {},
+  joinChatRoom: () => {},
   sendMessage: () => {},
   messages: [],
   notifications: [],
+  joinWorkspaceRoom: () => {},
+  isConnected: false,
 });
 
 export const useSocket = () => {
@@ -37,28 +42,37 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<MessageResponse[]>([]);
-  const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
+  const [notifications, setNotifications] = useState<NotificationResponse[]>(
+    []
+  );
+  const { notify } = useNotification();
+  const notifyRef = useRef(notify);
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    notifyRef.current = notify;
+  }, [notify]);
 
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
   const sender = useSelector((state: RootState) => state.auth.userId);
 
-  const joinRooms = useCallback(
-    (workSpaceId: string, chatId: string) => {
-      const rooms = { workSpaceId, chatId };
-      setStorageItem("joinedRooms", JSON.stringify(rooms));
-      if (socket) {
-        socket.emit("joinRooms", rooms);
+  const joinChatRoom = useCallback(
+    (chatId: string) => {
+      const rooms = { chatId };
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit("joinChatRoom", rooms);
       }
     },
-    [socket]
+    []
   );
 
   const sendMessage = useCallback(
     (chatId: string, text: string) => {
-      if (socket) {
+      if (socketRef.current) {
         setMessages((prev) => [
           ...prev,
           {
@@ -68,12 +82,12 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
           },
         ]);
         console.log("sending message...", text);
-        socket.emit("sendMessage", { chatId, text });
+        socketRef.current.emit("sendMessage", { chatId, text });
       } else {
         console.warn("Socket is not connected, Can't send message");
       }
     },
-    [socket, sender]
+    [sender]
   );
 
   const recieveMessage = useCallback(
@@ -93,8 +107,17 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
   const handleNotification = useCallback(
     (notification: NotificationResponse) => {
-      console.log("notification received", notification);
       setNotifications((prev) => [...prev, notification]);
+      notifyRef.current(notification.title, notification.message);
+    },
+    []
+  );
+
+  const joinWorkspaceRoom = useCallback(
+    (workSpaceId: string) => {
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit("joinWorkspaceRoom", { workSpaceId });
+      }
     },
     []
   );
@@ -108,39 +131,46 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
       newSocket.on("connect", () => {
         console.log("Socket connected");
-
-        const savedRooms = getStorageItem("joinedRooms");
-        if (savedRooms) {
-          const rooms = JSON.parse(savedRooms);
-          newSocket.emit("joinRooms", rooms);
-        }
+        setIsConnected(true);
       });
 
       newSocket.on("disconnect", () => {
         console.log("Socket disconnected");
+        setIsConnected(false);
       });
 
       newSocket.on("connect_error", (err) => {
         console.log("Socket connection error", err.message);
+        setIsConnected(false);
       });
 
       newSocket.on("messageReceived", recieveMessage);
       newSocket.on("notification", handleNotification);
 
       newSocket.connect();
+      socketRef.current = newSocket;
       setSocket(newSocket);
 
       return () => {
         newSocket.off("messageReceived", recieveMessage);
         newSocket.off("notification", handleNotification);
         newSocket.disconnect();
+        socketRef.current = null;
       };
     }
   }, [isAuthenticated, recieveMessage, handleNotification]);
 
   return (
     <SocketContext.Provider
-      value={{ socket, joinRooms, sendMessage, messages, notifications }}
+      value={{
+        socket,
+        joinChatRoom,
+        sendMessage,
+        messages,
+        notifications,
+        joinWorkspaceRoom,
+        isConnected,
+      }}
     >
       {children}
     </SocketContext.Provider>
