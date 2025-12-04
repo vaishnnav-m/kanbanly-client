@@ -6,6 +6,7 @@ export enum WorkspacePermissionEnum {
 
   PROJECT_CREATE = "projectCreate",
   PROJECT_EDIT = "projectEdit",
+  PROJECT_MEMBER_ADD = "projectMemberAdd",
   PROJECT_DELETE = "projectDelete",
 
   TASK_CREATE = "taskCreate",

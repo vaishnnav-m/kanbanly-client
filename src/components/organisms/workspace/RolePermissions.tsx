@@ -30,10 +30,11 @@ const permissions: Permission[] = [
 
   { id: WorkspacePermissionEnum.PROJECT_CREATE, label: "Create Projects" },
   { id: WorkspacePermissionEnum.PROJECT_EDIT, label: "Edit Projects" },
+  {
+    id: WorkspacePermissionEnum.PROJECT_MEMBER_ADD,
+    label: "Add members to projects",
+  },
   { id: WorkspacePermissionEnum.PROJECT_DELETE, label: "Delete Projects" },
-
-  { id: WorkspacePermissionEnum.MEMBER_INVITE, label: "Invite Members" },
-  { id: WorkspacePermissionEnum.MEMBER_REMOVE, label: "Remove Members" },
 
   { id: WorkspacePermissionEnum.TASK_CREATE, label: "Task Creation" },
   { id: WorkspacePermissionEnum.TASK_EDIT, label: "Edit Task" },
