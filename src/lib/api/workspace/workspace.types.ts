@@ -1,4 +1,9 @@
+import { WorkspacePermissionEnum } from "@/types/permissions.enum";
 import { workspaceRoles } from "@/types/roles.enum";
+
+export type IWorkspacePermissions = {
+  [key in WorkspacePermissionEnum]: boolean;
+};
 
 export interface WorkspaceCreatePayload {
   name: string;
@@ -21,6 +26,11 @@ export interface IWorkspace {
   createdBy: string;
   members?: number;
   logo?: string;
+  permissions: {
+    owner: IWorkspacePermissions;
+    projectManager: IWorkspacePermissions;
+    member: IWorkspacePermissions;
+  };
   createdAt: Date;
 }
 

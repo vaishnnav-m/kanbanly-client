@@ -15,6 +15,8 @@ import { RootState } from "@/store";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import { getDate } from "@/lib/utils";
 
+import { RolePermissions } from "@/components/organisms/workspace/RolePermissions";
+
 interface WorkspaceManageTemplateProps {
   workspaceData: Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">;
   handleDelete: () => void;
@@ -41,20 +43,16 @@ export function WorkspaceManageTemplate({
   };
 
   const handleEdit = () => {
-    // setEditData(workspaceData);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    // setEditData(workspaceData);
     setIsEditing(false);
   };
 
   const handleIconChange = (iconName: string) => {
     setEditData({ ...editData, logo: iconName });
   };
-
-  console.log("editData state", editData);
 
   const getCurrentIcon = () => {
     const currentIconName = isEditing ? editData?.logo : workspaceData.logo;
@@ -255,6 +253,9 @@ export function WorkspaceManageTemplate({
             </div>
           </CardContent>
         </Card>
+
+        {/* Role Permissions Section */}
+        <RolePermissions rolePermissions={workspaceData.permissions} />
       </div>
       <ConfirmationModal
         isOpen={isModalOpen}

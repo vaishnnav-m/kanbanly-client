@@ -82,7 +82,7 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
                       ) : (
                         <FolderClosed />
                       )}
-                      {project.name}
+                      <span className="truncate">{project.name}</span>
                     </SidebarMenuSubButton>
                   ))
                 )}
