@@ -8,6 +8,7 @@ import { Textarea } from "@/components/atoms/textarea";
 import { workspaceIcons } from "@/lib/constants/icons";
 import {
   IWorkspace,
+  IWorkspacePermissions,
   WorkspaceEditPayload,
 } from "@/lib/api/workspace/workspace.types";
 import { useSelector } from "react-redux";
@@ -16,17 +17,24 @@ import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModa
 import { getDate } from "@/lib/utils";
 
 import { RolePermissions } from "@/components/organisms/workspace/RolePermissions";
+import { workspaceRoles } from "@/types/roles.enum";
 
 interface WorkspaceManageTemplateProps {
   workspaceData: Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">;
   handleDelete: () => void;
   uploadEdited: (data: WorkspaceEditPayload) => void;
+  handleRolePermissionUpdation: (
+    role: workspaceRoles,
+    permissionId: keyof IWorkspacePermissions,
+    checked: boolean
+  ) => void;
 }
 
 export function WorkspaceManageTemplate({
   workspaceData,
   handleDelete,
   uploadEdited,
+  handleRolePermissionUpdation,
 }: WorkspaceManageTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<WorkspaceEditPayload | null>(null);
@@ -255,7 +263,10 @@ export function WorkspaceManageTemplate({
         </Card>
 
         {/* Role Permissions Section */}
-        <RolePermissions rolePermissions={workspaceData.permissions} />
+        <RolePermissions
+          rolePermissions={workspaceData.permissions}
+          handleRolePermissionUpdation={handleRolePermissionUpdation}
+        />
       </div>
       <ConfirmationModal
         isOpen={isModalOpen}

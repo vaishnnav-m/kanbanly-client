@@ -11,6 +11,16 @@ export interface WorkspaceCreatePayload {
   logo?: string;
 }
 
+export interface PermissionUpdationPayload {
+  role: workspaceRoles;
+  permissions: Partial<IWorkspacePermissions>;
+}
+
+export interface PermissionUpdationArgs {
+  workspaceId:string;
+  data:PermissionUpdationPayload
+}
+
 export type WorkspaceEditPayload = Partial<WorkspaceCreatePayload>;
 
 export interface WorkspaceEditArgs {

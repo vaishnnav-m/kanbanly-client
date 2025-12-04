@@ -48,20 +48,18 @@ interface RolePermissionsProps {
     projectManager: IWorkspacePermissions;
     member: IWorkspacePermissions;
   };
+  handleRolePermissionUpdation: (
+    role: workspaceRoles,
+    permissionId: keyof IWorkspacePermissions,
+    checked: boolean
+  ) => void;
 }
 
 export function RolePermissions({
   className,
   rolePermissions,
+  handleRolePermissionUpdation,
 }: RolePermissionsProps) {
-  const handlePermissionChange = (
-    role: workspaceRoles,
-    permissionId: string,
-    checked: boolean
-  ) => {
-    console.log(role, permissionId, checked);
-  };
-
   return (
     <Card
       className={cn("bg-blue-200/5 border-workspace-border mt-8", className)}
@@ -99,9 +97,9 @@ export function RolePermissions({
                         ]
                       }
                       onCheckedChange={(checked) =>
-                        handlePermissionChange(
+                        handleRolePermissionUpdation(
                           workspaceRoles.owner,
-                          permission.id,
+                          permission.id as keyof IWorkspacePermissions,
                           checked as boolean
                         )
                       }
@@ -119,9 +117,9 @@ export function RolePermissions({
                         ]
                       }
                       onCheckedChange={(checked) =>
-                        handlePermissionChange(
-                          workspaceRoles.owner,
-                          permission.id,
+                        handleRolePermissionUpdation(
+                          workspaceRoles.projectManager,
+                          permission.id as keyof IWorkspacePermissions,
                           checked as boolean
                         )
                       }
@@ -138,9 +136,9 @@ export function RolePermissions({
                         ]
                       }
                       onCheckedChange={(checked) =>
-                        handlePermissionChange(
-                          workspaceRoles.owner,
-                          permission.id,
+                        handleRolePermissionUpdation(
+                          workspaceRoles.member,
+                          permission.id as keyof IWorkspacePermissions,
                           checked as boolean
                         )
                       }

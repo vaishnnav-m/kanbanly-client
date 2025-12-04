@@ -1,6 +1,7 @@
 import api from "../axios";
 import {
   EditWorkspaceMember,
+  PermissionUpdationArgs,
   SendInvititationArgs,
   WorkspaceCreatePayload,
   WorkspaceEditArgs,
@@ -19,6 +20,16 @@ export const getAllWorkspaces = async () => {
 
 export const getOneWorkspace = async (payload: { workspaceId: string }) => {
   const response = await api.get(`/workspace/${payload.workspaceId}`);
+  return response.data;
+};
+
+export const updateRolePermissions = async (
+  payload: PermissionUpdationArgs
+) => {
+  const response = await api.patch(
+    `/workspace/${payload.workspaceId}/permissions`,
+    payload.data
+  );
   return response.data;
 };
 

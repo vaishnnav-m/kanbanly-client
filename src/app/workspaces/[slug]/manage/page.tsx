@@ -1,14 +1,19 @@
 "use client";
 import WorkspaceDetailsSkeleton from "@/components/organisms/workspace/WorkspaceManageSkeleton";
 import { WorkspaceManageTemplate } from "@/components/templates/workspace/WorkspaceManageTemplate";
-import { WorkspaceEditPayload } from "@/lib/api/workspace/workspace.types";
+import {
+  IWorkspacePermissions,
+  WorkspaceEditPayload,
+} from "@/lib/api/workspace/workspace.types";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import {
   useEditWorkspace,
   useGetOneWorkspace,
   useRemoveWorkspace,
+  useUpdateRolePermissions,
 } from "@/lib/hooks/useWorkspace";
 import { RootState } from "@/store";
+import { workspaceRoles } from "@/types/roles.enum";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
@@ -32,9 +37,21 @@ export default function WorkspaceManagementPage() {
     },
   });
   const { mutate: editWorkspace } = useEditWorkspace();
+  const { mutate: updateRolePermissions } = useUpdateRolePermissions();
 
   function handleEdit(data: WorkspaceEditPayload) {
     editWorkspace({ workspaceId, data });
+  }
+
+  function handleRolePermissionUpdation(
+    role: workspaceRoles,
+    permissionId: keyof IWorkspacePermissions,
+    checked: boolean
+  ) {
+    updateRolePermissions({
+      workspaceId,
+      data: { permissions: { [permissionId]: checked }, role },
+    });
   }
 
   function deleteWorkspace() {
@@ -50,6 +67,7 @@ export default function WorkspaceManagementPage() {
       workspaceData={workspaceData?.data}
       handleDelete={deleteWorkspace}
       uploadEdited={handleEdit}
+      handleRolePermissionUpdation={handleRolePermissionUpdation}
     />
   );
 }
