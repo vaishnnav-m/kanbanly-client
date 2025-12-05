@@ -1,5 +1,12 @@
 export interface MessageResponse {
-  sender: string;
+  sender:
+    | {
+        userId: string;
+        name: string;
+        email: string;
+        profile?: string;
+      }
+    | string;
   text: string;
   createdAt: Date;
   //   isSent: boolean;

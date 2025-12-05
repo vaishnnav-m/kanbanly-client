@@ -20,7 +20,11 @@ interface MessageBubbleProps {
 export const MessageBubble = ({ message, showSender }: MessageBubbleProps) => {
   const [showActions, setShowActions] = useState(false);
   const userId = useSelector((state: RootState) => state.auth.userId);
-  const isSent = message.sender === userId;
+  const isSent =
+    typeof message.sender === "string"
+      ? message.sender === userId
+      : message.sender.userId === userId;
+  console.log("userId", userId, " ", message.sender);
 
   return (
     <div
@@ -54,7 +58,7 @@ export const MessageBubble = ({ message, showSender }: MessageBubbleProps) => {
 
           {showSender && !isSent && (
             <span className="text-xs text-muted-foreground mb-1">
-              {message.sender}
+              {typeof message.sender !== "string" && message.sender.name}
             </span>
           )}
           <p className="text-sm leading-relaxed">{message.text}</p>
