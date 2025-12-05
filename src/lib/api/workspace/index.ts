@@ -65,6 +65,13 @@ export const verifyInvitation = async (payload: { token: string }) => {
   return response.data;
 };
 
+export const rejectInvitation = async (payload: { token: string }) => {
+  const response = await api.post(
+    `/invitations/workspace/${payload.token}/reject`
+  );
+  return response.data;
+};
+
 export const getAllInvitations = async (workspaceId: string) => {
   const response = await api.get(`/invitations/workspace/${workspaceId}/`);
   return response.data;

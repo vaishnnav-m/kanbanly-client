@@ -14,6 +14,7 @@ import {
   getDashboardData,
   getOneWorkspace,
   getWorkspaceMembers,
+  rejectInvitation,
   removeInvitation,
   removeWorkspace,
   removeWorkspaceMember,
@@ -173,6 +174,7 @@ export const useSendInvitation = () => {
 export const useVerifyInvitation = () => {
   const toast = useToastMessage();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation<ApiResponse, Error, { token: string }>({
     mutationFn: verifyInvitation,
@@ -182,7 +184,40 @@ export const useVerifyInvitation = () => {
         description: response.message,
         duration: 6000,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["getUserNotifications"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["workspaces"],
+      });
       router.replace("/workspaces");
+    },
+  });
+};
+
+export const useRejectInvitation = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, { token: string }>({
+    mutationFn: rejectInvitation,
+    onSuccess: (response) => {
+      toast.showSuccess({
+        title: "Successfully Rejected",
+        description: response.message,
+        duration: 6000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["getUserNotifications"],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Rejection Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
     },
   });
 };

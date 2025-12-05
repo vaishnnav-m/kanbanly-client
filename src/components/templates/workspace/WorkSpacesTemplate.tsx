@@ -19,6 +19,13 @@ import {
 } from "@/components/atoms/dropdown-menu";
 import { Button } from "@/components/atoms/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/atoms/popover";
+import { NotificationList } from "../../molecules/NotificationList";
+import { Bell } from "lucide-react";
 
 interface WorkSpacesTemplateProps {
   handleLogout: () => void;
@@ -59,6 +66,22 @@ const WorkSpacesTemplate = ({
           <Link className="flex gap-2" href="/billing/pricing">
             <Gem className="h-4 w-4" />
           </Link>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative rounded-full hover:bg-background/20"
+              >
+                <Bell className="h-5 w-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <NotificationList />
+            </PopoverContent>
+          </Popover>
+
           <ThemeToggleButton />
           <DropdownMenu>
             <DropdownMenuTrigger className="py-0 flex items-start" asChild>
