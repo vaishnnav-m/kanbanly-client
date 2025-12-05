@@ -5,11 +5,6 @@ import { Trash } from "lucide-react";
 export const createWorkspacesColumns = (onRemove: (id: string) => void) => {
   const columns: TableColumn<IWorkspace>[] = [
     {
-      key: "workspaceId",
-      label: "Workspace Id",
-      type: "text",
-    },
-    {
       key: "name",
       label: "Name",
       type: "text",
@@ -18,6 +13,19 @@ export const createWorkspacesColumns = (onRemove: (id: string) => void) => {
       key: "description",
       label: "Description",
       type: "text",
+    },
+    {
+      key: "memberCount",
+      label: "Members",
+      type: "text",
+    },
+    {
+      key: "createdBy",
+      label: "Created By",
+      type: "custom",
+      render: (row) => (
+        <span>{typeof row.createdBy !== "string" && row.createdBy.email}</span>
+      ),
     },
     {
       key: "delete",

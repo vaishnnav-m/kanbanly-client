@@ -33,7 +33,14 @@ export interface IWorkspace {
   name: string;
   slug: string;
   description: string;
-  createdBy: string;
+  createdBy:
+    | string
+    | {
+        userId: string;
+        email: string;
+        name: string;
+        profile?: string;
+      };
   members?: number;
   logo?: string;
   permissions: {

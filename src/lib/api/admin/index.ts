@@ -14,3 +14,8 @@ export const updateUserStatus = async ({ id }: { id: string }) => {
   const response = await api.patch(`/admin/users/${id}/status`);
   return response.data;
 };
+
+export const getAnalytics = async () => {
+  const response = await api.get(`/admin/analytics`);
+  return response.data;
+};

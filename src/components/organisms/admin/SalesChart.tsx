@@ -1,27 +1,33 @@
-import { Button } from "@/components/atoms/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/card";
-import { useState } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/atoms/card";
+import { SalesAnalytics } from "@/lib/api/admin/admin.types";
 
-const SalesChart = () => {
-  const [timeRange, setTimeRange] = useState("6months");
+const SalesChart = ({ sales }: { sales: SalesAnalytics[] }) => {
+  // const [timeRange, setTimeRange] = useState("6months");
 
-  const data = [
-    { month: "Jan", sales: 12000, users: 450 },
-    { month: "Feb", sales: 19000, users: 520 },
-    { month: "Mar", sales: 15000, users: 480 },
-    { month: "Apr", sales: 25000, users: 650 },
-    { month: "May", sales: 22000, users: 610 },
-    { month: "Jun", sales: 30000, users: 720 }
-  ];
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <p className="font-medium text-gray-900 dark:text-white">{`${label}`}</p>
+          <p className="font-medium text-gray-900 dark:text-white">
+            {new Date(label).toLocaleDateString()}
+          </p>
           <p className="text-blue-600 dark:text-blue-400">
-            Sales: ${payload[0].value.toLocaleString()}
+            Sales: {payload[0].value}
           </p>
         </div>
       );
@@ -36,7 +42,7 @@ const SalesChart = () => {
           <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
             Sales Analytics
           </CardTitle>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             {["3months", "6months", "1year"].map((range) => (
               <Button
                 key={range}
@@ -48,28 +54,34 @@ const SalesChart = () => {
                 {range === "3months" ? "3M" : range === "6months" ? "6M" : "1Y"}
               </Button>
             ))}
-          </div>
+          </div> */}
         </div>
       </CardHeader>
       <CardContent>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart
+              data={sales}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="month" 
+              <XAxis
+                dataKey="date"
                 className="text-gray-600 dark:text-gray-400"
                 fontSize={12}
+                tickFormatter={(value) => new Date(value).toLocaleDateString()}
+                padding={{ left: 10, right: 10 }}
               />
-              <YAxis 
+              <YAxis
                 className="text-gray-600 dark:text-gray-400"
                 fontSize={12}
-                tickFormatter={(value) => `$${value / 1000}k`}
+                domain={[0, "auto"]}
+                allowDecimals={false}
               />
               <Tooltip content={<CustomTooltip />} />
               <Line
                 type="monotone"
-                dataKey="sales"
+                dataKey="count"
                 stroke="url(#gradient)"
                 strokeWidth={3}
                 dot={{ fill: "#3b82f6", strokeWidth: 2, r: 6 }}
