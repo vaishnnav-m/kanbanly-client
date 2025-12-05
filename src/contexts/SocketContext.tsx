@@ -15,6 +15,7 @@ import { apiConfig } from "@/lib/config";
 import { MessageResponse } from "@/lib/api/message/message.types";
 import { NotificationResponse } from "@/lib/api/user/user.types";
 import { useNotification } from "@/lib/hooks/useNotification";
+import { TaskListing } from "@/lib/api/task/task.types";
 
 interface ISocketContext {
   socket: Socket | null;
@@ -22,7 +23,9 @@ interface ISocketContext {
   sendMessage: (chatId: string, text: string) => void;
   messages: MessageResponse[];
   notifications: NotificationResponse[];
+  tasks: TaskListing[];
   joinWorkspaceRoom: (workSpaceId: string) => void;
+  joinProjectRoom: (projectId: string) => void;
   isConnected: boolean;
 }
 
@@ -32,7 +35,9 @@ const SocketContext = createContext<ISocketContext>({
   sendMessage: () => {},
   messages: [],
   notifications: [],
+  tasks: [],
   joinWorkspaceRoom: () => {},
+  joinProjectRoom: () => {},
   isConnected: false,
 });
 
@@ -47,6 +52,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<NotificationResponse[]>(
     []
   );
+  const [tasks, setTasks] = useState<TaskListing[]>([]);
   const { notify } = useNotification();
   const notifyRef = useRef(notify);
   const socketRef = useRef<Socket | null>(null);
@@ -60,16 +66,32 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   );
   const sender = useSelector((state: RootState) => state.auth.userId);
 
-  const joinChatRoom = useCallback(
-    (chatId: string) => {
-      const rooms = { chatId };
-      if (socketRef.current && socketRef.current.connected) {
-        socketRef.current.emit("joinChatRoom", rooms);
-      }
-    },
-    []
-  );
+  // room joinings
+  // function to join workspace room
+  const joinWorkspaceRoom = useCallback((workSpaceId: string) => {
+    if (socketRef.current && socketRef.current.connected) {
+      socketRef.current.emit("joinWorkspaceRoom", { workSpaceId });
+    }
+  }, []);
 
+  // function to join project room
+  const joinProjectRoom = useCallback((projectId: string) => {
+    if (socketRef.current && socketRef.current.connected) {
+      console.log("joining project room,..")
+      socketRef.current.emit("joinProjectRoom", { projectId });
+    }
+  }, []);
+
+  // function to join chat room
+  const joinChatRoom = useCallback((chatId: string) => {
+    const rooms = { chatId };
+    if (socketRef.current && socketRef.current.connected) {
+      socketRef.current.emit("joinChatRoom", rooms);
+    }
+  }, []);
+
+  // population and sending
+  //  function send message
   const sendMessage = useCallback(
     (chatId: string, text: string) => {
       if (socketRef.current) {
@@ -90,6 +112,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     [sender]
   );
 
+  // function to populate recived message
   const recieveMessage = useCallback(
     (message: { chatId: string; senderId: string; text: string }) => {
       console.log("message recieved", message);
@@ -105,6 +128,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
+  // function to populate notification
   const handleNotification = useCallback(
     (notification: NotificationResponse) => {
       setNotifications((prev) => [...prev, notification]);
@@ -113,14 +137,11 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
-  const joinWorkspaceRoom = useCallback(
-    (workSpaceId: string) => {
-      if (socketRef.current && socketRef.current.connected) {
-        socketRef.current.emit("joinWorkspaceRoom", { workSpaceId });
-      }
-    },
-    []
-  );
+  // function to populate new task
+  const handleNewTask = useCallback((task: TaskListing) => {
+    setTasks((prev) => [...prev, task]);
+    console.log("new task added", task);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -144,8 +165,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         setIsConnected(false);
       });
 
+      // socket events
       newSocket.on("messageReceived", recieveMessage);
       newSocket.on("notification", handleNotification);
+      newSocket.on("taskchange", handleNewTask);
 
       newSocket.connect();
       socketRef.current = newSocket;
@@ -158,7 +181,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         socketRef.current = null;
       };
     }
-  }, [isAuthenticated, recieveMessage, handleNotification]);
+  }, [isAuthenticated, recieveMessage, handleNotification, handleNewTask]);
 
   return (
     <SocketContext.Provider
@@ -169,7 +192,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         messages,
         notifications,
         joinWorkspaceRoom,
+        joinProjectRoom,
         isConnected,
+        tasks,
       }}
     >
       {children}

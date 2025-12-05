@@ -5,6 +5,11 @@ import {
   CardTitle,
 } from "@/components/atoms/card";
 import {
+  ICompletionSlice,
+  IProgressItem,
+  ITrendItem,
+} from "@/lib/api/workspace/workspace.types";
+import {
   PieChart,
   Pie,
   Cell,
@@ -20,29 +25,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const completionData = [
-  { name: "Completed", value: 598, color: "green" },
-  { name: "In Progress", value: 234, color: "blue" },
-  { name: "Overdue", value: 60, color: "orange" },
-];
+interface TaskAnalyticsProps {
+  completionData: ICompletionSlice[];
+  progressData: IProgressItem[];
+  trendData: ITrendItem[];
+}
 
-const progressData = [
-  { status: "To Do", count: 150 },
-  { status: "In Progress", count: 234 },
-  { status: "Review", count: 120 },
-  { status: "Completed", count: 598 },
-];
-
-const trendData = [
-  { month: "Jan", completed: 45, created: 52 },
-  { month: "Feb", completed: 52, created: 61 },
-  { month: "Mar", completed: 61, created: 58 },
-  { month: "Apr", completed: 58, created: 67 },
-  { month: "May", completed: 67, created: 71 },
-  { month: "Jun", completed: 71, created: 69 },
-];
-
-export function TaskAnalytics() {
+export function TaskAnalytics({
+  completionData,
+  progressData,
+  trendData,
+}: TaskAnalyticsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>

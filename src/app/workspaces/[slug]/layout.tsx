@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useSocket } from "@/contexts/SocketContext";
 import { RootState } from "@/store";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function WorkspacesLayout({ children }: { children: ReactNode }) {
   const workSpaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );

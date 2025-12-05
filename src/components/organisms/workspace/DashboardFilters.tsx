@@ -1,12 +1,12 @@
-import { Button } from "@/components/atoms/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/atoms/select";
-import { Calendar, Filter } from "lucide-react";
+// import { Button } from "@/components/atoms/button";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/atoms/select";
+// import { Calendar, Filter } from "lucide-react";
 
 function DashboardFilters() {
   return (
@@ -18,7 +18,7 @@ function DashboardFilters() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      {/* <div className="flex flex-wrap gap-3">
         <Select defaultValue="all-workspaces">
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select workspace" />
@@ -50,7 +50,7 @@ function DashboardFilters() {
         <Button variant="outline" size="icon">
           <Filter className="h-4 w-4" />
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

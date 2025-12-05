@@ -11,18 +11,22 @@ import {
   getAllInvitations,
   getAllWorkspaces,
   getCurrentMember,
+  getDashboardData,
   getOneWorkspace,
   getWorkspaceMembers,
   removeInvitation,
   removeWorkspace,
   removeWorkspaceMember,
   sendInvititation,
+  updateRolePermissions,
   verifyInvitation,
 } from "../api/workspace";
 import {
   EditWorkspaceMember,
+  IDashboardResponse,
   InvitationList,
   IWorkspace,
+  PermissionUpdationArgs,
   SendInvititationArgs,
   WorkspaceCreatePayload,
   WorkspaceEditArgs,
@@ -81,13 +85,38 @@ export const useEditWorkspace = () => {
   return useMutation<ApiResponse, Error, WorkspaceEditArgs>({
     mutationKey: ["editWorkspace"],
     mutationFn: editWorkspace,
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       toast.showSuccess({
         title: "Successfully Edited",
         description: response.message,
         duration: 6000,
       });
-      queryClient.invalidateQueries({ queryKey: ["getOneWorkspace"] });
+      queryClient.invalidateQueries({
+        queryKey: ["getOneWorkspace", variables.workspaceId],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Unexpected Error";
+      toast.showError({
+        title: "Workspace Editing Failed",
+        description: errorMessage,
+        duration: 6000,
+      });
+    },
+  });
+};
+
+export const useUpdateRolePermissions = () => {
+  const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse, Error, PermissionUpdationArgs>({
+    mutationKey: ["updateRolePermissions"],
+    mutationFn: updateRolePermissions,
+    onSuccess: (response, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["getOneWorkspace", variables.workspaceId],
+      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
@@ -266,5 +295,13 @@ export const useRemoveWorkspaceMember = () => {
         duration: 6000,
       });
     },
+  });
+};
+
+export const useGetDashboardData = (workspaceId: string) => {
+  return useQuery<ApiResponse<IDashboardResponse>, Error>({
+    queryKey: ["getDashboardData", workspaceId],
+    queryFn: () => getDashboardData(workspaceId),
+    enabled: !!workspaceId,
   });
 };

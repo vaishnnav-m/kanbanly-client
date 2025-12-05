@@ -1,38 +1,46 @@
-import { Card, CardContent } from "@/components/atoms/card";
 import { FolderKanban, Users, CheckCircle2, Activity } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Card, CardContent } from "@/components/atoms/card";
+import { IWorkspaceSummaryResponse } from "@/lib/api/workspace/workspace.types";
 
-const summaryData = [
-  {
-    title: "Total Projects",
-    value: "24",
-    change: "+3 this month",
-    icon: FolderKanban,
-    color: "text-primary",
-  },
-  {
-    title: "Active Members",
-    value: "156",
-    change: "+12 this week",
-    icon: Users,
-    color: "text-green-500",
-  },
-  {
-    title: "Ongoing Tasks",
-    value: "892",
-    change: "67% completed",
-    icon: CheckCircle2,
-    color: "text-green-500",
-  },
-  {
-    title: "Recent Activities",
-    value: "1,234",
-    change: "Today",
-    icon: Activity,
-    color: "text-orange-500",
-  },
-];
+interface SummaryCardProps {
+  summaryDataValues: IWorkspaceSummaryResponse;
+}
 
-export function SummaryCards() {
+export function SummaryCards({ summaryDataValues }: SummaryCardProps) {
+  const summaryData = [
+    {
+      title: "Total Projects",
+      value: summaryDataValues.totalProjects,
+      change: `+${summaryDataValues.projectsThisMonth} this month`,
+      icon: FolderKanban,
+      color: "text-primary",
+    },
+    {
+      title: "Active Members",
+      value: summaryDataValues.activeMembers,
+      change: `+${summaryDataValues.membersThisWeek} this week`,
+      icon: Users,
+      color: "text-green-500",
+    },
+    {
+      title: "Ongoing Tasks",
+      value: summaryDataValues.ongoingTasks,
+      change: `${summaryDataValues.completionRate}% completed`,
+      icon: CheckCircle2,
+      color: "text-green-500",
+    },
+    {
+      title: "Recent Activities",
+      value: summaryDataValues.recentActivities,
+      change: `last activity ${formatDistanceToNow(
+        summaryDataValues.lastActivity
+      )}`,
+      icon: Activity,
+      color: "text-orange-500",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {summaryData.map((item) => {

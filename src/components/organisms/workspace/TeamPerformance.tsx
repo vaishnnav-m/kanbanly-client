@@ -6,47 +6,23 @@ import {
   CardTitle,
 } from "@/components/atoms/card";
 import { Progress } from "@/components/atoms/progress";
+import {
+  ITopPerformer,
+  IWorkloadItem,
+} from "@/lib/api/workspace/workspace.types";
 import { TrendingUp, Award } from "lucide-react";
 
-const topPerformers = [
-  {
-    name: "Sarah Johnson",
-    role: "Senior Developer",
-    tasksCompleted: 47,
-    avatar: "SJ",
-    progress: 94,
-  },
-  {
-    name: "Michael Chen",
-    role: "UI/UX Designer",
-    tasksCompleted: 42,
-    avatar: "MC",
-    progress: 88,
-  },
-  {
-    name: "Emily Davis",
-    role: "Project Manager",
-    tasksCompleted: 39,
-    avatar: "ED",
-    progress: 82,
-  },
-  {
-    name: "James Wilson",
-    role: "Backend Developer",
-    tasksCompleted: 36,
-    avatar: "JW",
-    progress: 76,
-  },
-];
+interface TeamPerformanceProps {
+  workloadData: IWorkloadItem[];
+  topPerformers: ITopPerformer[];
+  productivity: number;
+}
 
-const workloadData = [
-  { department: "Engineering", workload: 85 },
-  { department: "Design", workload: 72 },
-  { department: "Marketing", workload: 68 },
-  { department: "Sales", workload: 55 },
-];
-
-export function TeamPerformance() {
+export function TeamPerformance({
+  topPerformers,
+  workloadData,
+  productivity,
+}: TeamPerformanceProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
@@ -85,7 +61,7 @@ export function TeamPerformance() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-bold text-lg">{performer.tasksCompleted}</p>
+                <p className="font-bold text-lg">{performer.taskCompleted}</p>
                 <p className="text-xs text-muted-foreground">tasks</p>
               </div>
             </div>
@@ -102,9 +78,9 @@ export function TeamPerformance() {
         </CardHeader>
         <CardContent className="space-y-6">
           {workloadData.map((item) => (
-            <div key={item.department} className="space-y-2">
+            <div key={item.role} className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">{item.department}</span>
+                <span className="font-medium">{item.role}</span>
                 <span className="text-muted-foreground">{item.workload}%</span>
               </div>
               <Progress value={item.workload} className="h-2" />
@@ -115,10 +91,12 @@ export function TeamPerformance() {
             <h4 className="font-semibold mb-3">Team Productivity Score</h4>
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <Progress value={78} className="h-3" />
+                <Progress value={productivity} className="h-3" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-green-500">78%</p>
+                <p className="text-2xl font-bold text-green-500">
+                  {productivity}%
+                </p>
                 <p className="text-xs text-muted-foreground">Overall</p>
               </div>
             </div>

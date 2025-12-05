@@ -8,6 +8,7 @@ import { Textarea } from "@/components/atoms/textarea";
 import { workspaceIcons } from "@/lib/constants/icons";
 import {
   IWorkspace,
+  IWorkspacePermissions,
   WorkspaceEditPayload,
 } from "@/lib/api/workspace/workspace.types";
 import { useSelector } from "react-redux";
@@ -15,16 +16,25 @@ import { RootState } from "@/store";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import { getDate } from "@/lib/utils";
 
+import { RolePermissions } from "@/components/organisms/workspace/RolePermissions";
+import { workspaceRoles } from "@/types/roles.enum";
+
 interface WorkspaceManageTemplateProps {
   workspaceData: Omit<IWorkspace, "workspaceId" | "slug" | "createdBy">;
   handleDelete: () => void;
   uploadEdited: (data: WorkspaceEditPayload) => void;
+  handleRolePermissionUpdation: (
+    role: workspaceRoles,
+    permissionId: keyof IWorkspacePermissions,
+    checked: boolean
+  ) => void;
 }
 
 export function WorkspaceManageTemplate({
   workspaceData,
   handleDelete,
   uploadEdited,
+  handleRolePermissionUpdation,
 }: WorkspaceManageTemplateProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<WorkspaceEditPayload | null>(null);
@@ -41,20 +51,16 @@ export function WorkspaceManageTemplate({
   };
 
   const handleEdit = () => {
-    // setEditData(workspaceData);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    // setEditData(workspaceData);
     setIsEditing(false);
   };
 
   const handleIconChange = (iconName: string) => {
     setEditData({ ...editData, logo: iconName });
   };
-
-  console.log("editData state", editData);
 
   const getCurrentIcon = () => {
     const currentIconName = isEditing ? editData?.logo : workspaceData.logo;
@@ -255,6 +261,12 @@ export function WorkspaceManageTemplate({
             </div>
           </CardContent>
         </Card>
+
+        {/* Role Permissions Section */}
+        <RolePermissions
+          rolePermissions={workspaceData.permissions}
+          handleRolePermissionUpdation={handleRolePermissionUpdation}
+        />
       </div>
       <ConfirmationModal
         isOpen={isModalOpen}

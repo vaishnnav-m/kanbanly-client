@@ -61,13 +61,13 @@ export function EpicsSidebar({
               </div>
 
               <div className="flex items-center justify-between py-2 px-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-3 h-3 rounded-full ${
                       epicColors[epic.color as keyof typeof epicColors]
                     }`}
                   ></div>
-                  <h4 className="font-medium text-foreground text-sm">
+                  <h4 className="font-medium text-foreground text-sm truncate">
                     {epic.title}
                   </h4>
                 </div>

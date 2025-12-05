@@ -3,6 +3,7 @@ import {
   Dispatch,
   SetStateAction,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -26,6 +27,7 @@ import { IEpic } from "@/lib/api/epic/epic.types";
 import { formatDataIntoSections } from "@/lib/task-utils";
 import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
+import { useSocket } from "@/contexts/SocketContext";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -91,13 +93,30 @@ function TaskListingPageTemplate({
   handleDeleteComment,
   handleUpdateComment,
 }: TaskListingPageTemplateProps) {
+  const [combinedTasks, setCombinedTasks] = useState<TaskListing[]>([]);
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const currentProjectTemplate = useSelector(
     (state: RootState) => state.project.projectTemplate
   );
 
-  // task fetching according to id
+  const { tasks: socketTasks } = useSocket();
+
+  useEffect(() => {
+    const map = new Map();
+
+    tasks.forEach((task) => {
+      map.set(task.taskId, task);
+    });
+
+    socketTasks.forEach((sckttask) => {
+      map.set(sckttask.taskId, sckttask);
+    });
+
+    setCombinedTasks(Array.from(map.values()));
+  }, [tasks, socketTasks]);
+
+  // single task fetching
   const { data: taskData } = useGetOneTask(
     workspaceId,
     projectId,
@@ -120,8 +139,8 @@ function TaskListingPageTemplate({
   // map tasks to board view format
   const boardTasks = useMemo(() => {
     const filtered = activeSprint
-      ? tasks.filter((t) => t.sprintId === activeSprint.sprintId)
-      : tasks;
+      ? combinedTasks.filter((t) => t.sprintId === activeSprint.sprintId)
+      : combinedTasks;
 
     return filtered.map((task) => ({
       taskId: task.taskId,
@@ -130,11 +149,11 @@ function TaskListingPageTemplate({
       assignedTo: task.assignedTo as WorkspaceMember,
       workItemType: task.workItemType,
     }));
-  }, [tasks, activeSprint]);
+  }, [combinedTasks, activeSprint]);
 
   const formatedTasks: Section[] = useMemo(
-    () => formatDataIntoSections(tasks, members, sprints),
-    [tasks, members, sprints]
+    () => formatDataIntoSections(combinedTasks, members, sprints),
+    [combinedTasks, members, sprints]
   );
 
   const [activeTab, setActiveTab] = useState("Board");
@@ -234,7 +253,7 @@ function TaskListingPageTemplate({
           {activeTab === "List" && (
             <ListView
               projectId={projectId}
-              tasks={tasks}
+              tasks={combinedTasks}
               handlePriorityChange={handlePriorityChange}
               handleStatusChange={handleStatusChange}
               filters={filters}

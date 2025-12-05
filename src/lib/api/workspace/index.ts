@@ -1,6 +1,7 @@
 import api from "../axios";
 import {
   EditWorkspaceMember,
+  PermissionUpdationArgs,
   SendInvititationArgs,
   WorkspaceCreatePayload,
   WorkspaceEditArgs,
@@ -19,6 +20,16 @@ export const getAllWorkspaces = async () => {
 
 export const getOneWorkspace = async (payload: { workspaceId: string }) => {
   const response = await api.get(`/workspace/${payload.workspaceId}`);
+  return response.data;
+};
+
+export const updateRolePermissions = async (
+  payload: PermissionUpdationArgs
+) => {
+  const response = await api.patch(
+    `/workspace/${payload.workspaceId}/permissions`,
+    payload.data
+  );
   return response.data;
 };
 
@@ -104,5 +115,10 @@ export const removeWorkspaceMember = async (payload: {
   const response = await api.delete(
     `/workspace/${payload.workspaceId}/members/${payload.memberId}`
   );
+  return response.data;
+};
+
+export const getDashboardData = async (workspaceId: string) => {
+  const response = await api.get(`/workspace/${workspaceId}/dashboard`);
   return response.data;
 };
