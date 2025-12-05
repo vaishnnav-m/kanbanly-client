@@ -11,6 +11,7 @@ import {
   getAllInvitations,
   getAllWorkspaces,
   getCurrentMember,
+  getDashboardData,
   getOneWorkspace,
   getWorkspaceMembers,
   removeInvitation,
@@ -22,6 +23,7 @@ import {
 } from "../api/workspace";
 import {
   EditWorkspaceMember,
+  IDashboardResponse,
   InvitationList,
   IWorkspace,
   PermissionUpdationArgs,
@@ -293,5 +295,13 @@ export const useRemoveWorkspaceMember = () => {
         duration: 6000,
       });
     },
+  });
+};
+
+export const useGetDashboardData = (workspaceId: string) => {
+  return useQuery<ApiResponse<IDashboardResponse>, Error>({
+    queryKey: ["getDashboardData", workspaceId],
+    queryFn: () => getDashboardData(workspaceId),
+    enabled: !!workspaceId,
   });
 };

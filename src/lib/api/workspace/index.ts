@@ -117,3 +117,8 @@ export const removeWorkspaceMember = async (payload: {
   );
   return response.data;
 };
+
+export const getDashboardData = async (workspaceId: string) => {
+  const response = await api.get(`/workspace/${workspaceId}/dashboard`);
+  return response.data;
+};
