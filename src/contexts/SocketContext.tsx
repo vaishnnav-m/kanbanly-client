@@ -16,6 +16,7 @@ import { MessageResponse } from "@/lib/api/message/message.types";
 import { NotificationResponse } from "@/lib/api/user/user.types";
 import { useNotification } from "@/lib/hooks/useNotification";
 import { TaskListing } from "@/lib/api/task/task.types";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ISocketContext {
   socket: Socket | null;
@@ -56,6 +57,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { notify } = useNotification();
   const notifyRef = useRef(notify);
   const socketRef = useRef<Socket | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     notifyRef.current = notify;
@@ -133,8 +135,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     (notification: NotificationResponse) => {
       setNotifications((prev) => [...prev, notification]);
       notifyRef.current(notification.title, notification.message);
+      queryClient.invalidateQueries({ queryKey: ["getUserNotifications"] });
     },
-    []
+    [queryClient]
   );
 
   // function to populate new task

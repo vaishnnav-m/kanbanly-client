@@ -53,4 +53,7 @@ export interface NotificationResponse {
   title: string;
   message: string;
   createdAt: Date;
+  type?: "INVITATION" | "default";
+  token?: string;
+  workspaceName?: string;
 }

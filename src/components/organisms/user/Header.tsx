@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Bell, Settings, Check } from "lucide-react";
+import { Bell, Settings, Check, X, Loader2 } from "lucide-react";
 import { SidebarTrigger, useSidebar } from "@/components/atoms/sidebar";
 import { useLogout } from "@/lib/hooks/useAuth";
 import NavUser from "@/components/molecules/NavUser";
@@ -21,7 +21,20 @@ import { useGetUserNotifications, useMarkAsRead } from "@/lib/hooks/useUser";
 import { useEffect, useMemo, useState } from "react";
 import { NotificationResponse } from "@/lib/api/user/user.types";
 import { formatDistanceToNow } from "date-fns";
-import { ConfirmationModal } from "../admin/ConfirmationModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/atoms/alert-dialog";
+import {
+  useRejectInvitation,
+  useVerifyInvitation,
+} from "@/lib/hooks/useWorkspace";
 
 function Header() {
   const [notifications, setNotifications] = useState<NotificationResponse[]>(
@@ -36,6 +49,10 @@ function Header() {
   const { mutate: logout } = useLogout();
 
   const { mutate: markAsRead } = useMarkAsRead();
+  const { mutate: acceptInvitation, isPending: isAccepting } =
+    useVerifyInvitation();
+  const { mutate: rejectInvitation, isPending: isRejecting } =
+    useRejectInvitation();
 
   const { data: notificationsData } = useGetUserNotifications();
   const notificationHistory = useMemo(
@@ -56,6 +73,28 @@ function Header() {
         markAsRead(notificationIds);
       }
     }
+  };
+
+  const handleAccept = (token: string, notificationId: string) => {
+    acceptInvitation(
+      { token },
+      {
+        onSuccess: () => {
+          markAsRead([notificationId]);
+        },
+      }
+    );
+  };
+
+  const handleReject = (token: string, notificationId: string) => {
+    rejectInvitation(
+      { token },
+      {
+        onSuccess: () => {
+          markAsRead([notificationId]);
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -149,6 +188,47 @@ function Header() {
                       <p className="text-sm text-muted-foreground">
                         {notification.message}
                       </p>
+                      {notification.type === "INVITATION" && notification.token && (
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            size="sm"
+                            className="h-7 px-3 text-xs bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() =>
+                              handleAccept(
+                                notification.token!,
+                                notification.notificationId
+                              )
+                            }
+                            disabled={isAccepting || isRejecting}
+                          >
+                            {isAccepting ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Check className="h-3 w-3 mr-1" />
+                            )}
+                            Accept
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                            onClick={() =>
+                              handleReject(
+                                notification.token!,
+                                notification.notificationId
+                              )
+                            }
+                            disabled={isAccepting || isRejecting}
+                          >
+                            {isRejecting ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <X className="h-3 w-3 mr-1" />
+                            )}
+                            Reject
+                          </Button>
+                        </div>
+                      )}
                       <Button
                         onClick={() => {
                           setSelectedNotificationId(
@@ -178,6 +258,23 @@ function Header() {
                 </div>
               )}
             </ScrollArea>
+            <AlertDialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure to make all notifications read?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setSelectedNotificationId("")}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => {
+                    handleMarkAsRead(selectedNotificationId);
+                    setSelectedNotificationId("");
+                  }}>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </SheetContent>
         </Sheet>
         <Link className="group" href={`/workspaces/${params.slug}/manage`}>
@@ -185,19 +282,6 @@ function Header() {
         </Link>
         <NavUser handleLogout={handleLogout} />
       </div>
-      <ConfirmationModal
-        isOpen={isConfirmationOpen}
-        onClose={() => {
-          setIsConfirmationOpen(false);
-          setSelectedNotificationId("");
-        }}
-        onConfirm={() => {
-          handleMarkAsRead(selectedNotificationId);
-          setIsConfirmationOpen(false);
-          setSelectedNotificationId("");
-        }}
-        title="Are you sure to make all notifications read"
-      />
     </header>
   );
 }
