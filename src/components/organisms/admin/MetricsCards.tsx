@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
 import {
   TrendingUp,
   TrendingDown,
@@ -8,59 +7,17 @@ import {
   DollarSign,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/atoms/card";
+import { AnalyticsSummary } from "@/lib/api/admin/admin.types";
 
-const MetricsCards = () => {
-  const [animatedValues, setAnimatedValues] = useState({
-    sales: 0,
-    totalUsers: 0,
-    activeUsers: 0,
-    projects: 0,
-  });
+interface MetricsCardsProps {
+  summary: AnalyticsSummary;
+}
 
-  const targetValues = useMemo(
-    () => ({
-      sales: 124500,
-      totalUsers: 1847,
-      activeUsers: 892,
-      projects: 23,
-    }),
-    []
-  );
-
-  useEffect(() => {
-    const animateNumbers = () => {
-      const duration = 2000;
-      const steps = 60;
-      const stepTime = duration / steps;
-
-      let currentStep = 0;
-      const interval = setInterval(() => {
-        currentStep++;
-        const progress = currentStep / steps;
-        const easeOutProgress = 1 - Math.pow(1 - progress, 3);
-
-        setAnimatedValues({
-          sales: Math.floor(targetValues.sales * easeOutProgress),
-          totalUsers: Math.floor(targetValues.totalUsers * easeOutProgress),
-          activeUsers: Math.floor(targetValues.activeUsers * easeOutProgress),
-          projects: Math.floor(targetValues.projects * easeOutProgress),
-        });
-
-        if (currentStep >= steps) {
-          clearInterval(interval);
-          setAnimatedValues(targetValues);
-        }
-      }, stepTime);
-    };
-
-    const timer = setTimeout(animateNumbers, 500);
-    return () => clearTimeout(timer);
-  }, [targetValues]);
-
+const MetricsCards = ({ summary }: MetricsCardsProps) => {
   const metrics = [
     {
       title: "Total Sales",
-      value: `$${animatedValues.sales.toLocaleString()}`,
+      value: `${summary.totalActiveSubscriptions} sales`,
       change: "+12.5%",
       trend: "up",
       icon: DollarSign,
@@ -68,7 +25,7 @@ const MetricsCards = () => {
     },
     {
       title: "Total Users",
-      value: animatedValues.totalUsers.toLocaleString(),
+      value: summary.totalUsers,
       change: "+8.2%",
       trend: "up",
       icon: Users,
@@ -76,7 +33,7 @@ const MetricsCards = () => {
     },
     {
       title: "Active Users",
-      value: animatedValues.activeUsers.toLocaleString(),
+      value: summary.activeUsers,
       change: "+15.3%",
       trend: "up",
       icon: TrendingUp,
@@ -84,7 +41,7 @@ const MetricsCards = () => {
     },
     {
       title: "Total Projects",
-      value: animatedValues.projects.toString(),
+      value: summary.totalProjects,
       change: "-2.1%",
       trend: "down",
       icon: FileText,
