@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Archive, LayoutGrid, List } from "lucide-react";
+import { Archive, GanttChart, LayoutGrid, List } from "lucide-react";
 import { JSONContent } from "@tiptap/react";
 import { TaskCreationPayload, TaskListing } from "@/lib/api/task/task.types";
 import { TaskPriority, TaskStatus } from "@/types/task.enum";
@@ -135,7 +135,6 @@ function TaskListingPageTemplate({
     }
   );
 
-  console.log("activeSprint", activeSprint);
   // map tasks to board view format
   const boardTasks = useMemo(() => {
     const filtered = activeSprint
@@ -229,7 +228,7 @@ function TaskListingPageTemplate({
                     {tab === "Board" && <LayoutGrid size={16} />}
                     {tab === "List" && <List size={16} />}
                     {tab === "Backlog" && <Archive size={16} />}
-                    {/* {tab === "Timeline" && <GanttChart size={16} />} */}
+                    {tab === "Timeline" && <GanttChart size={16} />}
                     {tab}
                   </button>
                 );

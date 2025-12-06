@@ -31,7 +31,11 @@ export default function Layout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (workspaceMember?.data) {
       dispatch(
-        setWorkspaceData({ workspaceId, memberRole: workspaceMember.data.role })
+        setWorkspaceData({
+          workspaceId,
+          memberRole: workspaceMember.data.role,
+          permissions: workspaceMember.data.permissions,
+        })
       );
     }
   }, [workspaceId, workspaceMember?.data, dispatch]);

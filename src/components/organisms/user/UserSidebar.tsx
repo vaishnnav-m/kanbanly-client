@@ -16,7 +16,6 @@ import NavProjects from "@/components/molecules/user-sidebar/NavProjects";
 import NavWorkspace from "@/components/molecules/user-sidebar/NavWorkspace";
 import { useGetAllProjects } from "@/lib/hooks/useProject";
 import { RootState } from "@/store";
-import { workspaceRoles } from "@/types/roles.enum";
 import { useGetChats } from "@/lib/hooks/useChat";
 
 function UserSidebar() {
@@ -34,8 +33,6 @@ function UserSidebar() {
   );
 
   const { data: chats, isPending: isChatLoading } = useGetChats(workspaceId);
-
-  const role = useSelector((state: RootState) => state.workspace.memberRole);
 
   const navigation = [
     { title: "Home", url: `/workspaces/${params.slug}`, icon: Home },
@@ -72,7 +69,6 @@ function UserSidebar() {
         <NavProjects
           isLoading={isProjectLoading}
           projects={projects?.data}
-          role={role as workspaceRoles}
         />
         <NavWorkspace />
       </SidebarContent>

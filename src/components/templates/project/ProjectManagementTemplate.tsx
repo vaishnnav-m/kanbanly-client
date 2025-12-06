@@ -13,7 +13,6 @@ import {
   ProjectEditingPayload,
 } from "@/lib/api/project/project.types";
 import { getDate } from "@/lib/utils";
-import { workspaceRoles } from "@/types/roles.enum";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { InviteUserDropdown } from "@/components/molecules/InviteUserDropdown";
 import { createProjectMemberColumns } from "@/lib/columns/project-member.column";
@@ -54,7 +53,7 @@ ProjectManagementTemplateProps) {
   const [modalType, setModalType] = useState<"project" | "member" | null>(null);
   const [selectedMember, setSelectedMember] = useState("");
 
-  const role = useSelector((state: RootState) => state.workspace.memberRole);
+  const { permissions } = useSelector((state: RootState) => state.workspace);
 
   const handleSave = () => {
     if (!editData) {
@@ -72,9 +71,6 @@ ProjectManagementTemplateProps) {
     setIsEditing(false);
   };
 
-  const havePermission =
-    role === workspaceRoles.owner || role === workspaceRoles.projectManager;
-
   // Wrapper function to handle the dropdown invitation format
   const handleDropdownInvite = (data: {
     invitedEmail?: string;
@@ -88,14 +84,14 @@ ProjectManagementTemplateProps) {
 
   // members table
   const headings = ["Name", "Email", "Role"];
-  if (role === workspaceRoles.owner || role === workspaceRoles.projectManager) {
+  if (permissions?.memberRemove) {
     headings.push("Action");
   }
 
   const cols = createProjectMemberColumns((id: string) => {
     setModalType("member");
     setSelectedMember(id);
-  }, role as workspaceRoles);
+  }, !!permissions?.memberRemove);
 
   // for confirmation modal
   const modalContentMap = {
@@ -124,23 +120,27 @@ ProjectManagementTemplateProps) {
             </p>
           </div>
 
-          {!isEditing && havePermission && (
+          {!isEditing && (
             <div className="flex gap-5">
-              <Button
-                disabled={isDeleting}
-                onClick={() => setModalType("project")}
-                className="bg-red-500/80 hover:bg-red-500"
-              >
-                <Trash className="w-4 h-4 mr-2" />
-                {isDeleting ? "Removing..." : "Remove Project"}
-              </Button>
-              <Button
-                onClick={handleEdit}
-                className="bg-primary hover:bg-primary/90"
-              >
-                <Edit3 className="w-4 h-4 mr-2" />
-                Edit Details
-              </Button>
+              {permissions?.projectDelete && (
+                <Button
+                  disabled={isDeleting}
+                  onClick={() => setModalType("project")}
+                  className="bg-red-500/80 hover:bg-red-500"
+                >
+                  <Trash className="w-4 h-4 mr-2" />
+                  {isDeleting ? "Removing..." : "Remove Project"}
+                </Button>
+              )}
+              {permissions?.projectEdit && (
+                <Button
+                  onClick={handleEdit}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Details
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -258,7 +258,7 @@ ProjectManagementTemplateProps) {
           {/* Members Card */}
           <Card className="bg-blue-200/5 border-workspace-border">
             <CardContent className="p-8">
-              {havePermission && (
+              {permissions?.projectMemberAdd && (
                 <div className="w-full text-end pb-5">
                   <Button
                     ref={buttonRef}

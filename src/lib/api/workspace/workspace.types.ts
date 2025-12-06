@@ -70,6 +70,11 @@ export interface WorkspaceMember {
   isActive: boolean;
 }
 
+export type CurrentMemberResponse = Omit<WorkspaceMember, "_id"> & {
+  userId: string;
+  permissions: IWorkspacePermissions;
+};
+
 export interface EditWorkspaceMember {
   workspaceId: string;
   data: { memberId: string; role?: workspaceRoles; isActive?: boolean };

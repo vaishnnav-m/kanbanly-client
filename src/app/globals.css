@@ -231,3 +231,11 @@
 .editor-container button[data-active="true"] {
   background-color: hsl(var(--muted));
 }
+
+.mention {
+  color: #2563eb;
+  background-color: #dbeafe;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 500;
+}

@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/atoms/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import {
   Card,
   CardContent,
@@ -41,8 +41,9 @@ export function TeamPerformance({
               <div className="flex items-center gap-3 flex-1">
                 <div className="relative">
                   <Avatar className="h-12 w-12 border-2 border-primary">
+                    <AvatarImage src={performer.avatar} />
                     <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                      {performer.avatar}
+                      {performer.name[0]}
                     </AvatarFallback>
                   </Avatar>
                   {index === 0 && (

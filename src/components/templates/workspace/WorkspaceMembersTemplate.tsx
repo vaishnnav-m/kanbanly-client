@@ -58,7 +58,7 @@ function WorkspaceMembersTemplates({
   //   description: "";
   // } | null>();
   const [selectedMemberId, setSelectedMemberId] = useState("");
-  const role = useSelector((state: RootState) => state.workspace.memberRole);
+  const { permissions } = useSelector((state: RootState) => state.workspace);
   const [searchValue, setSearchValue] = useState("");
   const [filteredMembers, setFilteredMembers] = useState<
     WorkspaceMember[] | []
@@ -94,7 +94,7 @@ function WorkspaceMembersTemplates({
     handleStatusUpdate,
     handleRemove,
     handleChat,
-    role as workspaceRoles,
+    !!permissions?.workspaceManage,
     userId
   );
 
@@ -137,7 +137,7 @@ function WorkspaceMembersTemplates({
                   />
                 </div>
                 <div className="flex-1 text-end">
-                  {role === "owner" && (
+                  {permissions?.workspaceManage && (
                     <Button onClick={() => setIsModalOpen(true)}>
                       <UserPlus />
                       Invite Members
