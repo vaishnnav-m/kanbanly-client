@@ -12,8 +12,6 @@ import { InviteUserDropdown } from "../InviteUserDropdown";
 import { User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { hasPermission, PERMISSIONS } from "@/lib/utils";
-import { workspaceRoles } from "@/types/roles.enum";
 import { useTaskPageContext } from "@/contexts/TaskPageContext";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
@@ -38,14 +36,11 @@ export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
     setIsInvitingUser(false);
   };
 
-  const memberRole = useSelector(
-    (state: RootState) => state.workspace.memberRole
+  const permissions = useSelector(
+    (state: RootState) => state.workspace.permissions
   );
 
-  const isVisible = hasPermission(
-    memberRole as workspaceRoles,
-    PERMISSIONS.MEMBER_ASSIGN_TASK
-  );
+  const isVisible = permissions?.taskAssign;
 
   return (
     <>

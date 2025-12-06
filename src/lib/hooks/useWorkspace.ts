@@ -23,6 +23,7 @@ import {
   verifyInvitation,
 } from "../api/workspace";
 import {
+  CurrentMemberResponse,
   EditWorkspaceMember,
   IDashboardResponse,
   InvitationList,
@@ -268,7 +269,7 @@ export const useWorkspaceMembers = (
 };
 
 export const useGetCurrentMember = (workspaceId: string | null) => {
-  return useQuery<ApiResponse<WorkspaceMember>, Error>({
+  return useQuery<ApiResponse<CurrentMemberResponse>, Error>({
     queryKey: ["getCurrentMember", workspaceId],
     queryFn: () => getCurrentMember(workspaceId),
     enabled: !!workspaceId,
@@ -282,14 +283,17 @@ export const useEditWorkspaceMember = () => {
   return useMutation<ApiResponse, Error, EditWorkspaceMember>({
     mutationKey: ["editWorkspaceMember"],
     mutationFn: editWorkspaceMember,
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       toast.showSuccess({
         title: "Successfully Updated",
         description: response.message,
         duration: 6000,
       });
       queryClient.invalidateQueries({
-        queryKey: ["getWorkspaceMembers", "getAllInvitations"],
+        queryKey: ["getWorkspaceMembers", variables.workspaceId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["getAllInvitations"],
       });
     },
     onError: (error: any) => {

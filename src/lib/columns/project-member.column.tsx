@@ -2,15 +2,13 @@
 import { TableColumn } from "@/types/table.types";
 import { WorkspaceMember } from "../api/workspace/workspace.types";
 import { Trash } from "lucide-react";
-import { workspaceRoles } from "@/types/roles.enum";
-import { hasPermission, PERMISSIONS } from "../utils";
 import { Avatar } from "@/components/atoms/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { getAssignedTo } from "../task-utils";
 
 export const createProjectMemberColumns = (
   onRemove: (id: string) => void,
-  userRole: workspaceRoles
+  hasPermission: boolean
 ): TableColumn<WorkspaceMember>[] => {
   const columns: TableColumn<WorkspaceMember>[] = [
     {
@@ -57,7 +55,7 @@ export const createProjectMemberColumns = (
     },
   ];
 
-  if (hasPermission(userRole, PERMISSIONS.MANAGE_MEMBERS)) {
+  if (hasPermission) {
     columns.push({
       key: "delete",
       label: "Manage",

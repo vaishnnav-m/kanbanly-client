@@ -49,7 +49,7 @@ export const ListView = ({
   const priorites = Object.values(TaskPriority);
 
   const [isTaskCreationModalOpen, setIsTaskCreationModalOpen] = useState(false);
-  const role = useSelector((state: RootState) => state.workspace.memberRole);
+  const permissions = useSelector((state: RootState) => state.workspace.permissions);
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   const taskColumns = createTaskColumns({
@@ -63,7 +63,7 @@ export const ListView = ({
     <div>
       <div className="flex items-center justify-between mb-3 bg-gray-800/20 p-3 rounded-lg border-b border-border">
         <div className="flex items-center gap-3">
-          {role !== "member" && (
+          {permissions?.taskCreate && (
             <Button
               onClick={() => setIsTaskCreationModalOpen(true)}
               className="bg-card hover:bg-card/90 border border-border"

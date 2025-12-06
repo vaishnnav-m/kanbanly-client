@@ -12,25 +12,28 @@ import {
 import { Skeleton } from "@/components/atoms/skeleton";
 import { CreateProjectModal } from "@/components/organisms/project/CreateProject";
 import { IProject } from "@/lib/api/project/project.types";
+import { RootState } from "@/store";
 import { setprojectData } from "@/store/slices/projectSlice";
-import { workspaceRoles } from "@/types/roles.enum";
 import { FolderClosed, FolderOpen, List, Plus } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
 interface NavProjectsProps {
   projects?: IProject[];
   isLoading: boolean;
-  role: workspaceRoles;
 }
 
-function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
+function NavProjects({ projects, isLoading }: NavProjectsProps) {
   const dispatch = useDispatch();
   const router = useRouter();
   const params = useParams();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const permissions = useSelector(
+    (state: RootState) => state.workspace.permissions
+  );
 
   function handleProjectClick(project: IProject) {
     localStorage.setItem("projectName", project.name);
@@ -53,7 +56,7 @@ function NavProjects({ projects, isLoading, role }: NavProjectsProps) {
       <SidebarGroupLabel>
         <div className="w-full flex justify-between items-center">
           <span>Projects</span>
-          {role === "owner" && (
+          {permissions?.projectCreate && (
             <SidebarMenuButton
               className="w-fit"
               onClick={() => setIsProjectModalOpen(true)}

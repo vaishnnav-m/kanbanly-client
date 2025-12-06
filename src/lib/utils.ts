@@ -133,7 +133,6 @@ export const hasPermission = (
   role: workspaceRoles,
   permission: Permission
 ): boolean => {
-  console.log(role);
   const permissions = rolePermissions.get(role);
   if (!permissions) return false;
   return permissions.has(permission);

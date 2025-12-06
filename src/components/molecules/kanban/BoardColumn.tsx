@@ -8,8 +8,6 @@ import { TaskStatus } from "@/types/task.enum";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { hasPermission, PERMISSIONS } from "@/lib/utils";
-import { workspaceRoles } from "@/types/roles.enum";
 
 export const BoardColumn = ({
   title,
@@ -28,8 +26,8 @@ export const BoardColumn = ({
 }) => {
   const [active, setActive] = useState(false);
   const [completedEffect, setCompletedEffect] = useState(false);
-  const userRole = useSelector(
-    (state: RootState) => state.workspace.memberRole
+  const permissions = useSelector(
+    (state: RootState) => state.workspace.permissions
   );
 
   useEffect(() => {
@@ -139,10 +137,7 @@ export const BoardColumn = ({
 
   const filteredTasks = tasks.filter((c) => c.status === status);
 
-  const isAddTaskVisible = hasPermission(
-    userRole as workspaceRoles,
-    PERMISSIONS.CREATE_TASK
-  );
+  const isAddTaskVisible = permissions?.taskCreate;
 
   return (
     <div className="bg-card w-1/4 shrink-0">

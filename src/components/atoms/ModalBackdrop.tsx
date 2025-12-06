@@ -6,7 +6,7 @@ interface ModalBackdropProps {
 
 export const ModalBackdrop = ({ onClick }: ModalBackdropProps) => (
   <div
-    className="fixed inset-0 bg-black/50 z-[999]"
+    className="fixed inset-0 bg-black/50 z-[99]"
     onClick={onClick}
     aria-hidden="true"
   />
