@@ -84,14 +84,14 @@ ProjectManagementTemplateProps) {
 
   // members table
   const headings = ["Name", "Email", "Role"];
-  if (permissions?.memberRemove) {
+  if (permissions?.projectMemberDelete) {
     headings.push("Action");
   }
 
   const cols = createProjectMemberColumns((id: string) => {
     setModalType("member");
     setSelectedMember(id);
-  }, !!permissions?.memberRemove);
+  }, !!permissions?.projectMemberDelete);
 
   // for confirmation modal
   const modalContentMap = {

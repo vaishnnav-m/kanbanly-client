@@ -3,6 +3,7 @@ import React, { ReactNode, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useSocket } from "@/contexts/SocketContext";
 import { RootState } from "@/store";
+import { AIChat } from "@/components/organisms/ai-chat/AIChat";
 
 export default function WorkspacesLayout({ children }: { children: ReactNode }) {
   const workSpaceId = useSelector(
@@ -16,5 +17,10 @@ export default function WorkspacesLayout({ children }: { children: ReactNode }) 
     }
   }, [workSpaceId, joinWorkspaceRoom, isConnected]);
 
-  return <div>{children}</div>;
+  return (
+    <div className="relative min-h-screen">
+      {children}
+      <AIChat />
+    </div>
+  );
 }

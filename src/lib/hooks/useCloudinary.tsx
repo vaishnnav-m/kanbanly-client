@@ -1,6 +1,5 @@
 import {
   useMutation,
-  UseMutationOptions,
   useQuery,
 } from "@tanstack/react-query";
 import { getSignature, uploadPicture } from "../api/cloudinary";
