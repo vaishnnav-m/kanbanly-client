@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Sparkles, Bot, User, Minimize2 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
@@ -16,18 +22,21 @@ interface Message {
   timestamp: Date;
 }
 
-export const AIChat = () => {
+interface AIChatProps {
+  messages: Message[];
+  inputValue: string;
+  setInputValue: Dispatch<SetStateAction<string>>;
+  handleSend: () => void;
+  isGenerating: boolean;
+}
+
+export const AIChat = ({
+  messages,
+  inputValue,
+  setInputValue,
+  handleSend,
+}: AIChatProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content:
-        "Hi! I'm your Kanbanly AI assistant. How can I help you manage your workspace today?",
-      timestamp: new Date(),
-    },
-  ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -41,34 +50,6 @@ export const AIChat = () => {
       return () => clearTimeout(timer);
     }
   }, [messages, isOpen]);
-
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: inputValue,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-    setInputValue("");
-
-    // Simulated AI response for UI demonstration
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content:
-            "That's a great question! Since I'm currently in 'design-only' mode, I'll just say that I can help you with task automation, insights, and project management once my logic is fully implemented.",
-          timestamp: new Date(),
-        },
-      ]);
-    }, 1000);
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -95,37 +76,39 @@ export const AIChat = () => {
           >
             <Card className="flex flex-col h-full border-primary/20 shadow-2xl overflow-hidden backdrop-blur-sm bg-card/95 rounded-3xl">
               {/* Header */}
-              <div className="p-4 bg-primary text-primary-foreground flex items-center justify-between shadow-md">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-white/20 rounded-lg">
-                    <Sparkles className="w-5 h-5" />
+              <div className="py-2.5 px-4 bg-primary text-primary-foreground flex items-center justify-between shadow-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1 bg-white/20 rounded-md">
+                    <Sparkles className="w-4 h-4" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-sm">Kanbanly AI</h3>
+                  <div className="flex flex-col">
+                    <h3 className="font-semibold text-xs leading-none mb-0.5">
+                      Kanbanly AI
+                    </h3>
                     <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                      <span className="text-[10px] opacity-80">
-                        Always active
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                      <span className="text-[9px] opacity-70 font-medium">
+                        Online
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-primary-foreground hover:bg-white/10"
+                    className="h-7 w-7 text-primary-foreground hover:bg-white/10 rounded-full"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Minimize2 className="w-4 h-4" />
+                    <Minimize2 className="w-3.5 h-3.5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-primary-foreground hover:bg-white/10"
+                    className="h-7 w-7 text-primary-foreground hover:bg-white/10 rounded-full"
                     onClick={() => setIsOpen(false)}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
@@ -219,7 +202,7 @@ export const AIChat = () => {
       </AnimatePresence>
 
       <motion.button
-        whileHover={{ scale: 1.1 }}
+        // whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
         className="h-16 w-16 flex items-center justify-center transition-all duration-300 bg-transparent"
