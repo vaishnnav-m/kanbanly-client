@@ -5,13 +5,7 @@ import { useSocket } from "@/contexts/SocketContext";
 import { RootState } from "@/store";
 import { AIChat } from "@/components/organisms/ai-chat/AIChat";
 import { useChatAi } from "@/lib/hooks/useAiChat";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-}
+import { AiMessage } from "@/lib/api/ai/ai.types";
 
 export default function WorkspacesLayout({
   children,
@@ -22,9 +16,8 @@ export default function WorkspacesLayout({
     (state: RootState) => state.workspace.workspaceId
   );
   const { joinWorkspaceRoom, isConnected } = useSocket();
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<AiMessage[]>([
     {
-      id: "1",
       role: "assistant",
       content:
         "Hi! I'm your Kanbanly AI assistant. I can help you manage your workspace. You can ask me how to use the tool (e.g., 'How do I create a sprint?') or give me direct instructions (e.g., 'Create a task named Prepare Report'). How can I help you today?",
@@ -35,8 +28,7 @@ export default function WorkspacesLayout({
 
   const { mutate: chatAi, isPending: isGenerating } = useChatAi({
     onSuccess(data) {
-      const newMessage: Message = {
-        id: Date.now().toString(),
+      const newMessage: AiMessage = {
         role: "assistant",
         content: data.data as string,
         timestamp: new Date(),
@@ -49,17 +41,17 @@ export default function WorkspacesLayout({
   const handleSend = () => {
     if (!inputValue.trim()) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
+    const newMessage: AiMessage = {
       role: "user",
       content: inputValue,
       timestamp: new Date(),
     };
 
+    const prevMessages = messages;
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
 
-    chatAi({ question: inputValue, workspaceId });
+    chatAi({ question: inputValue, workspaceId, prevMessages });
   };
 
   useEffect(() => {

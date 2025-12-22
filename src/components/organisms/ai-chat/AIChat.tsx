@@ -14,16 +14,10 @@ import { Input } from "@/components/atoms/input";
 import { ScrollArea } from "@/components/atoms/scroll-area";
 import { cn } from "@/lib/utils";
 import { RobotIcon } from "@/components/molecules/ai/RobotIcon";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-}
+import { AiMessage } from "@/lib/api/ai/ai.types";
 
 interface AIChatProps {
-  messages: Message[];
+  messages: AiMessage[];
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
   handleSend: () => void;
@@ -35,6 +29,7 @@ export const AIChat = ({
   inputValue,
   setInputValue,
   handleSend,
+  isGenerating,
 }: AIChatProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -49,7 +44,7 @@ export const AIChat = ({
       const timer = setTimeout(scrollToBottom, 100);
       return () => clearTimeout(timer);
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isGenerating]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -123,9 +118,9 @@ export const AIChat = ({
               >
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-4">
-                    {messages.map((msg) => (
+                    {messages.map((msg, index) => (
                       <div
-                        key={msg.id}
+                        key={index}
                         className={cn(
                           "flex w-full gap-2",
                           msg.role === "user" ? "justify-end" : "justify-start"
@@ -164,6 +159,46 @@ export const AIChat = ({
                         )}
                       </div>
                     ))}
+                    {isGenerating && (
+                      <div className="flex w-full gap-2 justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1 border border-primary/20">
+                          <Bot className="w-4 h-4 text-primary animate-pulse" />
+                        </div>
+                        <div className="bg-muted text-foreground rounded-2xl rounded-tl-none border border-border px-4 py-3 shadow-sm">
+                          <div className="flex gap-1.5 items-center h-4">
+                            <motion.span
+                              animate={{ opacity: [0.4, 1, 0.4] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                times: [0, 0.5, 1],
+                              }}
+                              className="w-1.5 h-1.5 bg-primary rounded-full"
+                            />
+                            <motion.span
+                              animate={{ opacity: [0.4, 1, 0.4] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                times: [0, 0.5, 1],
+                                delay: 0.2,
+                              }}
+                              className="w-1.5 h-1.5 bg-primary rounded-full"
+                            />
+                            <motion.span
+                              animate={{ opacity: [0.4, 1, 0.4] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                times: [0, 0.5, 1],
+                                delay: 0.4,
+                              }}
+                              className="w-1.5 h-1.5 bg-primary rounded-full"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
@@ -177,12 +212,13 @@ export const AIChat = ({
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    disabled={isGenerating}
                     className="flex-1 bg-muted/50 border-border focus-visible:ring-primary"
                   />
                   <Button
                     size="icon"
                     onClick={handleSend}
-                    disabled={!inputValue.trim()}
+                    disabled={!inputValue.trim() || isGenerating}
                     className="shrink-0 shadow-md"
                   >
                     <Send className="w-4 h-4" />
@@ -208,7 +244,10 @@ export const AIChat = ({
         className="h-16 w-16 flex items-center justify-center transition-all duration-300 bg-transparent"
       >
         <div className="relative">
-          <RobotIcon className="drop-shadow-2xl" isTransmitting={!isOpen} />
+          <RobotIcon
+            className="drop-shadow-2xl"
+            isTransmitting={isGenerating || !isOpen}
+          />
         </div>
       </motion.button>
     </div>
