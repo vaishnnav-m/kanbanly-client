@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Bell, CheckCircle, AlertTriangle, AlertCircle } from "lucide-react";
+import { X, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Notification,

@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/atoms/card";
-import React, { useState } from "react"; // useMemo is no longer needed
+import React, { useState } from "react";
 import { Folder, Users, Plus, Calendar, Activity, Search } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { IProject } from "@/lib/api/project/project.types";
@@ -54,8 +54,6 @@ function ProjectListingPageTemplate({
 
   const canCreateProject = permissions?.projectCreate;
 
-  // --- Client-side filtering logic has been removed ---
-
   return (
     <div className="relative overflow-hidden">
       <div className="relative z-10">
@@ -102,7 +100,7 @@ function ProjectListingPageTemplate({
                     placeholder="Search by project name..."
                     value={searchTerm}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-10" // The shadcn Input component handles padding and other styles well
+                    className="pl-10"
                   />
                 </div>
 

@@ -48,6 +48,16 @@ export const useNotificationContext = () => {
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isVisible: false } : n))
+    );
+
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, 300);
+  }, []);
+
   const showNotification = useCallback(
     (data: Omit<Notification, "id" | "isVisible" | "timestamp">) => {
       const id = Math.random().toString(36).substr(2, 9);
@@ -60,25 +70,14 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
       setNotifications((prev) => [newNotification, ...prev]);
 
-      // Auto dismiss after 5 seconds
       setTimeout(() => {
         removeNotification(id);
       }, 5000);
 
       return id;
     },
-    []
+    [removeNotification]
   );
-
-  const removeNotification = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isVisible: false } : n))
-    );
-
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 300); // Wait for animation
-  }, []);
 
   return (
     <NotificationContext.Provider
