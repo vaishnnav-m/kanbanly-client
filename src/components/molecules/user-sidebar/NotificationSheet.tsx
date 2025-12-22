@@ -58,7 +58,7 @@ export function NotificationSheet() {
                         {notification.type}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(notification.timestamp).toLocaleString()}
+                        {new Date(notification.createdAt).toLocaleString()}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">

@@ -1,11 +1,12 @@
 "use client";
+import { SuspenseLoader } from "@/components/organisms/SuspenseLoader";
 import { useVerifyCheckoutSession } from "@/lib/hooks/useSubscription";
 import { SubscriptionStatus } from "@/types/status.enum";
 import { CheckCircle, Clock, AlertTriangle, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-const PaymentSuccessPage = () => {
+const PaymentSuccessContent = () => {
   const params = useSearchParams();
   const sessionId = params.get("session_id") as string;
   const { data } = useVerifyCheckoutSession(sessionId);
@@ -158,6 +159,14 @@ const PaymentSuccessPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const PaymentSuccessPage = () => {
+  return (
+    <Suspense fallback={<SuspenseLoader />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 };
 

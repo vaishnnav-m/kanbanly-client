@@ -4,9 +4,10 @@ import InvitationFailureTemplate from "@/components/templates/workspace/Invitati
 import { useVerifyInvitation } from "@/lib/hooks/useWorkspace";
 import { AxiosError } from "axios";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
+import { SuspenseLoader } from "@/components/organisms/SuspenseLoader";
 
-export default function InvitationHandlePage() {
+function InvitationHandleContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -41,4 +42,12 @@ export default function InvitationHandlePage() {
       <InvitationFailureTemplate errorMessage="The invitation link is missing or invalid. Please check your link or request a new one." />
     );
   }
+}
+
+export default function InvitationHandlePage() {
+  return (
+    <Suspense fallback={<SuspenseLoader />}>
+      <InvitationHandleContent />
+    </Suspense>
+  );
 }

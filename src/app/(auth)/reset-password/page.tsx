@@ -3,9 +3,10 @@ import ResetPasswordTemplate from "@/components/templates/auth/ResetPasswordTemp
 import { useResetPassword } from "@/lib/hooks/useAuth";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
+import { SuspenseLoader } from "@/components/organisms/SuspenseLoader";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const { mutate: resetPassword } = useResetPassword();
   const [error, setError] = useState<Record<string, string>>();
   const router = useRouter();
@@ -54,5 +55,13 @@ export default function ResetPasswordPage() {
       isLoading={false}
       errorMessages={error}
     />
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<SuspenseLoader />}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

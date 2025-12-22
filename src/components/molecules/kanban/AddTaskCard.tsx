@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, JSX, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Bug, CheckSquare, Star } from "lucide-react";
+import { Plus, Bug, CheckSquare } from "lucide-react";
 import { TaskPriority, TaskStatus, WorkItemType } from "@/types/task.enum";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 
@@ -19,11 +19,6 @@ const workItemOptions: {
     type: WorkItemType.Bug,
     label: "Bug",
     icon: <Bug className="size-4 inline" />,
-  },
-  {
-    type: WorkItemType.Feature,
-    label: "Feature",
-    icon: <Star className="size-4 inline" />,
   },
 ];
 
@@ -44,7 +39,7 @@ export const AddTaskCard = ({
     e.preventDefault();
     if (!text.trim().length) return;
 
-    console.log("status",status);
+    console.log("status", status);
 
     const newTask: TaskCreationPayload = {
       task: text.trim(),

@@ -3,7 +3,7 @@ import { BaseModal } from "@/components/molecules/BaseModal";
 import { TaskCreationPayload } from "@/lib/api/task/task.types";
 import { useCreateTask } from "@/lib/hooks/useTask";
 import { RootState } from "@/store";
-import { TaskPriority } from "@/types/task.enum";
+import { TaskPriority, WorkItemType } from "@/types/task.enum";
 import React, { ChangeEvent, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -40,6 +40,7 @@ export const CreateTaskModal = ({
     assignedTo: "",
     dueDate: "",
     priority: TaskPriority.low,
+    workItemType: WorkItemType.Task,
   });
   // errors
   const [errors, setErrors] = useState<{

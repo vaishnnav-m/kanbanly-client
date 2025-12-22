@@ -1,4 +1,4 @@
-import { Bug, CheckSquare, FileText, Star, HelpCircle } from "lucide-react";
+import { Bug, CheckSquare, FileText, HelpCircle } from "lucide-react";
 import { Issue, Section } from "@/components/organisms/project/BacklogView";
 import { TaskListing } from "./api/task/task.types";
 import { WorkspaceMember } from "./api/workspace/workspace.types";
@@ -100,11 +100,6 @@ const issueTypeConfig = {
     label: "Story",
     icon: FileText,
     className: "text-green-500",
-  },
-  [WorkItemType.Feature]: {
-    label: "Feature",
-    icon: Star,
-    className: "text-purple-500",
   },
   [WorkItemType.Bug]: {
     label: "Bug",

@@ -13,7 +13,11 @@ const LandingPageTemplate = () => {
       <main className="flex-grow">
         <HeroSection />
         <FeaturesSection />
-        <PricingSection buttonLabel="Get Started" />
+        <PricingSection
+          buttonLabel="Get Started"
+          isLoading={false}
+          onPlanSelection={() => {}}
+        />
       </main>
       <Footer />
     </div>

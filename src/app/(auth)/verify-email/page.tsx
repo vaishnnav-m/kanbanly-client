@@ -5,10 +5,11 @@ import { useVerifyEmail } from "@/lib/hooks/useAuth";
 import { RootState } from "@/store";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { SuspenseLoader } from "@/components/organisms/SuspenseLoader";
 
-const VerifyEmailPage = () => {
+const VerifyEmailContent = () => {
   const router = useRouter();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -54,6 +55,14 @@ const VerifyEmailPage = () => {
       />
     );
   }
+};
+
+const VerifyEmailPage = () => {
+  return (
+    <Suspense fallback={<SuspenseLoader />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
 };
 
 export default VerifyEmailPage;

@@ -94,7 +94,7 @@ function WorkspaceMembersTemplates({
     handleStatusUpdate,
     handleRemove,
     handleChat,
-    !!permissions?.workspaceManage,
+    !!permissions?.workspaceMemberAdd,
     userId
   );
 
@@ -137,7 +137,7 @@ function WorkspaceMembersTemplates({
                   />
                 </div>
                 <div className="flex-1 text-end">
-                  {permissions?.workspaceManage && (
+                  {permissions?.workspaceMemberAdd && (
                     <Button onClick={() => setIsModalOpen(true)}>
                       <UserPlus />
                       Invite Members

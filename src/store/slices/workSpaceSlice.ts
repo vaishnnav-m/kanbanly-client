@@ -23,14 +23,16 @@ const workspaceSlice = createSlice({
       action: PayloadAction<{
         workspaceId: string;
         memberRole?: string;
-        permissions: IWorkspacePermissions;
+        permissions?: IWorkspacePermissions;
       }>
     ) => {
       state.workspaceId = action.payload.workspaceId;
       state.memberRole = action.payload?.memberRole
         ? action.payload.memberRole
         : "";
-      state.permissions = action.payload.permissions;
+      state.permissions = action.payload.permissions
+        ? action.payload.permissions
+        : null;
     },
     removeWorkspaceData: (state) => {
       state.workspaceId = "";
