@@ -61,7 +61,7 @@ export default function WorkspacesLayout({
   }, [workspaceId, joinWorkspaceRoom, isConnected]);
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative">
       {children}
       <AIChat
         messages={messages}

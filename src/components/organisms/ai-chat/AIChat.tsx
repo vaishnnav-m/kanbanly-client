@@ -6,6 +6,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Sparkles, Bot, User, Minimize2 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
@@ -31,6 +32,7 @@ export const AIChat = ({
   handleSend,
   isGenerating,
 }: AIChatProps) => {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +54,10 @@ export const AIChat = ({
       handleSend();
     }
   };
+
+  if (pathname?.includes("/chats/")) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
