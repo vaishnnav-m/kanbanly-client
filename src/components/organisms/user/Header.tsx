@@ -35,6 +35,7 @@ import {
   useRejectInvitation,
   useVerifyInvitation,
 } from "@/lib/hooks/useWorkspace";
+import { ThemeToggleButton } from "@/components/molecules/ThemeToggleButton";
 
 function Header() {
   const [notifications, setNotifications] = useState<NotificationResponse[]>(
@@ -137,6 +138,7 @@ function Header() {
         </Command> */}
       </div>
       <div className="flex gap-5 items-center">
+        <ThemeToggleButton />
         <Sheet>
           <SheetTrigger className="relative group">
             <Bell className="w-5 h-5 bell-icon  text-foreground hover:text-foreground transition-colors" />
@@ -188,47 +190,48 @@ function Header() {
                       <p className="text-sm text-muted-foreground">
                         {notification.message}
                       </p>
-                      {notification.type === "INVITATION" && notification.token && (
-                        <div className="flex gap-2 mt-2">
-                          <Button
-                            size="sm"
-                            className="h-7 px-3 text-xs bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() =>
-                              handleAccept(
-                                notification.token!,
-                                notification.notificationId
-                              )
-                            }
-                            disabled={isAccepting || isRejecting}
-                          >
-                            {isAccepting ? (
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <Check className="h-3 w-3 mr-1" />
-                            )}
-                            Accept
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
-                            onClick={() =>
-                              handleReject(
-                                notification.token!,
-                                notification.notificationId
-                              )
-                            }
-                            disabled={isAccepting || isRejecting}
-                          >
-                            {isRejecting ? (
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <X className="h-3 w-3 mr-1" />
-                            )}
-                            Reject
-                          </Button>
-                        </div>
-                      )}
+                      {notification.type === "INVITATION" &&
+                        notification.token && (
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              size="sm"
+                              className="h-7 px-3 text-xs bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() =>
+                                handleAccept(
+                                  notification.token!,
+                                  notification.notificationId
+                                )
+                              }
+                              disabled={isAccepting || isRejecting}
+                            >
+                              {isAccepting ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Check className="h-3 w-3 mr-1" />
+                              )}
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-3 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                              onClick={() =>
+                                handleReject(
+                                  notification.token!,
+                                  notification.notificationId
+                                )
+                              }
+                              disabled={isAccepting || isRejecting}
+                            >
+                              {isRejecting ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <X className="h-3 w-3 mr-1" />
+                              )}
+                              Reject
+                            </Button>
+                          </div>
+                        )}
                       <Button
                         onClick={() => {
                           setSelectedNotificationId(
@@ -258,20 +261,33 @@ function Header() {
                 </div>
               )}
             </ScrollArea>
-            <AlertDialog open={isConfirmationOpen} onOpenChange={setIsConfirmationOpen}>
+            <AlertDialog
+              open={isConfirmationOpen}
+              onOpenChange={setIsConfirmationOpen}
+            >
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure to make all notifications read?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Are you sure to make all notifications read?
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setSelectedNotificationId("")}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {
-                    handleMarkAsRead(selectedNotificationId);
-                    setSelectedNotificationId("");
-                  }}>Continue</AlertDialogAction>
+                  <AlertDialogCancel
+                    onClick={() => setSelectedNotificationId("")}
+                  >
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      handleMarkAsRead(selectedNotificationId);
+                      setSelectedNotificationId("");
+                    }}
+                  >
+                    Continue
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

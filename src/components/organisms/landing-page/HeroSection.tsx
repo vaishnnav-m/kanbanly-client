@@ -67,7 +67,7 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Placeholder for dashboard mockup */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
@@ -78,7 +78,7 @@ const HeroSection = () => {
               Dashboard Mockup / Animation
             </p>
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );
