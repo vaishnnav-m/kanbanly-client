@@ -116,8 +116,6 @@ function TaskListingPageTemplate({
     setCombinedTasks(Array.from(map.values()));
   }, [tasks, socketTasks]);
 
-  console.log("combinedTasks", combinedTasks);
-
   // single task fetching
   const { data: taskData } = useGetOneTask(
     workspaceId,
@@ -194,9 +192,9 @@ function TaskListingPageTemplate({
 
   return (
     <TaskPageContext.Provider value={contextValue}>
-      <div className="bg-background">
+      <div className="min-h-[calc(100vh-75px)] bg-slate-50/50 dark:bg-background transition-colors duration-300">
         {/* Header */}
-        <div className="border-b border-border sticky top-[75px] z-10 bg-background">
+        <div className="border-b border-border sticky top-[75px] z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center justify-between px-6 py-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">

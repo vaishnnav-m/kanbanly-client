@@ -32,7 +32,7 @@ function AdminLayout({ children }: { children: ReactNode }) {
               onClick={handleLogout}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer text-white transition-all duration-300`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer dark:text-white transition-all duration-300`}
               aria-label="Logout"
             >
               <LogOut className="w-5 h-5" />

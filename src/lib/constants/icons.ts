@@ -1,7 +1,7 @@
 import { Briefcase, Coffee, Heart, Music, Rocket, Settings, Star, Target, Users, Zap } from "lucide-react";
 
 export const workspaceIcons = [
-  { icon: Briefcase, name: "briefcase", color: "bg-blue-500" },
+  { icon: Briefcase, name: "briefcase", color: "dark:bg-blue-500" },
   { icon: Users, name: "users", color: "bg-green-500" },
   { icon: Settings, name: "settings", color: "bg-gray-500" },
   { icon: Heart, name: "heart", color: "bg-red-500" },

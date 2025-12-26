@@ -60,7 +60,7 @@ export const AssigneeCard = ({ taskId, assignedTo }: AssigneeProps) => {
                 ref={inviteButtonRef}
                 onClick={() => setIsInvitingUser(true)}
                 variant="ghost"
-                className="p-1 size-6 rounded-full hover:bg-white/20 bg-white/10 flex items-center justify-center"
+                className="p-1 size-6 rounded-full hover:bg-black/10 dark:hover:bg-white/20 bg-white/10 flex items-center justify-center"
                 disabled={isInvitingUser}
                 style={{ minWidth: "1.5rem", minHeight: "1.5rem" }}
               >

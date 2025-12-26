@@ -19,7 +19,7 @@ function NavUser({ handleLogout }: { handleLogout: () => void }) {
       <DropdownMenuTrigger className="py-0 flex items-start" asChild>
         <Avatar className="size-6">
           <AvatarImage src={profile} />
-          <AvatarFallback className="bg-transparent text-primary-foreground text-sm font-bold rounded-full">
+          <AvatarFallback className="bg-transparent text-sm font-bold rounded-full">
             <User className="w-5 h-5 transition-transform duration-500 ease-in hover:scale-x-[-1] cursor-pointer" />
           </AvatarFallback>
         </Avatar>

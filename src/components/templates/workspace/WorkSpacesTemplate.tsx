@@ -87,7 +87,7 @@ const WorkSpacesTemplate = ({
             <DropdownMenuTrigger className="py-0 flex items-start" asChild>
               <Avatar className="size-6">
                 <AvatarImage src={profile} />
-                <AvatarFallback className="bg-transparent text-primary-foreground text-sm font-bold rounded-full">
+                <AvatarFallback className="bg-transparent text-sm font-bold rounded-full">
                   <User className="w-5 h-5 transition-transform duration-500 ease-in hover:scale-x-[-1] cursor-pointer" />
                 </AvatarFallback>
               </Avatar>
@@ -159,10 +159,8 @@ const WorkSpacesTemplate = ({
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`relative h-full overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm ${
-                    getWorkspaceIcon(workspace?.logo || "")?.color
-                  }
-                  bg-card/70 border-border
+                  className={`relative h-full overflow-hidden rounded-2xl cursor-pointer group backdrop-blur-sm
+                  bg-gray-100 border-border
                   dark:bg-card/50 dark:border-border
                   shadow-lg hover:shadow-2xl transition-all duration-300`}
                 >

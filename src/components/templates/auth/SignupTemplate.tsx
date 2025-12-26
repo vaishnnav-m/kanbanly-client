@@ -125,7 +125,7 @@ const SignupTemplate = ({
         </div>
 
         {/* Login Card */}
-        <Card className="backdrop-blur-lg bg-[#273444] border-0 shadow-2xl">
+        <Card className="backdrop-blur-lg dark:bg-[#273444] border-0 shadow-2xl">
           <CardContent className="p-6 space-y-6 bg-log ">
             <div className="flex flex-col items-center gap-4 pb-4 border-b border-purple-500/20">
               <div className="relative group">

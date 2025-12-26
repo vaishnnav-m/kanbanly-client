@@ -31,7 +31,7 @@ export const TaskHeader = ({
   const statusColors = workItemStatusColors[taskStatus];
 
   return (
-    <div className="flex-shrink-0 p-6 border-b border-slate-700">
+    <div className="flex-shrink-0 p-6 border-b dark:border-slate-700">
       <div className="flex items-center justify-between mb-4">
         <div
           className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors.bg} ${statusColors.text}`}
@@ -42,14 +42,14 @@ export const TaskHeader = ({
           {canDelete && (
             <button
               onClick={() => setIsConfirmationOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-lg transition-colors"
             >
               <Trash className="h-4 w-4 text-slate-400" />
             </button>
           )}
           <button
             onClick={close}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-lg transition-colors"
           >
             <X className="h-4 w-4 text-slate-400" />
           </button>
@@ -63,7 +63,7 @@ export const TaskHeader = ({
           className="w-full text-2xl font-bold bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-600 focus:outline-none focus:border-blue-500"
         />
       ) : (
-        <h2 className="text-2xl font-bold text-white group flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-black/60 dark:text-white group flex items-center gap-2">
           {name}
           {canEdit && (
             <PenBox

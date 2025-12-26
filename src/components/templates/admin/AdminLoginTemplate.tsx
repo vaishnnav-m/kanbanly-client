@@ -51,7 +51,7 @@ function AdminLoginTemplate({
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4 pulse-glow">
-            <LogIn className="w-8 h-8 text-white" />
+            <LogIn className="w-8 h-8 text-gray-400 dark:text-white" />
           </div>
           <h1 className="text-4xl font-bold gradient-text mb-2">
             Admin Access
@@ -62,9 +62,9 @@ function AdminLoginTemplate({
         </div>
 
         {/* Login Card */}
-        <Card className="backdrop-blur-lg bg-[#273444] border-0 shadow-2xl">
+        <Card className="backdrop-blur-lg dark:bg-[#273444] border-0 shadow-2xl">
           <CardHeader className="space-y-1 text-center pb-4">
-            <CardTitle className="text-2xl text-white">Admin Login</CardTitle>
+            <CardTitle className="text-2xl dark:text-white">Admin Login</CardTitle>
             <CardDescription className="text-muted-foreground">
               Use your admin credentials to continue
             </CardDescription>
@@ -80,7 +80,7 @@ function AdminLoginTemplate({
             />
             {/* Security Notice */}
             <div className="text-center">
-              <p className="text-white/60 text-sm bg-white/5 rounded-lg p-3 border border-white/10">
+              <p className="dark:text-white/60 text-sm bg-black/5 dark:bg-white/5 rounded-lg p-3 border border-white/10">
                 🔒 This is a secure admin area. All activities are monitored and
                 logged.
               </p>

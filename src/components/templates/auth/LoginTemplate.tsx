@@ -82,7 +82,7 @@ const LoginTemplate = ({
         </div>
 
         {/* Login Card */}
-        <Card className="backdrop-blur-lg bg-[#273444] border-0 shadow-2xl">
+        <Card className="backdrop-blur-lg dark:bg-[#273444] border-0 shadow-2xl">
           <CardHeader className="space-y-1 text-center pb-4">
             <CardTitle className="text-2xl text white">Login</CardTitle>
             <CardDescription className="text-muted-foreground">
