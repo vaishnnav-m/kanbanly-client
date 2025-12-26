@@ -21,6 +21,8 @@ interface InviteUserDropdownProps {
   buttonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
+import { createPortal } from "react-dom";
+
 export const InviteUserDropdown = ({
   buttonLabel,
   isOpen,
@@ -213,10 +215,10 @@ export const InviteUserDropdown = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       ref={dropdownRef}
-      className="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-auto"
+      className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-auto"
       style={{
         top: position.top,
         left: position.left,
@@ -322,6 +324,7 @@ export const InviteUserDropdown = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

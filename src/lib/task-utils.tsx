@@ -1,4 +1,4 @@
-import { Bug, CheckSquare, FileText, HelpCircle } from "lucide-react";
+import { Bug, CheckSquare, FileText, HelpCircle, User } from "lucide-react";
 import { Issue, Section } from "@/components/organisms/project/BacklogView";
 import { TaskListing } from "./api/task/task.types";
 import { WorkspaceMember } from "./api/workspace/workspace.types";
@@ -119,6 +119,14 @@ export function getWorkItemTypeIcon(type: WorkItemType) {
 }
 
 // function to get the avathar
-export function getAssignedTo(assignedTo: { email: string; name: string }) {
-  return assignedTo.email[0].toUpperCase();
+export function getAssignedTo(
+  assignedTo: { email?: string; name?: string } | null | undefined
+) {
+  if (assignedTo?.email) {
+    return assignedTo.email[0].toUpperCase();
+  }
+  if (assignedTo?.name) {
+    return assignedTo.name[0].toUpperCase();
+  }
+  return <User />;
 }

@@ -66,7 +66,7 @@ const WorkSpacesTemplate = ({
           <Link className="flex gap-2" href="/billing/pricing">
             <Gem className="h-4 w-4" />
           </Link>
-          
+
           <Popover>
             <PopoverTrigger asChild>
               <Button

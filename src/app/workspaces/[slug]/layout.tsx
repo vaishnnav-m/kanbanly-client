@@ -6,6 +6,7 @@ import { RootState } from "@/store";
 import { AIChat } from "@/components/organisms/ai-chat/AIChat";
 import { useChatAi } from "@/lib/hooks/useAiChat";
 import { AiMessage } from "@/lib/api/ai/ai.types";
+import { useParams } from "next/navigation";
 
 export default function WorkspacesLayout({
   children,
@@ -15,6 +16,7 @@ export default function WorkspacesLayout({
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
+  const params = useParams();
   const { joinWorkspaceRoom, isConnected } = useSocket();
   const [messages, setMessages] = useState<AiMessage[]>([
     {
@@ -51,7 +53,12 @@ export default function WorkspacesLayout({
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
 
-    chatAi({ question: inputValue, workspaceId, prevMessages });
+    chatAi({
+      ...(params.projectId && { projectId: params.projectId as string }),
+      question: inputValue,
+      workspaceId,
+      prevMessages,
+    });
   };
 
   useEffect(() => {

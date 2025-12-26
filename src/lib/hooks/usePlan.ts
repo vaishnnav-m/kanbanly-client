@@ -10,6 +10,8 @@ import { createPlan, deletePlan, editPlan, getAllPlans } from "../api/plans";
 
 export const useCreatePlan = () => {
   const toast = useToastMessage();
+  const queryClient = useQueryClient();
+
   return useMutation<ApiResponse<IPlan>, Error, PlanCreationPayload>({
     mutationKey: ["createPlan"],
     mutationFn: createPlan,
@@ -18,6 +20,9 @@ export const useCreatePlan = () => {
         title: "Success fully created",
         description: response.message,
         duration: 6000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["getAllPlans"],
       });
     },
     onError: (error: any) => {

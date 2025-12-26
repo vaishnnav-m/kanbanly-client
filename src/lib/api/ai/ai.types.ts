@@ -1,5 +1,6 @@
 export interface AIChatPayload {
   workspaceId: string;
+  projectId?: string;
   question: string;
   prevMessages?: AiMessage[];
 }

@@ -116,6 +116,8 @@ function TaskListingPageTemplate({
     setCombinedTasks(Array.from(map.values()));
   }, [tasks, socketTasks]);
 
+  console.log("combinedTasks", combinedTasks);
+
   // single task fetching
   const { data: taskData } = useGetOneTask(
     workspaceId,

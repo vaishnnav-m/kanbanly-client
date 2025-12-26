@@ -5,8 +5,10 @@ export const chatAi = async ({
   workspaceId,
   question,
   prevMessages,
+  projectId,
 }: AIChatPayload) => {
   const result = await api.post(`/ai/${workspaceId}/chat`, {
+    projectId,
     question,
     prevMessages,
   });
