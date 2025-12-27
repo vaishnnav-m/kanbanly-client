@@ -6,9 +6,10 @@ import { MoreVertical, User, Users2 } from "lucide-react";
 
 interface ChatHeaderProps {
   chatInfo: ChatResponse;
+  onToggleMembers?: () => void;
 }
 
-export const ChatHeader = ({ chatInfo }: ChatHeaderProps) => {
+export const ChatHeader = ({ chatInfo, onToggleMembers }: ChatHeaderProps) => {
   const chat = chatInfo || {
     name: "Unknown",
     status: "offline",
@@ -35,9 +36,16 @@ export const ChatHeader = ({ chatInfo }: ChatHeaderProps) => {
       </div>
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon">
-          <MoreVertical className="h-5 w-5" />
-        </Button>
+        {chat.type === "project" && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleMembers}
+            title="Toggle Members"
+          >
+            <MoreVertical className="h-5 w-5" />
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ export interface ChatResponse {
   chatId: string;
   name: string;
   type: "direct" | "project";
+  projectId?: string;
   icon?: string;
   description?: string;
   createdAt: Date;

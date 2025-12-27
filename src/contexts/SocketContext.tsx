@@ -86,6 +86,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
   // function to join chat room
   const joinChatRoom = useCallback((chatId: string) => {
+    setMessages([]);
     const rooms = { chatId };
     if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit("joinChatRoom", rooms);

@@ -32,6 +32,7 @@ function ChatPage() {
         chatId={params.chatId as string}
         chatInfo={chatData?.data}
         messageHistory={messageHistoryData?.data || []}
+        workspaceId={workspaceId}
       />
     </main>
   );
