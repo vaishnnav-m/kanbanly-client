@@ -1,8 +1,10 @@
 "use client";
+import { Button } from "@/components/atoms/button";
 import { BaseModal } from "@/components/molecules/BaseModal";
 import { useCreateProject } from "@/lib/hooks/useProject";
 import { RootState } from "@/store";
 import { projectTemplate } from "@/types/project.enum";
+import { Kanban, ListTodo, Plus, X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -19,18 +21,16 @@ export const CreateProjectModal = ({
   const [description, setDescription] = useState("");
   const [key, setKey] = useState("");
   const [keyEdited, setKeyEdited] = useState(false);
-  const [template, setTemplate] = useState<projectTemplate>(projectTemplate.kanban);
+  const [template, setTemplate] = useState<projectTemplate>(
+    projectTemplate.kanban
+  );
   const [nameError, setNameError] = useState("");
 
   const workspaceId = useSelector(
     (state: RootState) => state.workspace.workspaceId
   );
-  const {
-    mutate: createProject,
-    isPending: isLoading,
-  } = useCreateProject();
+  const { mutate: createProject, isPending: isLoading } = useCreateProject();
 
-  // Auto-generate key from name unless user edits it
   useEffect(() => {
     if (!keyEdited) {
       const generatedKey = name
@@ -42,7 +42,7 @@ export const CreateProjectModal = ({
     }
   }, [name, keyEdited]);
 
-  const handleInvite = () => {
+  const handleCreateProject = () => {
     if (!workspaceId) return null;
     createProject({ workspaceId, data: { name, description, key, template } });
     setName("");
@@ -69,111 +69,151 @@ export const CreateProjectModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Create New Project"
-      text=""
+      text="Organize tasks and track progress with a new project."
       footer={
-        <div className="flex justify-center space-x-2">
-          <button
-            className="px-10 py-2 bg-gray-200 dark:bg-transparent dark:border rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition"
+        <div className="flex justify-end gap-4">
+          <Button
+            variant="outline"
             onClick={onClose}
+            className="px-8"
           >
+            <X className="w-4 h-4 mr-2" />
             Cancel
-          </button>
-          <button
-            className="px-10 py-2 bg-primary text-white rounded cursor-pointer hover:bg-purple-400 transition"
-            onClick={handleInvite}
+          </Button>
+          <Button
+            onClick={handleCreateProject}
             disabled={!name.trim() || !key.trim() || isLoading || !!nameError}
+            className="px-8"
           >
-            {isLoading ? "Creating..." : "Create"}
-          </button>
+            {isLoading ? (
+              "Creating..."
+            ) : (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                Create
+              </>
+            )}
+          </Button>
         </div>
       }
     >
-      <div className="border rounded-xl shadow-md p-6 flex flex-col gap-6 mb-6">
-        <div className="flex flex-col gap-2">
-          <label
-            className="text-sm font-medium text-foreground"
-            htmlFor="project-name"
-          >
-            Project Name <span className="text-red-400">*</span>
-          </label>
-          <input
-            id="project-name"
-            type="text"
-            placeholder="Enter project name"
-            value={name}
-            onChange={handleNameChange}
-            className="p-3 border border-border rounded-lg bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition"
-          />
-          {nameError && <p className="text-red-500 text-xs">{nameError}</p>}
+      <div className="flex flex-col gap-6 py-4">
+        {/* Project Name & Key Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-3 space-y-2">
+            <label
+              className="text-sm font-semibold text-foreground flex items-center gap-1"
+              htmlFor="project-name"
+            >
+              Project Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="project-name"
+              type="text"
+              placeholder="e.g. Website Redesign"
+              value={name}
+              onChange={handleNameChange}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+            />
+            {nameError && <p className="text-red-500 text-xs">{nameError}</p>}
+          </div>
+
+          <div className="md:col-span-1 space-y-2">
+            <label
+              className="text-sm font-semibold text-foreground flex items-center gap-1"
+              htmlFor="project-key"
+            >
+              Key <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="project-key"
+              type="text"
+              placeholder="KEY"
+              value={key}
+              onChange={(e) => {
+                setKey(e.target.value.toUpperCase());
+                setKeyEdited(true);
+              }}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm uppercase font-mono"
+            />
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
+
+        {/* Description */}
+        <div className="space-y-2">
           <label
-            className="text-sm font-medium text-foreground"
-            htmlFor="project-key"
-          >
-            Project Key <span className="text-red-400">*</span>
-          </label>
-          <input
-            id="project-key"
-            type="text"
-            placeholder="Auto-generated from name, but editable"
-            value={key}
-            onChange={(e) => {
-              setKey(e.target.value);
-              setKeyEdited(true);
-            }}
-            className="p-3 border border-border rounded-lg bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition"
-          />
-          <span className="text-xs text-muted-foreground">
-            Used as a short identifier for your project (e.g. MY-PROJECT).
-          </span>
-        </div>
-        <div className="flex flex-col gap-2">
-          <label
-            className="text-sm font-medium text-foreground"
+            className="text-sm font-semibold text-foreground"
             htmlFor="project-description"
           >
             Description
           </label>
           <textarea
             id="project-description"
-            placeholder="Describe your project"
+            placeholder="Add a brief description of the project goals..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="p-3 border border-border rounded-lg bg-transparent text-foreground max-h-60 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition"
+            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground min-h-[100px] max-h-[200px] placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-y"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-foreground">
-            Project Model <span className="text-red-400">*</span>
+
+        {/* Project Model Selection */}
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+            Project Model <span className="text-red-500">*</span>
           </label>
-          <div className="flex gap-4 mt-1">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="model"
-                value="kanban"
-                checked={template === projectTemplate.kanban}
-                onChange={() => setTemplate(projectTemplate.kanban)}
-                className="accent-primary"
-              />
-              <span className="text-sm text-foreground">Kanban</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="model"
-                value="scrum"
-                checked={template === projectTemplate.scrum}
-                onChange={() => setTemplate(projectTemplate.scrum)}
-                className="accent-primary"
-              />
-              <span className="text-sm text-foreground">Scrum</span>
-            </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => setTemplate(projectTemplate.kanban)}
+              className={`flex items-start gap-4 p-4 text-left border rounded-xl transition-all duration-200 ${
+                template === projectTemplate.kanban
+                  ? "border-primary bg-primary/5 ring-1 ring-primary"
+                  : "border-input hover:border-primary/50 hover:bg-muted/50"
+              }`}
+            >
+              <div
+                className={`p-3 rounded-lg ${
+                  template === projectTemplate.kanban
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                <Kanban size={20} />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">Kanban</h4>
+                <p className="text-xs text-muted-foreground mt-1 leading-normal">
+                  Visualize workflow and maximize efficiency with a continuous flow.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTemplate(projectTemplate.scrum)}
+              className={`flex items-start gap-4 p-4 text-left border rounded-xl transition-all duration-200 ${
+                template === projectTemplate.scrum
+                  ? "border-primary bg-primary/5 ring-1 ring-primary"
+                  : "border-input hover:border-primary/50 hover:bg-muted/50"
+              }`}
+            >
+              <div
+                className={`p-3 rounded-lg ${
+                  template === projectTemplate.scrum
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                <ListTodo size={20} />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">Scrum</h4>
+                <p className="text-xs text-muted-foreground mt-1 leading-normal">
+                  Focus on delivering value in fixed-length iterations called sprints.
+                </p>
+              </div>
+            </button>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Choose Kanban for continuous flow or Scrum for sprint-based workflow.
-          </span>
         </div>
       </div>
     </BaseModal>

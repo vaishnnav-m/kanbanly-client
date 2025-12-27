@@ -154,7 +154,7 @@ export const PreferenceCard = ({
         />
         <NotificationRow
           label="Workspace invitations"
-          description="When you're invited to join a workspace or project"
+          description="When you're invited to join a workspace"
           emailChecked={notifications.invitation.email}
           pushChecked={notifications.invitation.app}
           onEmailChange={(checked) => {

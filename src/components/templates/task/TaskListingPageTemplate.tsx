@@ -156,7 +156,7 @@ function TaskListingPageTemplate({
   );
 
   const [activeTab, setActiveTab] = useState("Board");
-  const tabs = ["Board", "List", "Backlog", "Timeline"];
+  const tabs = ["Board", "List", "Backlog"];
 
   const projectName = useSelector(
     (state: RootState) => state.project.projectName
