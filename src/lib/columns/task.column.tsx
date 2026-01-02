@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
+import { WorkspaceMember } from "../api/workspace/workspace.types";
 
 interface TaskColumnProps {
   handleStatusChange: (value: TaskStatus, taskId: string) => void;
@@ -117,7 +118,10 @@ export const createSubTaskColumns = ({
             label: "Assigned To",
             type: "custom",
             render: (row, value) => (
-              <AssigneeCard assignedTo={value} taskId={row.taskId} />
+              <AssigneeCard
+                assignedTo={value as WorkspaceMember}
+                taskId={row.taskId}
+              />
             ),
           },
         ] as TableColumn<ITask>[])
@@ -144,9 +148,8 @@ export const createSubTaskColumns = ({
       ),
     },
     {
-      key: "",
       label: "Manage",
-      type: "custom",
+      type: "action",
       render: (row) => (
         <Button
           onClick={() => {
@@ -188,25 +191,31 @@ export const createTaskColumns = ({
       key: "createdBy",
       label: "Created By",
       type: "custom",
-      render: (row, value) => (
-        <div className="space-x-2 flex items-center">
-          <AssigneeCard assignedTo={value} taskId={row.taskId} />
-          <span className="opacity-0 xl:opacity-100">{value?.name}</span>
-        </div>
-      ),
+      render: (row, value) => {
+        const member = value as WorkspaceMember;
+        return (
+          <div className="space-x-2 flex items-center">
+            <AssigneeCard assignedTo={member} taskId={row.taskId} />
+            <span className="opacity-0 xl:opacity-100">{member.name}</span>
+          </div>
+        );
+      },
     },
     {
       key: "assignedTo",
       label: "Assigned To",
       type: "custom",
-      render: (row, value) => (
-        <div className="space-x-2 flex items-center">
-          <AssigneeCard assignedTo={value} taskId={row.taskId} />
-          <span className="opacity-0 xl:opacity-100">
-            {value?.name ? value.name : "Unassigned"}
-          </span>
-        </div>
-      ),
+      render: (row, value) => {
+        const member = value as WorkspaceMember;
+        return (
+          <div className="space-x-2 flex items-center">
+            <AssigneeCard assignedTo={member} taskId={row.taskId} />
+            <span className="opacity-0 xl:opacity-100">
+              {member?.name ? member.name : "Unassigned"}
+            </span>
+          </div>
+        );
+      },
     },
     {
       key: "status",
@@ -302,9 +311,8 @@ export const createTaskColumns = ({
       ),
     },
     {
-      key: "",
       label: "Manage",
-      type: "custom",
+      type: "action",
       render: (row) => (
         <Button
           onClick={() => {

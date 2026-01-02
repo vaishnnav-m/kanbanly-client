@@ -1,6 +1,5 @@
 "use client";
 import {
-  ForwardedRef,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -23,8 +22,12 @@ interface MentionListProps extends SuggestionProps {
   command: (user: WorkspaceMember) => void;
 }
 
-export const MentionList = forwardRef(
-  (props: MentionListProps, ref: ForwardedRef<any>) => {
+interface MentionListRef {
+  onKeyDown: (props: { event: KeyboardEvent }) => boolean;
+}
+
+export const MentionList = forwardRef<MentionListRef, MentionListProps>(
+  (props: MentionListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const workspaceId = useSelector(
@@ -112,7 +115,7 @@ export const suggestion = {
   },
 
   render: () => {
-    let component: ReactRenderer<any, MentionListProps>;
+    let component: ReactRenderer<MentionListRef, MentionListProps>;
     let popup: Instance[];
 
     return {
@@ -164,7 +167,7 @@ export const suggestion = {
           popup[0].hide();
           return true;
         }
-        return component.ref?.onKeyDown(props);
+        return component.ref?.onKeyDown(props) ?? false;
       },
 
       onExit() {

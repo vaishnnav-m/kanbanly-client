@@ -18,6 +18,7 @@ import {
   updateUserPreferences,
   updateUserProfile,
 } from "../api/user";
+import { AxiosError } from "axios";
 
 export const useGetUserProfile = () => {
   return useQuery<ApiResponse<UserProfileData>, Error>({
@@ -30,7 +31,11 @@ export const useUpdateUserProfile = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, UpdateUserProfilePayload>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    UpdateUserProfilePayload
+  >({
     mutationKey: ["updateUserProfile"],
     mutationFn: updateUserProfile,
     onSuccess: (response) => {
@@ -41,7 +46,7 @@ export const useUpdateUserProfile = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getUserProfile"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "User Profile Updation Failed",
@@ -56,7 +61,11 @@ export const useUpdateUserPassword = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, UpdateUserPasswordPayload>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    UpdateUserPasswordPayload
+  >({
     mutationKey: ["updateUserProfile"],
     mutationFn: updateUserPassword,
     onSuccess: (response) => {
@@ -67,7 +76,7 @@ export const useUpdateUserPassword = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getUserProfile"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Password Updation Failed",
@@ -89,13 +98,17 @@ export const useUpdateUserPreferences = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, UpdatePreferencesPayload>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    UpdatePreferencesPayload
+  >({
     mutationKey: ["updateUserPreferences"],
     mutationFn: updateUserPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getUserPreferences"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Password Updation Failed",
@@ -117,13 +130,13 @@ export const useMarkAsRead = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, string[]>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, string[]>({
     mutationKey: ["markAsRead"],
     mutationFn: markAsRead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getUserNotifications"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Notification Updation Failed",

@@ -75,6 +75,7 @@ export const SubTasks = ({
             columns={columns}
             data={subTasks}
             emptyMessage="No children"
+            getRowKey={(row) => row.taskId}
           />
         </div>
       ) : (

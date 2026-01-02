@@ -28,7 +28,6 @@ export const createWorkspacesColumns = (onRemove: (id: string) => void) => {
       ),
     },
     {
-      key: "delete",
       label: "Manage",
       type: "button",
       cellClassName: "hover:bg-transperant",

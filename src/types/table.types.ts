@@ -1,20 +1,11 @@
-import React from "react";
-
 export type ButtonConfig<T> = {
   action: (data: T) => void;
   icon: (row: T) => React.ReactNode;
   styles: string;
 };
 
-export interface BaseRowData {
-  _id?: string;
-  id?: string;
-  [key: string]: any;
-}
-
 // Base column
-export interface BaseColumn<T extends BaseRowData> {
-  key: keyof T | string;
+export interface BaseColumn {
   label: string;
   headerClassName?: string;
   cellClassName?: string;
@@ -30,14 +21,13 @@ export type ButtonVariants =
   | "link";
 
 // text column
-export interface TextColumn<T extends BaseRowData = BaseRowData>
-  extends BaseColumn<T> {
+export interface TextColumn<T> extends BaseColumn {
+  key: keyof T;
   type: "text";
 }
 
 // button column
-export interface ButtonColumn<T extends BaseRowData = BaseRowData>
-  extends BaseColumn<T> {
+export interface ButtonColumn<T> extends BaseColumn {
   type: "button";
   variant?: ButtonVariants;
   buttonLabel?: string;
@@ -48,30 +38,39 @@ export interface ButtonColumn<T extends BaseRowData = BaseRowData>
 }
 
 // select column
-export interface SelectColumn<T extends BaseRowData = BaseRowData>
-  extends BaseColumn<T> {
+export interface SelectColumn<T> extends BaseColumn {
+  key: keyof T;
   type: "select";
   options: { value: string | number; label: string }[];
   onChange?: (row: T, value: number | string) => void;
   disabled?: (row: T) => boolean;
 }
 
-// custom column
-export interface CustomColumn<T extends BaseRowData = BaseRowData>
-  extends BaseColumn<T> {
-  type: "custom";
-  render: (row: T, value: any) => React.ReactNode;
+// action column
+export interface ActionColumn<T> extends BaseColumn {
+  type: "action";
+  render: (row: T) => React.ReactNode;
 }
 
+// custom column
+export type CustomColumn<T> = {
+  [K in keyof T]: BaseColumn & {
+    type: "custom";
+    key: K;
+    render: (row: T, value: T[K]) => React.ReactNode;
+  };
+}[keyof T];
+
 // Table column
-export type TableColumn<T extends BaseRowData = BaseRowData> =
+export type TableColumn<T> =
   | TextColumn<T>
   | ButtonColumn<T>
   | SelectColumn<T>
-  | CustomColumn<T>;
+  | CustomColumn<T>
+  | ActionColumn<T>;
 
 // Table Props
-export interface CustomTableProps<T extends BaseRowData> {
+export interface CustomTableProps<T> {
   data: T[];
   columns: TableColumn<T>[];
   isLoading?: boolean;
@@ -79,5 +78,5 @@ export interface CustomTableProps<T extends BaseRowData> {
   emptyMessage?: string;
   className?: string;
   onRowClick?: (row: T) => void;
-  getRowKey?: (row: T, idx: number) => string | number;
+  getRowKey: (row: T, idx: number) => string | number;
 }

@@ -26,12 +26,17 @@ import {
   getOnetask,
   removeTask,
 } from "../api/task";
+import { AxiosError } from "axios";
 
 export const useCreateTask = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, TaskCreationArgs>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    TaskCreationArgs
+  >({
     mutationFn: createTask,
     mutationKey: ["createTask"],
     onSuccess: () => {
@@ -41,7 +46,7 @@ export const useCreateTask = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getTasks"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Task Creation Failed",
@@ -104,7 +109,11 @@ export const useChangeStatus = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, StatusChangingArgs>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    StatusChangingArgs
+  >({
     mutationFn: changeStatus,
     mutationKey: ["changeStatus"],
     onSuccess: (response, variables) => {
@@ -119,7 +128,7 @@ export const useChangeStatus = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getAllEpics"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Status Updation Failed",
@@ -134,7 +143,11 @@ export const useEditTask = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, TaskEditArgs>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    TaskEditArgs
+  >({
     mutationFn: editTask,
     mutationKey: ["editTask"],
     onSuccess: (response, variables) => {
@@ -152,7 +165,7 @@ export const useEditTask = () => {
         ],
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Task Updation Failed",
@@ -167,7 +180,11 @@ export const useAttachParrent = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, AttachParentArgs>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    AttachParentArgs
+  >({
     mutationKey: ["attachParent"],
     mutationFn: attachParent,
     onSuccess: (response, variables) => {
@@ -181,7 +198,7 @@ export const useAttachParrent = () => {
         ],
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Failed to attach work item",
@@ -196,7 +213,11 @@ export const useAttachSprint = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, AttachSprintPayload>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    AttachSprintPayload
+  >({
     mutationKey: ["attachSprint"],
     mutationFn: attachSprint,
     onSuccess: (response, variables) => {
@@ -211,7 +232,7 @@ export const useAttachSprint = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getTasks"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Failed to attach Sprint",
@@ -228,7 +249,7 @@ export const useRemoveTask = () => {
 
   return useMutation<
     ApiResponse,
-    Error,
+    AxiosError<{ message: string }>,
     { workspaceId: string; projectId: string; taskId: string }
   >({
     mutationFn: removeTask,
@@ -240,7 +261,7 @@ export const useRemoveTask = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getTasks"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Task Deletion Failed",

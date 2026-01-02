@@ -4,6 +4,7 @@ import { checkoutCreationPayload } from "@/lib/api/subscription/subscription.typ
 import { useCreateCheckout } from "@/lib/hooks/useSubscription";
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 
 function PricingPage() {
@@ -30,7 +31,7 @@ function PricingPage() {
       }
       window.location.href = response.data.url;
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Plan Selection Error",

@@ -6,12 +6,12 @@ const api = axios.create({
   withCredentials: true,
 });
 
+
 interface ToastMethods {
   showWarning: (options: {
     title: string;
     description?: string;
     duration: number;
-    actions?: any[];
   }) => string;
 }
 

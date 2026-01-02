@@ -22,12 +22,13 @@ import {
   updateSprint,
 } from "../api/sprint";
 import { useToastMessage } from "./useToastMessage";
+import { AxiosError } from "axios";
 
 export const useCreateSprint = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, CreateSprintArgs>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, CreateSprintArgs>({
     mutationKey: ["createSprint"],
     mutationFn: createSprint,
     onSuccess: () => {
@@ -37,7 +38,7 @@ export const useCreateSprint = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getSprints"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Sprint Creation Failed",
@@ -77,7 +78,7 @@ export const useUpdateSprint = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, UpdateSprintArgs>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, UpdateSprintArgs>({
     mutationKey: ["updateSprint"],
     mutationFn: updateSprint,
     onSuccess: () => {
@@ -87,7 +88,7 @@ export const useUpdateSprint = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getSprints"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Sprint Updation Failed",
@@ -100,16 +101,16 @@ export const useUpdateSprint = () => {
 
 export const useStartSprint = (
   options?: Omit<
-    UseMutationOptions<ApiResponse, Error, UpdateSprintArgs>,
+    UseMutationOptions<ApiResponse, AxiosError<{ message: string }>, UpdateSprintArgs>,
     "mutationKey" | "mutationFn" | "onError"
   >
 ) => {
   const toast = useToastMessage();
 
-  return useMutation<ApiResponse, Error, UpdateSprintArgs>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, UpdateSprintArgs>({
     mutationKey: ["startSprint"],
     mutationFn: startSprint,
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Sprint Starting Failed",
@@ -135,7 +136,7 @@ export const useCompleteSprint = () => {
 
   return useMutation<
     ApiResponse,
-    Error,
+    AxiosError<{ message: string }>,
     { workspaceId: string; projectId: string; sprintId: string }
   >({
     mutationKey: ["completeSprint"],
@@ -149,7 +150,7 @@ export const useCompleteSprint = () => {
       queryClient.invalidateQueries({ queryKey: ["getTasks"] });
       queryClient.invalidateQueries({ queryKey: ["getActiveSprint"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Sprint Completion Failed",
@@ -166,7 +167,7 @@ export const useDeleteSprint = () => {
 
   return useMutation<
     ApiResponse,
-    Error,
+    AxiosError<{ message: string }>,
     { workspaceId: string; projectId: string; sprintId: string }
   >({
     mutationKey: ["deleteSprint"],
@@ -180,7 +181,7 @@ export const useDeleteSprint = () => {
       queryClient.invalidateQueries({ queryKey: ["getTasks"] });
       queryClient.invalidateQueries({ queryKey: ["getActiveSprint"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Sprint Deletion Failed",

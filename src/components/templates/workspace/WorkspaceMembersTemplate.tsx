@@ -152,6 +152,7 @@ function WorkspaceMembersTemplates({
                   emptyMessage="No Members"
                   isLoading={isMembersLoading}
                   skeletonRows={4}
+                  getRowKey={(row) => row._id}
                 />
               </div>
             </Card>
@@ -173,6 +174,7 @@ function WorkspaceMembersTemplates({
                     emptyMessage="No Invitations"
                     isLoading={isInvitationsLoading}
                     skeletonRows={4}
+                    getRowKey={(row) => row.invitedEmail}
                   />
                 </div>
               </Card>

@@ -42,7 +42,6 @@ export const createInvitationColumns = (
     type: "text",
   },
   {
-    key: "delete",
     label: "Manage",
     type: "button",
     cellClassName: "hover:bg-transperant",
@@ -51,7 +50,6 @@ export const createInvitationColumns = (
     onClick: (row) => onRemove(row.invitedEmail),
   },
   {
-    key: "resend",
     label: "Resend",
     type: "button",
     cellClassName: "hover:bg-transperant",

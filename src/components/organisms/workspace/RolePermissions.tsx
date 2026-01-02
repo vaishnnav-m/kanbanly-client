@@ -124,7 +124,7 @@ export function RolePermissions({
       </CardHeader>
 
       <CardContent>
-        <CustomTable data={tableData} columns={columns} />
+        <CustomTable data={tableData} columns={columns} getRowKey={(row) => row.id} />
       </CardContent>
     </Card>
   );

@@ -19,6 +19,7 @@ import {
   useUpdateUserPreferences,
   useUpdateUserProfile,
 } from "@/lib/hooks/useUser";
+import { AxiosError } from "axios";
 
 export default function UserProfile() {
   const { data, isFetching } = useGetUserProfile();
@@ -59,8 +60,7 @@ export default function UserProfile() {
       }
       window.location.href = response.data.url;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Please try again or try contacting support",

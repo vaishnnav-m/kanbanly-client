@@ -17,12 +17,13 @@ import {
   verifyCheckoutSession,
 } from "../api/subscription";
 import { SubscriptionStatus } from "@/types/status.enum";
+import { AxiosError } from "axios";
 
 export const useCreateCheckout = (
   options?: Omit<
     UseMutationOptions<
       ApiResponse<checkoutCreationResponse>,
-      Error,
+      AxiosError<{ message: string }>,
       checkoutCreationPayload
     >,
     "mutationKey" | "mutationFn"
@@ -30,7 +31,7 @@ export const useCreateCheckout = (
 ) => {
   return useMutation<
     ApiResponse<checkoutCreationResponse>,
-    Error,
+    AxiosError<{ message: string }>,
     checkoutCreationPayload
   >({
     mutationKey: ["createCheckout"],
@@ -61,12 +62,11 @@ export const useGetUserSubscription = (
 
 export const useCreateCustomerPortal = (
   options?: Omit<
-    UseMutationOptions<ApiResponse<checkoutCreationResponse>, Error>,
+    UseMutationOptions<ApiResponse<checkoutCreationResponse>, AxiosError<{ message: string }>>,
     "mutationKey" | "mutationFn"
   >
 ) => {
-
-  return useMutation<ApiResponse, Error>({
+  return useMutation<ApiResponse<checkoutCreationResponse>, AxiosError<{ message: string }>>({
     mutationKey: ["createPortal"],
     mutationFn: createCustomerPortal,
     ...options,

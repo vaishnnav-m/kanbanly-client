@@ -45,6 +45,7 @@ export interface ITask {
   epicId?: string;
   epic?: TaskEpic;
   dueDate: Date;
+  createdBy: string | WorkspaceMember;
 }
 
 export interface TaskEditArgs {

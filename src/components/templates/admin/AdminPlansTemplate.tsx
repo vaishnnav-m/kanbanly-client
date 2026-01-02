@@ -101,7 +101,10 @@ export const AdminPlansTemplate = ({
       <AddPlanDialog
         isOpen={isModalOpen}
         onAdd={createPlan}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setEditingPlan(null);
+          setIsModalOpen(false);
+        }}
         plan={editingPlan}
         onEdit={submitEditedTask}
       />

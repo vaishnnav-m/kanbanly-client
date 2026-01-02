@@ -36,6 +36,7 @@ export const EpicChild = ({ epic, handleStatusChange }: IEpicChildProps) => {
           columns={columns}
           data={epic.children || []}
           emptyMessage="No children"
+          getRowKey={(row) => row.taskId}
         />
       </div>
     </div>

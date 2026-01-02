@@ -99,12 +99,9 @@ export function AddPlanDialog({
     if (plan) {
       const dirtyKeys = Object.keys(dirtyFields) as Array<keyof typeof values>;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const editValues = dirtyKeys.reduce((result: any, key) => {
-        result[key] = values[key];
-        return result;
-      }, {} as Partial<PlanCreationPayload>);
-
+      const editValues = Object.fromEntries(
+        dirtyKeys.map((key) => [key, values[key]])
+      ) as Partial<typeof values>;
       onEdit(editValues);
     } else {
       onAdd(values);

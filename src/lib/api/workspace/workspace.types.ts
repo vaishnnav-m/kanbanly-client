@@ -49,6 +49,7 @@ export interface IWorkspace {
     member: IWorkspacePermissions;
   };
   createdAt: Date;
+  memberCount?: number;
 }
 
 export interface WorkspaceInvitationPayload {

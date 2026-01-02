@@ -9,6 +9,7 @@ import {
   CloudinaryUploadArgs,
 } from "../api/cloudinary/cloudinary.types";
 import { useToastMessage } from "./useToastMessage";
+import { AxiosError } from "axios";
 
 export const useGetSignature = () => {
   return useQuery<ApiResponse<CloudinarySignatureResponse>, Error>({
@@ -20,10 +21,10 @@ export const useGetSignature = () => {
 export const useUploadPicture = () => {
   const toast = useToastMessage();
 
-  return useMutation<{ secure_url: string }, Error, CloudinaryUploadArgs>({
+  return useMutation<{ secure_url: string }, AxiosError<{ message: string }>, CloudinaryUploadArgs>({
     mutationKey: ["uploadPicture"],
     mutationFn: uploadPicture,
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       console.log("error in uploading", error);
       toast.showError({

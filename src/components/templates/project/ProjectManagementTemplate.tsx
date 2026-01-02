@@ -275,6 +275,7 @@ ProjectManagementTemplateProps) {
                   data={members ? members : []}
                   emptyMessage="No Members"
                   isLoading={isProjectMembersFetching}
+                  getRowKey={(row) => row._id}
                 />
               </div>
             </CardContent>

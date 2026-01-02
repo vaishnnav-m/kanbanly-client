@@ -82,7 +82,6 @@ export const createMemberColumns = (
     });
 
     columns.push({
-      key: "delete",
       label: "Manage",
       type: "button",
       cellClassName: "hover:bg-transperant",
@@ -93,7 +92,6 @@ export const createMemberColumns = (
   }
 
   columns.push({
-    key: "chat",
     label: "Message",
     type: "button",
     cellClassName: "hover:bg-transperant",

@@ -27,6 +27,7 @@ import {
 } from "@/store/slices/authSlice";
 import { setStorageItem } from "../utils";
 import { ApiResponse } from "../api/common.types";
+import { AxiosError } from "axios";
 
 export const useSignup = () => {
   const router = useRouter();
@@ -38,7 +39,7 @@ export const useSignup = () => {
       lastName: string;
       email: string;
     }>,
-    Error,
+    AxiosError<{ message: string }>,
     SignupPayload
   >({
     mutationKey: ["signup"],
@@ -46,7 +47,7 @@ export const useSignup = () => {
     onSuccess: () => {
       router.push("/signup-success");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -63,7 +64,11 @@ export const useLogin = () => {
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
+  return useMutation<
+    ApiResponse<LoginResponseData>,
+    AxiosError<{ message: string }>,
+    LoginPayload
+  >({
     mutationKey: ["login"],
     mutationFn: userLogin,
     onSuccess: (response) => {
@@ -92,7 +97,7 @@ export const useLogin = () => {
 
       router.replace("/workspaces");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -109,7 +114,11 @@ export const useGoogleAuth = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse<LoginResponseData>, Error, { token: string }>({
+  return useMutation<
+    ApiResponse<LoginResponseData>,
+    AxiosError<{ message: string }>,
+    { token: string }
+  >({
     mutationKey: ["googleAuth"],
     mutationFn: googleAuth,
     onSuccess: (response) => {
@@ -138,7 +147,7 @@ export const useGoogleAuth = () => {
 
       router.replace("/workspaces");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -155,7 +164,11 @@ export const useVerifyEmail = () => {
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse, Error, { token: string }>({
+  return useMutation<
+    ApiResponse<LoginResponseData>,
+    AxiosError<{ message: string }>,
+    { token: string }
+  >({
     mutationKey: ["verify-magiclink"],
     mutationFn: verifyMagicLink,
     onSuccess: (response) => {
@@ -172,7 +185,7 @@ export const useVerifyEmail = () => {
       if (response.data?.userId) {
         setStorageItem("userId", response.data?.userId);
       }
-      
+
       dispatch(
         setCredentials({
           userId: response.data?.userId,
@@ -183,7 +196,7 @@ export const useVerifyEmail = () => {
 
       router.replace("/workspaces");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log("Email verification failed:", error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -215,7 +228,11 @@ export const useForgotPassword = () => {
   const toast = useToastMessage();
   const router = useRouter();
 
-  return useMutation<ApiResponse, Error, { email: string }>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    { email: string }
+  >({
     mutationKey: ["forgot-password"],
     mutationFn: forgotPassword,
     onSuccess: (response) => {
@@ -226,7 +243,7 @@ export const useForgotPassword = () => {
         duration: 6000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -242,7 +259,11 @@ export const useResetPassword = () => {
   const toast = useToastMessage();
   const router = useRouter();
 
-  return useMutation<ApiResponse, Error, { password: string; token: string }>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    { password: string; token: string }
+  >({
     mutationKey: ["reset-password"],
     mutationFn: resetPassword,
     onSuccess: (response) => {
@@ -253,7 +274,7 @@ export const useResetPassword = () => {
         duration: 6000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -270,7 +291,7 @@ export const useLogout = () => {
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse, Error>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>>({
     mutationKey: ["logout"],
     mutationFn: logout,
     onSuccess: () => {
@@ -278,7 +299,7 @@ export const useLogout = () => {
       dispatch(logoutUser());
       router.replace("/login");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -295,7 +316,11 @@ export const useAdminLogin = () => {
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse<LoginResponseData>, Error, LoginPayload>({
+  return useMutation<
+    ApiResponse<LoginResponseData>,
+    AxiosError<{ message: string }>,
+    LoginPayload
+  >({
     mutationKey: ["adminLogin"],
     mutationFn: adminLogin,
     onSuccess: (response) => {
@@ -323,7 +348,7 @@ export const useAdminLogin = () => {
 
       router.replace("/admin/dashboard");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
@@ -340,14 +365,14 @@ export const useAdminLogout = () => {
   const toast = useToastMessage();
   const dispatch = useDispatch();
 
-  return useMutation<ApiResponse, Error>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>>({
     mutationKey: ["logout"],
     mutationFn: adminLogout,
     onSuccess: () => {
       dispatch(logoutAdmin());
       router.replace("/admin/login");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.log(error);
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({

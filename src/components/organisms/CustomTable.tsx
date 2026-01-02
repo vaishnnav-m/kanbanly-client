@@ -1,9 +1,5 @@
 "use client";
-import {
-  BaseRowData,
-  CustomTableProps,
-  TableColumn,
-} from "@/types/table.types";
+import { CustomTableProps, TableColumn } from "@/types/table.types";
 import { Button } from "../atoms/button";
 import {
   Select,
@@ -23,24 +19,27 @@ import {
 } from "../atoms/table";
 import { Skeleton } from "../atoms/skeleton";
 
-function CustomTable<T extends BaseRowData>({
+function CustomTable<T>({
   data,
   columns,
   onRowClick,
   className = "",
   emptyMessage,
-  getRowKey = (row, idx) => row.id || row._id || idx,
+  getRowKey,
   isLoading,
   skeletonRows,
 }: CustomTableProps<T>) {
   // function to render the cell content
   function renderCellContent(row: T, column: TableColumn<T>) {
-    const value = row[column.key];
     switch (column.type) {
-      case "text":
+      case "text": {
+        const value = row[column.key];
         return (
-          <span className={column.cellClassName}>{value ? value : "-"}</span>
+          <span className={column.cellClassName}>
+            {value ? String(value) : "-"}
+          </span>
         );
+      }
       case "button":
         return (
           <Button
@@ -54,7 +53,8 @@ function CustomTable<T extends BaseRowData>({
             {column.buttonLabel}
           </Button>
         );
-      case "select":
+      case "select": {
+        const value = row[column.key];
         return (
           <Select
             onValueChange={(value) => {
@@ -82,8 +82,11 @@ function CustomTable<T extends BaseRowData>({
             </SelectContent>
           </Select>
         );
+      }
       case "custom":
-        return column.render?.(row, value);
+        return column.render(row, row[column.key]);
+      case "action":
+        return column.render(row);
     }
   }
 
@@ -162,7 +165,7 @@ function CustomTable<T extends BaseRowData>({
           <TableRow
             key={getRowKey(row, rowIdx)}
             className={onRowClick ? "cursor-pointer" : ""}
-            onClick={() => handleRowClick}
+            onClick={() => handleRowClick(row)}
           >
             {columns.map((col, colIdx) => (
               <TableCell key={colIdx}>{renderCellContent(row, col)}</TableCell>

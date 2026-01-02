@@ -14,18 +14,19 @@ import {
   postComment,
   updateComment,
 } from "../api/comment";
+import { AxiosError } from "axios";
 
 export const usePostComment = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, CommentCreationPayload>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, CommentCreationPayload>({
     mutationFn: postComment,
     mutationKey: ["postComment"],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getComments"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Can't post comment",
@@ -53,13 +54,13 @@ export const useUpdateComment = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, CommentUpdationPayload>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, CommentUpdationPayload>({
     mutationFn: updateComment,
     mutationKey: ["updateComment"],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getComments"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Can't update comment",
@@ -74,13 +75,13 @@ export const useDeleteComment = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, CommentDeletionPayload>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, CommentDeletionPayload>({
     mutationFn: deleteComment,
     mutationKey: ["deleteComment"],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getComments"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Can't delete comment",

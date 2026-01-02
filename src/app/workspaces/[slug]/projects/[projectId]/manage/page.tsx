@@ -13,6 +13,7 @@ import {
 import { useToastMessage } from "@/lib/hooks/useToastMessage";
 import { RootState } from "@/store";
 import { useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -78,8 +79,7 @@ export default function ProjectManageMentPage() {
         queryClient.invalidateQueries({ queryKey: ["getProjects"] });
         queryClient.invalidateQueries({ queryKey: ["getProjectMembers"] });
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onError: (error: any) => {
+      onError: (error: AxiosError<{ message: string }>) => {
         const errorMessage =
           error?.response?.data?.message || "Unexpected Error";
         toast.showError({

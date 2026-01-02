@@ -1,11 +1,11 @@
 "use client";
 
-import { TableColumn, BaseRowData } from "@/types/table.types";
+import { TableColumn } from "@/types/table.types";
 import { Checkbox } from "@/components/atoms/checkbox";
 import { workspaceRoles } from "@/types/roles.enum";
 import { IWorkspacePermissions } from "@/lib/api/workspace/workspace.types";
 
-export interface PermissionRowData extends BaseRowData {
+export interface PermissionRowData {
   id: string;
   label: string;
   category: string;
@@ -36,9 +36,8 @@ export const createRolePermissionColumns = (
     cellClassName: "font-medium text-workspace-text-primary",
   },
   {
-    key: "owner",
     label: "Owner",
-    type: "custom",
+    type: "action",
     headerClassName: "text-center",
     render: (row) => (
       <div className="flex justify-center">
@@ -53,9 +52,8 @@ export const createRolePermissionColumns = (
     ),
   },
   {
-    key: "projectManager",
     label: "Project Manager",
-    type: "custom",
+    type: "action",
     headerClassName: "text-center",
     render: (row) => (
       <div className="flex justify-center">
@@ -78,9 +76,8 @@ export const createRolePermissionColumns = (
     ),
   },
   {
-    key: "member",
     label: "Member",
-    type: "custom",
+    type: "action",
     headerClassName: "text-center",
     render: (row) => (
       <div className="flex justify-center">

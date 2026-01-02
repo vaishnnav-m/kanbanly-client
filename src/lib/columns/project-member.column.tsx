@@ -57,7 +57,6 @@ export const createProjectMemberColumns = (
 
   if (hasPermission) {
     columns.push({
-      key: "delete",
       label: "Manage",
       type: "button",
       cellClassName: "hover:bg-transperant",

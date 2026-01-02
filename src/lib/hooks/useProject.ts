@@ -17,12 +17,17 @@ import {
 } from "../api/project/project.types";
 import { useToastMessage } from "./useToastMessage";
 import { WorkspaceMember } from "../api/workspace/workspace.types";
+import { AxiosError } from "axios";
 
 export const useCreateProject = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, ProjectCreationArgs>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    ProjectCreationArgs
+  >({
     mutationFn: createProject,
     mutationKey: ["createProject"],
     onSuccess: (response) => {
@@ -33,7 +38,7 @@ export const useCreateProject = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getProjects"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Project Creation Failed",
@@ -77,7 +82,11 @@ export const useEditProject = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, ProjectEditingArgs>({
+  return useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    ProjectEditingArgs
+  >({
     mutationFn: editProject,
     mutationKey: ["editProject"],
     onSuccess: (response, variables) => {
@@ -92,7 +101,7 @@ export const useEditProject = () => {
         queryKey: ["getOneProject", variables.projectId],
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Project Editing Failed",
@@ -124,7 +133,7 @@ export const useAddMember = () => {
 
   return useMutation<
     ApiResponse,
-    Error,
+    AxiosError<{ message: string }>,
     { workspaceId: string; projectId: string; data: { email: string } }
   >({
     mutationKey: ["addMember"],
@@ -137,7 +146,7 @@ export const useAddMember = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["getProjectMembers"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Member adding Failed",
@@ -162,11 +171,11 @@ export const useGetProjectMembers = (
 
 export const useRemoveProjectMember = (options?: {
   onSuccess?: (response: ApiResponse) => void;
-  onError?: (error: unknown) => void;
+  onError?: (error: AxiosError<{ message: string }>) => void;
 }) => {
   return useMutation<
     ApiResponse,
-    Error,
+    AxiosError<{ message: string }>,
     { workspaceId: string; projectId: string; memberId: string }
   >({
     mutationKey: ["removeProjectMember"],

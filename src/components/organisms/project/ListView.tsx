@@ -141,6 +141,7 @@ export const ListView = ({
         columns={taskColumns}
         data={tasks}
         className="bg-gray-200 dark:bg-gray-800/20 rounded-xl"
+        getRowKey={(row) => row.taskId}
       />
       <CreateTaskModal
         isOpen={isTaskCreationModalOpen}

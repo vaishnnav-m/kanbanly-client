@@ -7,6 +7,7 @@ import {
   ChatResponse,
 } from "../api/chat/chat.types";
 import { createChat, getChats, getOneChat } from "../api/chat";
+import { AxiosError } from "axios";
 
 export const useCreateChat = (options?: {
   onSuccess?: (
@@ -16,10 +17,10 @@ export const useCreateChat = (options?: {
 }) => {
   const toast = useToastMessage();
 
-  return useMutation<ApiResponse, Error, ChatCreationPayload>({
+  return useMutation<ApiResponse<{ chatId: string }>, AxiosError<{ message: string }>, ChatCreationPayload>({
     mutationFn: createChat,
     mutationKey: ["createChat"],
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Chat Creation Failed",

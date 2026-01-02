@@ -30,8 +30,8 @@ function AdminCustomers({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
 
-  const headings = ["Id", "First Name", "Last Name", "Email", "isActive"];
-  const cols: (keyof User)[] = ["userId", "firstName", "lastName", "email"];
+  const headings = ["First Name", "Last Name", "Email", "isActive"];
+  const cols: (keyof User)[] = ["firstName", "lastName", "email"];
 
   const buttonConfigs: ButtonConfig<User>[] = [
     {

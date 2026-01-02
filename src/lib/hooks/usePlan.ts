@@ -7,12 +7,13 @@ import {
   PlanCreationPayload,
 } from "../api/plans/plans.type";
 import { createPlan, deletePlan, editPlan, getAllPlans } from "../api/plans";
+import { AxiosError } from "axios";
 
 export const useCreatePlan = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse<IPlan>, Error, PlanCreationPayload>({
+  return useMutation<ApiResponse<IPlan>, AxiosError<{ message: string }>, PlanCreationPayload>({
     mutationKey: ["createPlan"],
     mutationFn: createPlan,
     onSuccess: (response) => {
@@ -25,7 +26,7 @@ export const useCreatePlan = () => {
         queryKey: ["getAllPlans"],
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Plan adding failed",
@@ -47,7 +48,7 @@ export const useEditPlan = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, EditPlanArgs>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, EditPlanArgs>({
     mutationKey: ["editPlan"],
     mutationFn: editPlan,
     onSuccess: (response) => {
@@ -58,7 +59,7 @@ export const useEditPlan = () => {
         duration: 6000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Plan Editing Failed",
@@ -73,7 +74,7 @@ export const useDeletePlan = () => {
   const toast = useToastMessage();
   const queryClient = useQueryClient();
 
-  return useMutation<ApiResponse, Error, { planId: string }>({
+  return useMutation<ApiResponse, AxiosError<{ message: string }>, { planId: string }>({
     mutationKey: ["deletePlan"],
     mutationFn: deletePlan,
     onSuccess: (response) => {
@@ -84,7 +85,7 @@ export const useDeletePlan = () => {
         duration: 6000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage = error?.response?.data?.message || "Unexpected Error";
       toast.showError({
         title: "Plan deletion failed",
