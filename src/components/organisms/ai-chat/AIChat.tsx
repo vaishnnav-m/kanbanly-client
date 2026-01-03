@@ -21,6 +21,7 @@ interface AIChatProps {
   messages: AiMessage[];
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
+  setMessages: Dispatch<SetStateAction<AiMessage[]>>;
   handleSend: () => void;
   isGenerating: boolean;
 }
@@ -28,6 +29,7 @@ interface AIChatProps {
 export const AIChat = ({
   messages,
   inputValue,
+  setMessages,
   setInputValue,
   handleSend,
   isGenerating,
@@ -107,7 +109,17 @@ export const AIChat = ({
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-primary-foreground hover:bg-white/10 rounded-full"
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setMessages([
+                        {
+                          role: "assistant",
+                          content:
+                            "Hi! I'm your Kanbanly AI assistant. I can help you manage your workspace. You can ask me how to use the tool (e.g., 'How do I create a sprint?') or give me direct instructions (e.g., 'Create a task named Prepare Report'). How can I help you today?",
+                          timestamp: new Date(),
+                        },
+                      ]);
+                      setIsOpen(false);
+                    }}
                   >
                     <X className="w-3.5 h-3.5" />
                   </Button>

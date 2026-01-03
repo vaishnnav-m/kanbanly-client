@@ -9,6 +9,7 @@ export interface MessageResponse {
     | string;
   text: string;
   createdAt: Date;
+  chatId?: string;
   //   isSent: boolean;
   //   status: "sent" | "delivered" | "read";
   //   type: "text" | "image";

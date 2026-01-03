@@ -29,17 +29,19 @@ function ChatPageTemplate({
     const combinedMessages = [...messageHistory];
 
     socketMessages.forEach((scktmsg) => {
-      const isDuplicate = combinedMessages.some(
-        (msg) => msg.text === scktmsg.text && msg.sender === scktmsg.sender
-      );
+      if (scktmsg.chatId === chatId) {
+        const isDuplicate = combinedMessages.some(
+          (msg) => msg.text === scktmsg.text && msg.sender === scktmsg.sender
+        );
 
-      if (!isDuplicate) {
-        combinedMessages.push(scktmsg);
+        if (!isDuplicate) {
+          combinedMessages.push(scktmsg);
+        }
       }
     });
 
     setMessages(combinedMessages);
-  }, [messageHistory, socketMessages]);
+  }, [messageHistory, socketMessages, chatId]);
 
   if (!chatInfo) {
     return;

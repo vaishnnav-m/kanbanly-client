@@ -6,7 +6,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-
 interface ToastMethods {
   showWarning: (options: {
     title: string;
@@ -26,6 +25,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    if (!error.response) {
+      toastInstance?.showWarning({
+        title: "Server is unreachable",
+        description: "Please check your connection or try again later.",
+        duration: 5000,
+      });
+      return Promise.reject(error);
+    }
 
     if (originalRequest?.url?.includes("/refresh")) {
       return Promise.reject(error);
@@ -51,6 +59,15 @@ api.interceptors.response.use(
           window.location.href = "/login";
         }
       }
+    }
+
+    if (error.response?.status === 500) {
+      toastInstance?.showWarning({
+        title: "Something went wrong",
+        description:
+          "We’re having trouble on our side. Please try again later.",
+        duration: 5000,
+      });
     }
 
     return Promise.reject(error);

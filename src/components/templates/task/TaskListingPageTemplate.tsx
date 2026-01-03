@@ -17,6 +17,8 @@ import { RootState } from "@/store";
 import { TaskDetails } from "@/components/organisms/task/TaskDetailModal";
 import { useGetAllSubTasks, useGetOneTask } from "@/lib/hooks/useTask";
 import { BoardView } from "@/components/organisms/project/BoardView";
+import { TaskCompletionModal } from "@/components/organisms/task/TaskCompletionModal";
+import { useGetSignature, useUploadPicture } from "@/lib/hooks/useCloudinary";
 import { WorkspaceMember } from "@/lib/api/workspace/workspace.types";
 import { ListView } from "@/components/organisms/project/ListView";
 import {
@@ -28,6 +30,8 @@ import { formatDataIntoSections } from "@/lib/task-utils";
 import { ISprint, ISprintResponse } from "@/lib/api/sprint/sprint.types";
 import { TaskPageContext } from "@/contexts/TaskPageContext";
 import { useSocket } from "@/contexts/SocketContext";
+
+import { useToastMessage } from "@/lib/hooks/useToastMessage";
 
 interface TaskListingPageTemplateProps {
   projectId: string;
@@ -96,6 +100,16 @@ function TaskListingPageTemplate({
   const [combinedTasks, setCombinedTasks] = useState<TaskListing[]>([]);
   const [selectedTask, setSelectedTask] = useState("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [pendingCompletionTaskId, setPendingCompletionTaskId] = useState<
+    string | null
+  >(null);
+
+  const { data: cloudinaryResponse } = useGetSignature();
+  const cloudinarySignature = cloudinaryResponse?.data;
+  const { mutateAsync: uploadPicture, isPending: isUploadingAttachment } =
+    useUploadPicture();
+  const toast = useToastMessage();
+
   const currentProjectTemplate = useSelector(
     (state: RootState) => state.project.projectTemplate
   );
@@ -165,10 +179,79 @@ function TaskListingPageTemplate({
   // function handle status change
   const handleStatusChange = useCallback(
     (value: TaskStatus, taskId: string) => {
-      changeStatus(value, taskId);
+      if (value === TaskStatus.Completed) {
+        setPendingCompletionTaskId(taskId);
+      } else {
+        changeStatus(value, taskId);
+      }
     },
     [changeStatus]
   );
+
+  const handleCompletionConfirm = async (file: File | null) => {
+    if (!pendingCompletionTaskId) return;
+
+    try {
+      if (file) {
+        if (!cloudinarySignature) {
+          toast.showError({
+            title: "Uploading failed!",
+            description:
+              "Failed to fetch signature try again or contact support",
+            duration: 6000,
+          });
+          return;
+        }
+
+        const { timeStamp, signature, apiKey, cloudName } = cloudinarySignature;
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", apiKey);
+        formData.append("timestamp", String(timeStamp));
+        formData.append("signature", signature);
+        formData.append("folder", "avatars");
+
+        const response = await uploadPicture({ cloudName, data: formData });
+
+        if (response.secure_url) {
+          const attachmentComment: JSONContent = {
+            type: "doc",
+            content: [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "text",
+                    text: "Task completed with attachment: ",
+                  },
+                  {
+                    type: "text",
+                    marks: [
+                      {
+                        type: "link",
+                        attrs: {
+                          href: response.secure_url,
+                          target: "_blank",
+                        },
+                      },
+                    ],
+                    text: "View Attachment",
+                  },
+                ],
+              },
+            ],
+          };
+          handlePostComment(attachmentComment, pendingCompletionTaskId);
+        }
+      }
+
+      changeStatus(TaskStatus.Completed, pendingCompletionTaskId);
+    } catch (error) {
+      console.error("Failed to complete task with attachment:", error);
+    } finally {
+      setPendingCompletionTaskId(null);
+    }
+  };
 
   // function to handle priority change
   const handlePriorityChange = useCallback(
@@ -287,6 +370,13 @@ function TaskListingPageTemplate({
             handleDeleteComment={handleDeleteComment}
           />
         )}
+
+        <TaskCompletionModal
+          isOpen={!!pendingCompletionTaskId}
+          onClose={() => setPendingCompletionTaskId(null)}
+          onConfirm={handleCompletionConfirm}
+          isUploading={isUploadingAttachment}
+        />
       </div>
     </TaskPageContext.Provider>
   );

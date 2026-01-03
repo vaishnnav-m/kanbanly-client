@@ -24,7 +24,6 @@ export const MessageBubble = ({ message, showSender }: MessageBubbleProps) => {
     typeof message.sender === "string"
       ? message.sender === userId
       : message.sender.userId === userId;
-  console.log("userId", userId, " ", message.sender);
 
   return (
     <div

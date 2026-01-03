@@ -104,6 +104,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             text: text,
             createdAt: new Date(),
             sender,
+            chatId,
           },
         ]);
         console.log("sending message...", text);
@@ -125,6 +126,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
           text: message.text,
           createdAt: new Date(),
           sender: message.senderId,
+          chatId: message.chatId,
         },
       ]);
     },

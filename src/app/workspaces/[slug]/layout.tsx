@@ -71,6 +71,7 @@ export default function WorkspacesLayout({
     <div className="relative">
       {children}
       <AIChat
+        setMessages={setMessages}
         messages={messages}
         inputValue={inputValue}
         setInputValue={setInputValue}
