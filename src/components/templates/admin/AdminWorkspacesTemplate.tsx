@@ -2,16 +2,20 @@
 import { Input } from "@/components/atoms/input";
 import { ConfirmationModal } from "@/components/organisms/admin/ConfirmationModal";
 import CustomTable from "@/components/organisms/CustomTable";
+import { Pagination } from "@/components/atoms/pagination";
 import { IWorkspace } from "@/lib/api/workspace/workspace.types";
 import { createWorkspacesColumns } from "@/lib/columns/workspaces.column";
 import { Search } from "lucide-react";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface IAdminWorkspacesTemplate {
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
   onRemove: (workspaceId: string) => void;
   workspaces: IWorkspace[];
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  totalPages: number;
 }
 
 export const AdminWorkspacesTemplate = ({
@@ -19,9 +23,16 @@ export const AdminWorkspacesTemplate = ({
   searchQuery,
   setSearchQuery,
   onRemove,
+  page,
+  setPage,
+  totalPages,
 }: IAdminWorkspacesTemplate) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState("");
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, setPage]);
 
   const handleRemove = (workspaceId: string) => {
     setSelectedWorkspaceId(workspaceId);
@@ -59,6 +70,11 @@ export const AdminWorkspacesTemplate = ({
           data={workspaces}
           emptyMessage="No Workspaces"
           getRowKey={(row) => row.workspaceId}
+        />
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
         />
       </div>
       <ConfirmationModal

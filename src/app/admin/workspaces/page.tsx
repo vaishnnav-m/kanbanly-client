@@ -5,14 +5,25 @@ import {
   useGetAllWorkspaces,
   useRemoveWorkspace,
 } from "@/lib/hooks/useWorkspace";
+import { useDebounce } from "@/lib/utils";
 import { useState } from "react";
 
 function AdminWorkspacesPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
   const toast = useToastMessage();
 
-  const { data: workspacesData } = useGetAllWorkspaces();
-  const workspaces = workspacesData?.data ? workspacesData.data : [];
+  const debouncedSearchTerm = useDebounce(searchQuery, 300);
+
+  // workspaces fetching
+  const { data: workspacesData } = useGetAllWorkspaces(
+    page,
+    debouncedSearchTerm
+  );
+  const workspaces = workspacesData?.data ? workspacesData.data.workspaces : [];
+  const totalPages = workspacesData?.data?.totalPages || 1;
+
+  // workspace deletion
   const { mutate: deleteWorkspace } = useRemoveWorkspace({
     onSuccess: (response) => {
       toast.showSuccess({
@@ -33,6 +44,9 @@ function AdminWorkspacesPage() {
       setSearchQuery={setSearchQuery}
       onRemove={onRemove}
       workspaces={workspaces}
+      page={page}
+      setPage={setPage}
+      totalPages={totalPages}
     />
   );
 }

@@ -68,10 +68,13 @@ export const useCreateWorkspace = () => {
   });
 };
 
-export const useGetAllWorkspaces = () => {
-  return useQuery<ApiResponse<IWorkspace[]>, Error>({
-    queryKey: ["workspaces"],
-    queryFn: getAllWorkspaces,
+export const useGetAllWorkspaces = (page?: number, search?: string) => {
+  return useQuery<
+    ApiResponse<{ workspaces: IWorkspace[]; totalPages: number }>,
+    Error
+  >({
+    queryKey: ["workspaces", page, search],
+    queryFn: () => getAllWorkspaces(page, search),
   });
 };
 

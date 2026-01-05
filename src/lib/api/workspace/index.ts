@@ -13,8 +13,8 @@ export const createWorkspace = async (payload: WorkspaceCreatePayload) => {
   return response.data;
 };
 
-export const getAllWorkspaces = async () => {
-  const response = await api.get("/workspace");
+export const getAllWorkspaces = async (page?: number, search?: string) => {
+  const response = await api.get(`/workspace?page=${page}&search=${search}`);
   return response.data;
 };
 

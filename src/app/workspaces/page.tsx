@@ -11,7 +11,7 @@ export default function WorkspacesListingPage() {
     logout();
   }
 
-  const workspaces = data?.data ?? [];
+  const workspaces = data?.data?.workspaces ?? [];
 
   return (
     <main>
